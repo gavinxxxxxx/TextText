@@ -56,6 +56,8 @@ public class TextTextView extends View {
 
     @Override
     protected void onDraw(Canvas canvas) {
+        // TODO: 2017/12/13  Paint.breakText
+
         if (getWidth() <= 0 || mText == null) return;
         canvas.save();
         canvas.translate(50, 0);
