@@ -2,6 +2,9 @@ package me.gavin.text;
 
 import org.junit.Test;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -16,20 +19,22 @@ public class ExampleUnitTest {
     }
 
     @Test
-    public void split() {
-        String str = "==========================================================\n" +
-                "更多精校小说尽在知轩藏书下载：http://www.zxcs8.com/\n" +
-                "==========================================================\n" +
-                "《诛仙》\n" +
-                "作者：萧鼎\n" +
-                "\n" +
-                "   　　　 内容简介：\n" +
-                "　　天地不仁，以万物为刍狗！\n";
+    public void matches() {
+        String r = "[`~!@#$^&*)=|}:;,\\].>/?~！@#￥……&*）——|}】‘；：”'。，、？]";
+        String str = "==";
 
-        String[] ss = str.split("[\\s　]*\\n[\\s　]*");
-        for (String s : ss) {
-            System.out.println(s.trim());
+        System.out.println(str.matches(r));
+    }
+
+    @Test
+    public void matches2() {
+        String r = "(\\W|\\w+)";
+        String str = "lwijoads nadkg 故意";
+        Pattern pattern = Pattern.compile(r);
+        Matcher matcher = pattern.matcher(str);
+        System.out.println(matcher.groupCount());
+        while (matcher.find()) {
+            System.out.println(matcher.group());
         }
-        System.out.println(ss.length);
     }
 }
