@@ -37,4 +37,10 @@ public class ExampleUnitTest {
             System.out.println(matcher.group());
         }
     }
+
+    @Test
+    public void matches3() {
+        String str = "我石fewfe fewfe";
+        System.out.println(str.matches(".*[A-Za-z0-9-]+"));
+    }
 }

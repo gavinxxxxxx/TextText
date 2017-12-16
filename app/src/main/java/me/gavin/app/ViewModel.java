@@ -13,8 +13,11 @@ public final class ViewModel {
     public final String REGEX_PUNCTUATION_LEFT = "[({'\\[<（｛【‘“]"; // 标点符号
     public final String REGEX_PUNCTUATION_RIGHT = "[)}'\\]>）｝】’”]"; // 标点符号
     public final String REGEX_PUNCTUATION_N = "[`~!@#$^&*)=|}:;,\\].>/?~！@#￥……&*）——|}】‘；：”'。，、？]"; // 标点符号
+    public final String REGEX_WORD = "[A-Za-z0-9\\-]"; // 单词
+    public final String REGEX_WORD2 = "[A-Za-z0-9\\-]+"; // 单词
+    public final String REGEX_WORD3 = "([A-Za-z0-9\\-]+|[^A-Za-z0-9\\-])"; // 单词
 
-    public float textSize = 30f; // 文字大小
+    public float textSize = 50f; // 文字大小
     public float textHeight = textSize * 1.3271484f;
     public int textColor = 0xFF000000;
 
@@ -26,6 +29,6 @@ public final class ViewModel {
     public float segmentSpacing = textSize * 1f; // 段间距
     public float lineSpacing = textSize * 0.0f; // 行间距
     public float indent = textSize * 2f; // 首行缩进
-    public float wordSpacingMax = textSize * 2f; // 单词最大间距
+    public float wordSpacingMax = textSize * 0.5f; // 单词最大间距
 
 }
