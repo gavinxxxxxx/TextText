@@ -2,9 +2,7 @@ package me.gavin.app;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Paint;
 import android.support.annotation.Nullable;
-import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.view.View;
 
@@ -23,9 +21,6 @@ public class TextTextView extends View {
     private String mText = "哈喽";
     private String[] mTextSp;
 
-    private final TextPaint mTextPaint;
-    private final Paint mDebugPaint;
-
     public TextTextView(Context context) {
         this(context, null);
     }
@@ -37,30 +32,21 @@ public class TextTextView extends View {
     public TextTextView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         mVm = new ViewModel();
-        mTextPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
-        mTextPaint.setTextSize(mVm.textSize);
-        mTextPaint.setColor(mVm.textColor);
-        mTextPaint.setTextAlign(Paint.Align.LEFT);
-        Paint.FontMetrics fontMetrics = mTextPaint.getFontMetrics();
-        mVm.textAscent = fontMetrics.ascent;
-        mVm.textDescent = fontMetrics.descent;
-        mVm.textHeight = fontMetrics.bottom - fontMetrics.top;
-
-        mDebugPaint = new Paint();
-        mDebugPaint.setColor(0x22222222);
     }
 
-    public void setText(String text) {
+    public void setText(String text, long offset) {
         this.mText = text;
         this.mTextSp = text == null ? null : text.split(mVm.REGEX_SEGMENT);
+        this.mVm.pageOffset = offset;
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         if (getWidth() <= 0 || mTextSp == null) return;
 
+        canvas.drawColor(mVm.mDebugPaint.getColor());
         canvas.drawRect(mVm.leftPadding, mVm.topPadding, getWidth() - mVm.rightPadding,
-                getHeight() - mVm.bottomPadding, mDebugPaint);
+                getHeight() - mVm.bottomPadding, mVm.mDebugPaint);
 
         drawText(canvas);
     }
@@ -69,8 +55,13 @@ public class TextTextView extends View {
         float y = mVm.topPadding - mVm.textAscent;
         for (String segment : mTextSp) {
             int start = 0;
-            while (start < segment.length() && y + mVm.textDescent <= getHeight()) {
+            while (start < segment.length()) {
                 String remaining = segment.substring(start, segment.length());
+                if (y + mVm.textDescent > getHeight() - mVm.bottomPadding) {
+                    L.e(remaining);
+                    return;
+                }
+
                 int count = breakText(remaining, start == 0);
                 String line = segment.substring(start, start + Math.abs(count));
                 drawLine(canvas, line.trim() + (count > 0 ? "" : "-"), y,
@@ -84,7 +75,7 @@ public class TextTextView extends View {
     }
 
     private int breakText(String remaining, boolean isFirstLine) {
-        int count = mTextPaint.breakText(remaining, true, getWidth()
+        int count = mVm.mTextPaint.breakText(remaining, true, getWidth()
                 - mVm.leftPadding - mVm.rightPadding - (isFirstLine ? mVm.indent : 0), null);
         return count >= remaining.length() ? count : countReset(remaining, count, isFirstLine);
     }
@@ -115,7 +106,7 @@ public class TextTextView extends View {
                 int end = line.lastIndexOf(group);
 
                 float indent = isFirstLine ? mVm.indent : 0;
-                float textWidth = mTextPaint.measureText(line.substring(0, end));
+                float textWidth = mVm.mTextPaint.measureText(line.substring(0, end));
                 float lineWidth = getWidth() - mVm.leftPadding - mVm.rightPadding - indent;
                 float extraSpace = lineWidth - textWidth; // 剩余空间
 
@@ -141,13 +132,13 @@ public class TextTextView extends View {
     private void drawLine(Canvas canvas, String line, float y, boolean isFirstLine, boolean isLastLine) {
         float indent = isFirstLine ? mVm.indent : 0;
         if (isLastLine) { // 最后一行不需要分散对齐
-            canvas.drawText(line, mVm.leftPadding + indent, y, mTextPaint);
+            canvas.drawText(line, mVm.leftPadding + indent, y, mVm.mTextPaint);
         } else {
-            float textWidth = mTextPaint.measureText(line);
+            float textWidth = mVm.mTextPaint.measureText(line);
             float lineWidth = getWidth() - mVm.leftPadding - mVm.rightPadding - indent;
             float extraSpace = lineWidth - textWidth; // 剩余空间
             if (extraSpace <= 0) { // 没有多余空间
-                canvas.drawText(line, mVm.leftPadding + indent, y, mTextPaint);
+                canvas.drawText(line, mVm.leftPadding + indent, y, mVm.mTextPaint);
             } else {
                 Pattern pattern = Pattern.compile(mVm.REGEX_WORD3);
                 Matcher matcher = pattern.matcher(line);
@@ -164,8 +155,8 @@ public class TextTextView extends View {
                     matcher.reset();
                     while (matcher.find()) {
                         String word = matcher.group();
-                        x = startX + mTextPaint.measureText(sb.toString()) + workSpacing * spacingCount;
-                        canvas.drawText(word, x, y, mTextPaint);
+                        x = startX + mVm.mTextPaint.measureText(sb.toString()) + workSpacing * spacingCount;
+                        canvas.drawText(word, x, y, mVm.mTextPaint);
                         sb.append(word);
                         spacingCount++;
                     }
@@ -175,8 +166,8 @@ public class TextTextView extends View {
                     float x;
                     for (int i = 0; i < line.length(); i++) {
                         String word = String.valueOf(line.charAt(i));
-                        x = startX + mTextPaint.measureText(line.substring(0, i)) + workSpacing * i;
-                        canvas.drawText(word, x, y, mTextPaint);
+                        x = startX + mVm.mTextPaint.measureText(line.substring(0, i)) + workSpacing * i;
+                        canvas.drawText(word, x, y, mVm.mTextPaint);
                     }
                 }
             }

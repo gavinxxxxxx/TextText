@@ -23,9 +23,9 @@ public class AssetsUtils {
      * @param assetPath the asset path
      * @return String string
      */
-    public static String readText(Context context, String assetPath) {
+    public static String readText(Context context, String assetPath, long offset) {
         try {
-            return toString(context.getAssets().open(assetPath), 0);
+            return toString(context.getAssets().open(assetPath), offset);
         } catch (Exception e) {
             return "";
         }
