@@ -42,6 +42,8 @@ public class TextTextView extends View {
         mTextPaint.setColor(mVm.textColor);
         mTextPaint.setTextAlign(Paint.Align.LEFT);
         Paint.FontMetrics fontMetrics = mTextPaint.getFontMetrics();
+        mVm.textAscent = fontMetrics.ascent;
+        mVm.textDescent = fontMetrics.descent;
         mVm.textHeight = fontMetrics.bottom - fontMetrics.top;
 
         mDebugPaint = new Paint();
@@ -64,10 +66,10 @@ public class TextTextView extends View {
     }
 
     private void drawText(Canvas canvas) {
-        float y = mVm.topPadding + mVm.textHeight;
+        float y = mVm.topPadding - mVm.textAscent;
         for (String segment : mTextSp) {
             int start = 0;
-            while (start < segment.length() && y < getHeight()) {
+            while (start < segment.length() && y + mVm.textDescent <= getHeight()) {
                 String remaining = segment.substring(start, segment.length());
                 int count = breakText(remaining, start == 0);
                 String line = segment.substring(start, start + Math.abs(count));

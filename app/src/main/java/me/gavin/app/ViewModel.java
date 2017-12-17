@@ -17,8 +17,10 @@ public final class ViewModel {
     public final String REGEX_WORD2 = "[A-Za-z0-9\\-]+"; // 单词
     public final String REGEX_WORD3 = "([A-Za-z0-9\\-]+|[^A-Za-z0-9\\-])"; // 单词
 
-    public float textSize = 50f; // 文字大小
+    public float textSize = 30f; // 文字大小
     public float textHeight = textSize * 1.3271484f;
+    public float textAscent = textSize * -0.9277344f;
+    public float textDescent = textSize * 0.24414062f;
     public int textColor = 0xFF000000;
 
     public float topPadding = 0f;
