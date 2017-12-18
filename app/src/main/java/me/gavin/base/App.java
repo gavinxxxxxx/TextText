@@ -27,4 +27,8 @@ public class App extends Application {
                 .applicationModule(new ApplicationModule(this))
                 .build());
     }
+
+    public static Application get() {
+        return ApplicationComponent.Instance.get().getApplication();
+    }
 }

@@ -23,9 +23,9 @@ public class AssetsUtils {
      * @param assetPath the asset path
      * @return String string
      */
-    public static String readText(Context context, String assetPath, long offset) {
+    public static String readText(Context context, String assetPath, long offset, int limit) {
         try {
-            return toString(context.getAssets().open(assetPath), offset);
+            return toString(context.getAssets().open(assetPath), offset, limit);
         } catch (Exception e) {
             return "";
         }
@@ -37,9 +37,9 @@ public class AssetsUtils {
      * @param is the is
      * @return the string
      */
-    private static String toString(InputStream is, long offset) {
+    private static String toString(InputStream is, long offset, int limit) {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(is))) {
-            char[] chars = new char[1500];
+            char[] chars = new char[limit]; // TODO: 2017/12/18 END
             reader.skip(offset);
             reader.read(chars, 0, chars.length);
             return String.valueOf(chars);

@@ -6,6 +6,8 @@ import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.View;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -16,10 +18,7 @@ import java.util.regex.Pattern;
  */
 public class TextTextView extends View {
 
-    private final ViewModel mVm;
-
-    private String mText;
-    private String[] mTextSp;
+    private ViewModel mVm;
 
     public TextTextView(Context context) {
         this(context, null);
@@ -31,37 +30,41 @@ public class TextTextView extends View {
 
     public TextTextView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        mVm = new ViewModel();
     }
 
-    public void setText(String text, long offset) {
-        this.mText = text;
-        this.mTextSp = text == null ? null : text.split(Config.REGEX_SEGMENT);
-        this.mVm.pageOffset = offset;
+    public void set(ViewModel viewModel) {
+        this.mVm = viewModel;
+        L.e(viewModel.mText);
+        invalidate();
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
-        if (getWidth() <= 0 || mTextSp == null) return;
+        if (mVm == null) return;
 
-        canvas.drawColor(mVm.debugPaint.getColor());
-        canvas.drawRect(mVm.leftPadding, mVm.topPadding, getWidth() - mVm.rightPadding,
-                getHeight() - mVm.bottomPadding, mVm.debugPaint);
+        canvas.drawColor(Config.debugPaint.getColor());
+        canvas.drawRect(Config.leftPadding, Config.topPadding, getWidth() - Config.rightPadding,
+                getHeight() - Config.bottomPadding, Config.debugPaint);
 
         drawText(canvas);
     }
 
+    private List<Float> yList = new ArrayList<>();
+    private List<String> lineList = new ArrayList<>();
+
     private void drawText(Canvas canvas) {
-        float y = mVm.topPadding - mVm.textAscent;
-        String subText = mText; // 子字符串 - 计算字符数量
-        for (String segment : mTextSp) {
+        yList.clear();
+        lineList.clear();
+
+        float y = Config.topPadding - Config.textAscent;
+        String subText = mVm.mText; // 子字符串 - 计算字符数量
+        for (String segment : mVm.mTextSp) {
             int start = 0;
             while (start < segment.length()) {
-                String remaining = segment.substring(start, segment.length());
-                if (y + mVm.textDescent > getHeight() - mVm.bottomPadding) {
-                    L.e(remaining);
-                    L.e(subText);
-                    mVm.pageLimit = mText.indexOf(subText); // 计算字符数量
+                String remaining = segment.substring(start);
+                if (!mVm.isLast && y + Config.textDescent > getHeight() - Config.bottomPadding) {
+                    mVm.pageLimit = mVm.mText.indexOf(subText); // 计算字符数量
+                    mVm.pageEnd = mVm.pageOffset + mVm.pageLimit;
                     return;
                 }
 
@@ -69,18 +72,40 @@ public class TextTextView extends View {
                 String line = segment.substring(start, start + Math.abs(count));
                 drawLine(canvas, line.trim() + (count > 0 ? "" : "-"), y,
                         start == 0, start + Math.abs(count) >= segment.length());
-                y = y + mVm.textHeight + mVm.lineSpacing;
+
+                yList.add(y);
+                lineList.add(line);
+
+                y = y + Config.textHeight + Config.lineSpacing;
                 start += Math.abs(count);
-                subText = subText.substring(subText.indexOf(line) + line.length(), subText.length());
+                subText = subText.substring(subText.indexOf(line) + line.length());
             }
             // 段间距
-            y += mVm.segmentSpacing;
+            y += Config.segmentSpacing;
+        }
+        if (mVm.isLast) {
+            float maxY = y - Config.segmentSpacing - Config.lineSpacing; // y 最大值
+            float extraY = maxY - getHeight() + Config.bottomPadding;
+            subText = mVm.mText; // 子字符串 - 计算字符数量
+            for (int i = 0; i < yList.size(); i++) {
+                if (yList.get(i) - 44 < extraY) { // TODO: 2017/12/18 @see {http://blog.csdn.net/flyeek/article/details/43934945}
+                    subText = subText.substring(subText.indexOf(lineList.get(i)) + lineList.get(i).length());
+                } else {
+                    break;
+                }
+            }
+            mVm.pageLimit = subText.length();
+            mVm.pageOffset = mVm.pageEnd - mVm.pageLimit;
+            mVm.mText = mVm.mText.substring(mVm.mText.length() - mVm.pageLimit);
+            mVm.mTextSp = mVm.mText.split(Config.REGEX_SEGMENT);
+            mVm.isLast = false;
+            invalidate();
         }
     }
 
     private int breakText(String remaining, boolean isFirstLine) {
-        int count = mVm.textPaint.breakText(remaining, true, getWidth()
-                - mVm.leftPadding - mVm.rightPadding - (isFirstLine ? mVm.indent : 0), null);
+        int count = Config.textPaint.breakText(remaining, true, getWidth()
+                - Config.leftPadding - Config.rightPadding - (isFirstLine ? Config.indent : 0), null);
         return count >= remaining.length() ? count : countReset(remaining, count, isFirstLine);
     }
 
@@ -107,13 +132,13 @@ public class TextTextView extends View {
             }
             int end = line.lastIndexOf(group);
 
-            float indent = isFirstLine ? mVm.indent : 0;
-            float textWidth = mVm.textPaint.measureText(line.substring(0, end));
-            float lineWidth = getWidth() - mVm.leftPadding - mVm.rightPadding - indent;
+            float indent = isFirstLine ? Config.indent : 0;
+            float textWidth = Config.textPaint.measureText(line.substring(0, end));
+            float lineWidth = getWidth() - Config.leftPadding - Config.rightPadding - indent;
             float extraSpace = lineWidth - textWidth; // 剩余空间
 
             float spacing = extraSpace / (groupCount > 1 ? groupCount - 1 : 1);
-            if (spacing > mVm.wordSpacingMax) { // 单词间距过大 - 改为 abc- 形式
+            if (spacing > Config.wordSpacingMax) { // 单词间距过大 - 改为 abc- 形式
                 return 1 - count;
             }
             return end;
@@ -131,17 +156,17 @@ public class TextTextView extends View {
      * @param isLastLine  段落末行 - 分散对齐
      */
     private void drawLine(Canvas canvas, String line, float y, boolean isFirstLine, boolean isLastLine) {
-        float indent = isFirstLine ? mVm.indent : 0;
+        float indent = isFirstLine ? Config.indent : 0;
         if (isLastLine) { // 最后一行 - 不需要分散对齐
-            canvas.drawText(line, mVm.leftPadding + indent, y, mVm.textPaint);
+            canvas.drawText(line, Config.leftPadding + indent, y, Config.textPaint);
             return;
         }
 
-        float textWidth = mVm.textPaint.measureText(line);
-        float lineWidth = getWidth() - mVm.leftPadding - mVm.rightPadding - indent;
+        float textWidth = Config.textPaint.measureText(line);
+        float lineWidth = getWidth() - Config.leftPadding - Config.rightPadding - indent;
         float extraSpace = lineWidth - textWidth; // 剩余空间
         if (extraSpace <= 0) { // 没有多余空间 - 不需要分散对齐
-            canvas.drawText(line, mVm.leftPadding + indent, y, mVm.textPaint);
+            canvas.drawText(line, Config.leftPadding + indent, y, Config.textPaint);
             return;
         }
 
@@ -152,26 +177,26 @@ public class TextTextView extends View {
         }
         if (workCount > 1) { // 多个单词 - 词间距
             float workSpacing = extraSpace / (workCount - 1);
-            float startX = mVm.leftPadding + indent;
+            float startX = Config.leftPadding + indent;
             float x;
             StringBuilder sb = new StringBuilder();
             int spacingCount = 0;
             matcher.reset();
             while (matcher.find()) {
                 String word = matcher.group();
-                x = startX + mVm.textPaint.measureText(sb.toString()) + workSpacing * spacingCount;
-                canvas.drawText(word, x, y, mVm.textPaint);
+                x = startX + Config.textPaint.measureText(sb.toString()) + workSpacing * spacingCount;
+                canvas.drawText(word, x, y, Config.textPaint);
                 sb.append(word);
                 spacingCount++;
             }
         } else { // 单个单词 - 字间距
             float workSpacing = extraSpace / (line.length() - 1);
-            float startX = mVm.leftPadding + indent;
+            float startX = Config.leftPadding + indent;
             float x;
             for (int i = 0; i < line.length(); i++) {
                 String word = String.valueOf(line.charAt(i));
-                x = startX + mVm.textPaint.measureText(line.substring(0, i)) + workSpacing * i;
-                canvas.drawText(word, x, y, mVm.textPaint);
+                x = startX + Config.textPaint.measureText(line.substring(0, i)) + workSpacing * i;
+                canvas.drawText(word, x, y, Config.textPaint);
             }
         }
     }
