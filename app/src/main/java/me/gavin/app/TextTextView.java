@@ -34,7 +34,6 @@ public class TextTextView extends View {
 
     public void set(ViewModel viewModel) {
         this.mVm = viewModel;
-        L.e(viewModel.mText);
         invalidate();
     }
 
@@ -56,13 +55,14 @@ public class TextTextView extends View {
         yList.clear();
         lineList.clear();
 
-        float y = Config.topPadding - Config.textAscent;
+        float y = Config.topPadding - Config.textTop;
+        L.e(y);
         String subText = mVm.mText; // 子字符串 - 计算字符数量
         for (String segment : mVm.mTextSp) {
             int start = 0;
             while (start < segment.length()) {
                 String remaining = segment.substring(start);
-                if (!mVm.isLast && y + Config.textDescent > getHeight() - Config.bottomPadding) {
+                if (!mVm.isLast && y + Config.textBottom > getHeight() - Config.bottomPadding) {
                     mVm.pageLimit = mVm.mText.indexOf(subText); // 计算字符数量
                     mVm.pageEnd = mVm.pageOffset + mVm.pageLimit;
                     return;
@@ -76,7 +76,7 @@ public class TextTextView extends View {
                 yList.add(y);
                 lineList.add(line);
 
-                y = y + Config.textHeight + Config.lineSpacing;
+                y = y + Config.textHeight + Config.lineSpacing; // TODO: 2017/12/18 *? | 分段没分好
                 start += Math.abs(count);
                 subText = subText.substring(subText.indexOf(line) + line.length());
             }
@@ -85,10 +85,10 @@ public class TextTextView extends View {
         }
         if (mVm.isLast) {
             float maxY = y - Config.segmentSpacing - Config.lineSpacing; // y 最大值
-            float extraY = maxY - getHeight() + Config.bottomPadding;
+            float extraY = maxY - getHeight() + Config.bottomPadding - Config.textTop;
             subText = mVm.mText; // 子字符串 - 计算字符数量
             for (int i = 0; i < yList.size(); i++) {
-                if (yList.get(i) - 44 < extraY) { // TODO: 2017/12/18 @see {http://blog.csdn.net/flyeek/article/details/43934945}
+                if (yList.get(i) - 2 < extraY) { // TODO: 2017/12/18 @see {http://blog.csdn.net/flyeek/article/details/43934945}
                     subText = subText.substring(subText.indexOf(lineList.get(i)) + lineList.get(i).length());
                 } else {
                     break;

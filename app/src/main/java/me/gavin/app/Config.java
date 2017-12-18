@@ -29,10 +29,12 @@ public final class Config {
     public static int pagePreCount; // 预加载字符数
 
     public static float textSize; // 文字大小
-    public static float textHeight; // 文字高度
     public static float textAscent;
     public static float textDescent;
     public static float textLeading;
+    public static float textTop;
+    public static float textBottom;
+    public static float textHeight; // 文字高度
     public static int textColor; // 文字颜色
 
     public static float topPadding;
@@ -75,16 +77,13 @@ public final class Config {
         textAscent = fontMetrics.ascent;
         textDescent = fontMetrics.descent;
         textLeading = fontMetrics.leading;
-        textHeight = fontMetrics.bottom - fontMetrics.top;
+        textTop = fontMetrics.top;
+        textBottom = fontMetrics.bottom;
+        textHeight = textBottom - textTop;
 
         int lineCount = textPaint.breakText(Config.TEXT_A, true,
                 DisplayUtil.getScreenWidth() - leftPadding - rightPadding, null);
         pagePreCount = lineCount * (int) Math.ceil((DisplayUtil.getScreenHeight() - topPadding - bottomPadding) / textHeight);
-
-        L.e(textAscent);
-        L.e(textDescent);
-        L.e(textLeading);
-        L.e(textHeight);
     }
 
 }

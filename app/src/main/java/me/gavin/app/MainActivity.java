@@ -5,7 +5,9 @@ import android.databinding.DataBindingUtil;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.PagerSnapHelper;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SnapHelper;
 import android.view.View;
 
 import java.util.ArrayList;
@@ -33,10 +35,10 @@ public class MainActivity extends AppCompatActivity {
         }
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
 
-        list.add(new ViewModel(50008, false));
+        list.add(new ViewModel(50013, false));
         mBinding.recycler.setAdapter(new Adapter(this, list));
-//        SnapHelper snapHelper = new PagerSnapHelper();
-//        snapHelper.attachToRecyclerView(mBinding.recycler);
+        SnapHelper snapHelper = new PagerSnapHelper();
+        snapHelper.attachToRecyclerView(mBinding.recycler);
 
         mBinding.recycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
             int pagingPreCount = 0;
