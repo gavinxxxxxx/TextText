@@ -39,7 +39,7 @@ public class AssetsUtils {
      */
     private static String toString(InputStream is, long offset) {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(is))) {
-            char[] chars = new char[1000];
+            char[] chars = new char[1500];
             reader.skip(offset);
             reader.read(chars, 0, chars.length);
             return String.valueOf(chars);

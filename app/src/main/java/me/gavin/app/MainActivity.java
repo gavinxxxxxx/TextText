@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected void onBind(RecyclerHolder<ItemTextBinding> holder, String s, int position) {
-            holder.binding.text.setText(AssetsUtils.readText(mContext, "test.txt", 200), 0);
+            holder.binding.text.setText(AssetsUtils.readText(mContext, "test.txt", 0), 0);
         }
     }
 }
