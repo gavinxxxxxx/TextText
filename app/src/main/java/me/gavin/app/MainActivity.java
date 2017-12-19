@@ -5,14 +5,14 @@ import android.databinding.DataBindingUtil;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.PagerSnapHelper;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SnapHelper;
 import android.view.View;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import me.gavin.app.model.Book;
+import me.gavin.app.model.Page;
 import me.gavin.base.recycler.RecyclerAdapter;
 import me.gavin.base.recycler.RecyclerHolder;
 import me.gavin.text.R;
@@ -23,7 +23,7 @@ public class MainActivity extends AppCompatActivity {
 
     private ActivityMainBinding mBinding;
 
-    private List<ViewModel> list = new ArrayList<>();
+    private List<Page> list = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,10 +35,11 @@ public class MainActivity extends AppCompatActivity {
         }
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
 
-        list.add(new ViewModel(50013, false));
+        Book book = Book.fromSDCard("/gavin/book/zx.8.txt");
+        list.add(Page.fromBook(book, 10000, false));
         mBinding.recycler.setAdapter(new Adapter(this, list));
-        SnapHelper snapHelper = new PagerSnapHelper();
-        snapHelper.attachToRecyclerView(mBinding.recycler);
+//        SnapHelper snapHelper = new PagerSnapHelper();
+//        snapHelper.attachToRecyclerView(mBinding.recycler);
 
         mBinding.recycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
             int pagingPreCount = 0;
@@ -69,27 +70,25 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private boolean pagingHaveMore = true;
     private boolean pagingLoading = false;
 
     /**
      * 执行加载更多
      */
     public void performPagingLoad() {
-        if (pagingHaveMore && !pagingLoading) {
+        if (!list.get(list.size() - 1).isLast && !pagingLoading) {
             pagingLoading = true;
             getData(false);
         }
     }
 
-    private boolean pagingHaveMore2 = true;
     private boolean pagingLoading2 = false;
 
     /**
      * 执行加载更多
      */
     public void performPagingLoad2() {
-        if (pagingHaveMore2 && !pagingLoading2) {
+        if (!list.get(0).isFirst && !pagingLoading2) {
             pagingLoading2 = true;
             getData(true);
         }
@@ -97,9 +96,9 @@ public class MainActivity extends AppCompatActivity {
 
     public void getData(boolean isLast) {
         mBinding.recycler.post(() -> { // TODO: 2017/12/18
-            ViewModel cur = list.get(isLast ? 0 : list.size() - 1);
+            Page cur = list.get(isLast ? 0 : list.size() - 1);
             int index = isLast ? 0 : list.size();
-            list.add(index, new ViewModel(cur.pageOffset + (isLast ? 0 : cur.pageLimit), isLast));
+            list.add(index, Page.fromBook(cur.book, cur.pageStart + (isLast ? 0 : cur.pageLimit), isLast));
             mBinding.recycler.getAdapter().notifyItemInserted(index);
             if (isLast) {
                 pagingLoading2 = false;
@@ -109,14 +108,14 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    public static class Adapter extends RecyclerAdapter<ViewModel, ItemTextBinding> {
+    public static class Adapter extends RecyclerAdapter<Page, ItemTextBinding> {
 
-        Adapter(Context context, List<ViewModel> list) {
+        Adapter(Context context, List<Page> list) {
             super(context, list, R.layout.item_text);
         }
 
         @Override
-        protected void onBind(RecyclerHolder<ItemTextBinding> holder, ViewModel t, int position) {
+        protected void onBind(RecyclerHolder<ItemTextBinding> holder, Page t, int position) {
             holder.binding.text.set(t);
         }
     }

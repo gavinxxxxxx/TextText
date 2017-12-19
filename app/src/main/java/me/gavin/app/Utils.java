@@ -7,6 +7,19 @@ package me.gavin.app;
  */
 public final class Utils {
 
+    public static String trim(String string) {
+        int len = string.length();
+        int st = 0;
+
+        while ((st < len) && (string.charAt(st) <= ' ' || string.charAt(st) == '　')) {
+            st++;
+        }
+        while ((st < len) && (string.charAt(len - 1) <= ' ' || string.charAt(len - 1) == '　')) {
+            len--;
+        }
+        return ((st > 0) || (len < string.length())) ? string.substring(st, len) : string;
+    }
+
     /**
      * 是否是中文标点
      */

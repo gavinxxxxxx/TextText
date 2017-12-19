@@ -26,7 +26,8 @@ public final class Config {
     public static final String TEXT_B = "iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii"; // 示范
 
 
-    public static int pagePreCount; // 预加载字符数
+    public static int pagePreCount; // 页面预加载字符数
+    public static int segmentPreCount; // 段落预加载字符数
 
     public static float textSize; // 文字大小
     public static float textAscent;
@@ -84,6 +85,7 @@ public final class Config {
         int lineCount = textPaint.breakText(Config.TEXT_A, true,
                 DisplayUtil.getScreenWidth() - leftPadding - rightPadding, null);
         pagePreCount = lineCount * (int) Math.ceil((DisplayUtil.getScreenHeight() - topPadding - bottomPadding) / textHeight);
+        segmentPreCount = 20;
     }
 
 }

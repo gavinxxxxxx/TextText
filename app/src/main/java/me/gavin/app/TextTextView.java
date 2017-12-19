@@ -11,6 +11,9 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import me.gavin.app.model.Line;
+import me.gavin.app.model.Page;
+
 /**
  * TextTextView
  *
@@ -18,7 +21,7 @@ import java.util.regex.Pattern;
  */
 public class TextTextView extends View {
 
-    private ViewModel mVm;
+    private Page mPage;
 
     public TextTextView(Context context) {
         this(context, null);
@@ -32,81 +35,87 @@ public class TextTextView extends View {
         super(context, attrs, defStyleAttr);
     }
 
-    public void set(ViewModel viewModel) {
-        this.mVm = viewModel;
+    public void set(Page page) {
+        this.mPage = page;
         invalidate();
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
-        if (mVm == null) return;
+        if (mPage == null) return;
 
         canvas.drawColor(Config.debugPaint.getColor());
         canvas.drawRect(Config.leftPadding, Config.topPadding, getWidth() - Config.rightPadding,
                 getHeight() - Config.bottomPadding, Config.debugPaint);
 
-        drawText(canvas);
+        layoutAndDrawText(canvas);
     }
 
-    private List<Float> yList = new ArrayList<>();
-    private List<String> lineList = new ArrayList<>();
+    private List<Line> lineList = new ArrayList<>();
 
-    private void drawText(Canvas canvas) {
-        yList.clear();
+    private void layoutAndDrawText(Canvas canvas) {
         lineList.clear();
 
         float y = Config.topPadding - Config.textTop;
-        L.e(y);
-        String subText = mVm.mText; // 子字符串 - 计算字符数量
-        for (String segment : mVm.mTextSp) {
+        String subText = mPage.mText; // 子字符串 - 计算字符数量
+        for (int i = 0; i < mPage.mTextSp.length; i++) {
+            String segment = mPage.mTextSp[i];
             int start = 0;
             while (start < segment.length()) {
                 String remaining = segment.substring(start);
-                if (!mVm.isLast && y + Config.textBottom > getHeight() - Config.bottomPadding) {
-                    mVm.pageLimit = mVm.mText.indexOf(subText); // 计算字符数量
-                    mVm.pageEnd = mVm.pageOffset + mVm.pageLimit;
+                if (!mPage.reverseFlag && y + Config.textBottom > getHeight() - Config.bottomPadding) {
+                    mPage.pageLimit = mPage.mText.indexOf(subText); // 计算字符数量
+                    mPage.pageEnd = mPage.pageStart + mPage.pageLimit;
+                    mPage.isLast = mPage.pageEnd >= mPage.book.getLength();
                     return;
                 }
 
-                int count = breakText(remaining, start == 0);
-                String line = segment.substring(start, start + Math.abs(count));
-                drawLine(canvas, line.trim() + (count > 0 ? "" : "-"), y,
-                        start == 0, start + Math.abs(count) >= segment.length());
+                boolean lineIndent = i == 0 && start == 0 && mPage.firstLineIndent
+                        || i != 0 && start == 0;
+                int count = breakText(remaining, lineIndent);
+                boolean lineAlign = start + Math.abs(count) >= segment.length()
+                        && !(mPage.isReverse && mPage.lastLineAlign && i == mPage.mTextSp.length - 1);
 
-                yList.add(y);
+                String text = segment.substring(start, start + Math.abs(count));
+                Line line = new Line(text.trim() + (count > 0 ? "" : "-"), y, lineIndent, lineAlign);
                 lineList.add(line);
+
+                if (!mPage.reverseFlag) {
+                    drawLine(canvas, line);
+                }
 
                 y = y + Config.textHeight + Config.lineSpacing; // TODO: 2017/12/18 *? | 分段没分好
                 start += Math.abs(count);
-                subText = subText.substring(subText.indexOf(line) + line.length());
+                subText = subText.substring(subText.indexOf(text) + text.length());
             }
             // 段间距
             y += Config.segmentSpacing;
         }
-        if (mVm.isLast) {
+        if (mPage.reverseFlag) {
             float maxY = y - Config.segmentSpacing - Config.lineSpacing; // y 最大值
             float extraY = maxY - getHeight() + Config.bottomPadding - Config.textTop;
-            subText = mVm.mText; // 子字符串 - 计算字符数量
-            for (int i = 0; i < yList.size(); i++) {
-                if (yList.get(i) - 2 < extraY) { // TODO: 2017/12/18 @see {http://blog.csdn.net/flyeek/article/details/43934945}
-                    subText = subText.substring(subText.indexOf(lineList.get(i)) + lineList.get(i).length());
+            subText = mPage.mText; // 子字符串 - 计算字符数量
+            for (Line line : lineList) {
+                if (line.y - 2 < extraY) { // TODO: 2017/12/18 *? -> line
+                    subText = subText.substring(subText.indexOf(line.text) + line.text.length());
                 } else {
                     break;
                 }
             }
-            mVm.pageLimit = subText.length();
-            mVm.pageOffset = mVm.pageEnd - mVm.pageLimit;
-            mVm.mText = mVm.mText.substring(mVm.mText.length() - mVm.pageLimit);
-            mVm.mTextSp = mVm.mText.split(Config.REGEX_SEGMENT);
-            mVm.isLast = false;
-            invalidate();
+            mPage.pageLimit = subText.length();
+            mPage.pageStart = mPage.pageEnd - mPage.pageLimit;
+            mPage.isFirst = mPage.pageStart <= 0;
+            mPage.mText = Utils.trim(mPage.mText.substring(mPage.mText.length() - mPage.pageLimit));
+            mPage.mTextSp = mPage.mText.split(Config.REGEX_SEGMENT);
+            mPage.reverseFlag = false;
+            layoutAndDrawText(canvas);
         }
     }
 
-    private int breakText(String remaining, boolean isFirstLine) {
+    private int breakText(String remaining, boolean lineIndent) {
         int count = Config.textPaint.breakText(remaining, true, getWidth()
-                - Config.leftPadding - Config.rightPadding - (isFirstLine ? Config.indent : 0), null);
-        return count >= remaining.length() ? count : countReset(remaining, count, isFirstLine);
+                - Config.leftPadding - Config.rightPadding - (lineIndent ? Config.indent : 0), null);
+        return count >= remaining.length() ? count : countReset(remaining, count, lineIndent);
     }
 
     /**
@@ -114,12 +123,12 @@ public class TextTextView extends View {
      *
      * @return count 数量 负数代表要加 -
      */
-    private int countReset(String remaining, int count, boolean isFirstLine) {
+    private int countReset(String remaining, int count, boolean lineIndent) {
         if (remaining.substring(count, count + 1).matches(Config.REGEX_PUNCTUATION_N)) { // 下一行第一个是标点
             if (!remaining.substring(count - 2, count)
                     .matches(Config.REGEX_PUNCTUATION_N + "*")) { // 当前行末两不都是标点 - 标准状况下
                 count -= 1;
-                return countReset(remaining, count, isFirstLine);
+                return countReset(remaining, count, lineIndent);
             }
         } else if (remaining.substring(count - 1, count + 1).matches(Config.REGEX_WORD2)) { // 上一行最后一个字符和下一行第一个字符符合单词形式
             String line = remaining.substring(0, count);
@@ -132,7 +141,7 @@ public class TextTextView extends View {
             }
             int end = line.lastIndexOf(group);
 
-            float indent = isFirstLine ? Config.indent : 0;
+            float indent = lineIndent ? Config.indent : 0;
             float textWidth = Config.textPaint.measureText(line.substring(0, end));
             float lineWidth = getWidth() - Config.leftPadding - Config.rightPadding - indent;
             float extraSpace = lineWidth - textWidth; // 剩余空间
@@ -149,28 +158,25 @@ public class TextTextView extends View {
     /**
      * 显示文字
      *
-     * @param canvas      画布
-     * @param line        单行文字
-     * @param y           当前行y坐标
-     * @param isFirstLine 段落首行 - 首行缩进
-     * @param isLastLine  段落末行 - 分散对齐
+     * @param canvas 画布
+     * @param line   单行文字 & 当前行y坐标 & 缩进 & 分散对齐
      */
-    private void drawLine(Canvas canvas, String line, float y, boolean isFirstLine, boolean isLastLine) {
-        float indent = isFirstLine ? Config.indent : 0;
-        if (isLastLine) { // 最后一行 - 不需要分散对齐
-            canvas.drawText(line, Config.leftPadding + indent, y, Config.textPaint);
+    private void drawLine(Canvas canvas, Line line) {
+        float indent = line.lineIndent ? Config.indent : 0;
+        if (line.lineAlign) { // 最后一行 - 不需要分散对齐
+            canvas.drawText(line.text, Config.leftPadding + indent, line.y, Config.textPaint);
             return;
         }
 
-        float textWidth = Config.textPaint.measureText(line);
+        float textWidth = Config.textPaint.measureText(line.text);
         float lineWidth = getWidth() - Config.leftPadding - Config.rightPadding - indent;
         float extraSpace = lineWidth - textWidth; // 剩余空间
         if (extraSpace <= 0) { // 没有多余空间 - 不需要分散对齐
-            canvas.drawText(line, Config.leftPadding + indent, y, Config.textPaint);
+            canvas.drawText(line.text, Config.leftPadding + indent, line.y, Config.textPaint);
             return;
         }
 
-        Matcher matcher = Pattern.compile(Config.REGEX_WORD3).matcher(line);
+        Matcher matcher = Pattern.compile(Config.REGEX_WORD3).matcher(line.text);
         int workCount = 0;
         while (matcher.find()) {
             workCount++;
@@ -185,18 +191,18 @@ public class TextTextView extends View {
             while (matcher.find()) {
                 String word = matcher.group();
                 x = startX + Config.textPaint.measureText(sb.toString()) + workSpacing * spacingCount;
-                canvas.drawText(word, x, y, Config.textPaint);
+                canvas.drawText(word, x, line.y, Config.textPaint);
                 sb.append(word);
                 spacingCount++;
             }
         } else { // 单个单词 - 字间距
-            float workSpacing = extraSpace / (line.length() - 1);
+            float workSpacing = extraSpace / (line.text.length() - 1);
             float startX = Config.leftPadding + indent;
             float x;
-            for (int i = 0; i < line.length(); i++) {
-                String word = String.valueOf(line.charAt(i));
-                x = startX + Config.textPaint.measureText(line.substring(0, i)) + workSpacing * i;
-                canvas.drawText(word, x, y, Config.textPaint);
+            for (int i = 0; i < line.text.length(); i++) {
+                String word = String.valueOf(line.text.charAt(i));
+                x = startX + Config.textPaint.measureText(line.text.substring(0, i)) + workSpacing * i;
+                canvas.drawText(word, x, line.y, Config.textPaint);
             }
         }
     }
