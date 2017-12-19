@@ -62,8 +62,8 @@ public final class Config {
         leftPadding = SPUtil.getFloat("leftPadding", 50f);
         rightPadding = leftPadding;
 
-        segmentSpacing = textSize * SPUtil.getFloat("segmentSpacing", 0.5f);
-        lineSpacing = textSize * SPUtil.getFloat("lineSpacing", 0.2f);
+        segmentSpacing = textSize * SPUtil.getFloat("segmentSpacing", 0.f);
+        lineSpacing = textSize * SPUtil.getFloat("lineSpacing", 0.f);
         indent = textSize * SPUtil.getFloat("indent", 2f);
         wordSpacingMax = textSize * 0.5f;
 
