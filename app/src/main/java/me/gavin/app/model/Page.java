@@ -1,6 +1,7 @@
 package me.gavin.app.model;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -9,6 +10,7 @@ import me.gavin.app.Config;
 import me.gavin.app.StreamHelper;
 import me.gavin.app.Utils;
 import me.gavin.util.DisplayUtil;
+import me.gavin.util.L;
 
 /**
  * ViewModel
@@ -53,14 +55,14 @@ public class Page {
             page.pageStart = offset;
             page.isFirst = page.pageStart <= 0;
             page.mText = StreamHelper.getText(book.open(), page.pageStart, Config.pagePreCount);
-            page.mTextSp = page.mText == null ? null : page.mText.split(Config.REGEX_SEGMENT);
+            page.mTextSp = page.mText == null ? null : Utils.trim(page.mText).split(Config.REGEX_SEGMENT);
             page.firstLineIndent = true;
             page.lastLineAlign = true;
         } else { // 反向
             page.pageEnd = offset;
             page.isLast = page.pageEnd >= book.getLength();
-            page.mText = StreamHelper.getText(book.open(), page.pageEnd - Config.pagePreCount, Config.pagePreCount);
-            page.mTextSp = page.mText == null ? null : page.mText.split(Config.REGEX_SEGMENT);
+            page.mText = StreamHelper.getText(book.open(), Math.max(page.pageEnd - Config.pagePreCount, 0), Config.pagePreCount);
+            page.mTextSp = page.mText == null ? null : Utils.trim(page.mText).split(Config.REGEX_SEGMENT);
             page.firstLineIndent = true;
             page.lastLineAlign = true;
         }

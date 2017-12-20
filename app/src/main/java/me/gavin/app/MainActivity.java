@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
 
         Book book = Book.fromSDCard("/gavin/book/zx.8.txt");
-        list.add(Page.fromBook(book, 9999 + 1, false));
+        list.add(Page.fromBook(book, 1630000, false));
         mBinding.recycler.setAdapter(new Adapter(this, list));
 //        SnapHelper snapHelper = new PagerSnapHelper();
 //        snapHelper.attachToRecyclerView(mBinding.recycler);

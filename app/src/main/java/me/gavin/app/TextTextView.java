@@ -11,7 +11,6 @@ import java.util.regex.Pattern;
 
 import me.gavin.app.model.Line;
 import me.gavin.app.model.Page;
-import me.gavin.util.L;
 
 /**
  * TextTextView
@@ -60,7 +59,7 @@ public class TextTextView extends View {
      */
     private void drawLine(Canvas canvas, Line line) {
         float indent = line.lineIndent ? Config.indent : 0;
-        if (line.lineAlign) { // 最后一行 - 不需要分散对齐
+        if (line.lineAlign || line.text.length() <= 1) { // 不需要分散对齐 | 只有一个字符
             canvas.drawText(line.text, Config.leftPadding + indent, line.y, Config.textPaint);
             return;
         }
@@ -93,15 +92,9 @@ public class TextTextView extends View {
                 spacingCount++;
             }
         } else { // 单个单词 - 字间距
-            if (mPage.pageEnd == 10000 && line.text.trim().equals("说"))
-                L.e(line.y + " 1 " + line.text);
-
             float workSpacing = extraSpace / (line.text.length() - 1);
             float startX = Config.leftPadding + indent;
             float x;
-
-            if (mPage.pageEnd == 10000 && line.text.trim().equals("说"))
-                L.e(line.y + " 2 " + line.text);
             for (int i = 0; i < line.text.length(); i++) {
                 String word = String.valueOf(line.text.charAt(i));
                 x = startX + Config.textPaint.measureText(line.text.substring(0, i)) + workSpacing * i;

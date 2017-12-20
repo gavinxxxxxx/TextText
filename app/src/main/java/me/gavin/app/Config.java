@@ -52,9 +52,6 @@ public final class Config {
 
     static {
         textSize = SPUtil.getFloat("textSize", 41f);
-        // textHeight = textSize * 1.3271484f;
-        // textAscent = textSize * -0.9277344f;
-        // textDescent = textSize * 0.24414062f;
         textColor = SPUtil.getInt("textColor", 0xFF000000);
 
         topPadding = SPUtil.getFloat("topPadding", 50f);
@@ -62,8 +59,8 @@ public final class Config {
         leftPadding = SPUtil.getFloat("leftPadding", 50f);
         rightPadding = leftPadding;
 
-        segmentSpacing = textSize * SPUtil.getFloat("segmentSpacing", 0.f);
-        lineSpacing = textSize * SPUtil.getFloat("lineSpacing", 0.f);
+        segmentSpacing = textSize * SPUtil.getFloat("segmentSpacing", 0.5f);
+        lineSpacing = textSize * SPUtil.getFloat("lineSpacing", 0.2f);
         indent = textSize * SPUtil.getFloat("indent", 2f);
         wordSpacingMax = textSize * 0.5f;
 
@@ -75,12 +72,12 @@ public final class Config {
         debugPaint.setColor(0x22222222);
 
         Paint.FontMetrics fontMetrics = textPaint.getFontMetrics();
-        textAscent = fontMetrics.ascent;
-        textDescent = fontMetrics.descent;
+        textAscent = fontMetrics.ascent; // textAscent = textSize * -0.9277344f;
+        textDescent = fontMetrics.descent; // textDescent = textSize * 0.24414062f;
         textLeading = fontMetrics.leading;
         textTop = fontMetrics.top;
         textBottom = fontMetrics.bottom;
-        textHeight = textBottom - textTop;
+        textHeight = textBottom - textTop; // textHeight = textSize * 1.3271484f;
 
         int lineCount = textPaint.breakText(Config.TEXT_A, true,
                 DisplayUtil.getScreenWidth() - leftPadding - rightPadding, null);
