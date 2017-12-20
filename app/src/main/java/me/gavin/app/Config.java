@@ -54,13 +54,13 @@ public final class Config {
         textSize = SPUtil.getFloat("textSize", 41f);
         textColor = SPUtil.getInt("textColor", 0xFF000000);
 
-        topPadding = SPUtil.getFloat("topPadding", 50f);
+        topPadding = SPUtil.getFloat("topPadding", 53f);
         bottomPadding = topPadding;
         leftPadding = SPUtil.getFloat("leftPadding", 50f);
         rightPadding = leftPadding;
 
         segmentSpacing = textSize * SPUtil.getFloat("segmentSpacing", 0.5f);
-        lineSpacing = textSize * SPUtil.getFloat("lineSpacing", 0.2f);
+        lineSpacing = textSize * SPUtil.getFloat("lineSpacing", 0.5f);
         indent = textSize * SPUtil.getFloat("indent", 2f);
         wordSpacingMax = textSize * 0.5f;
 

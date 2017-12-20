@@ -11,6 +11,9 @@ import android.view.View;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 import me.gavin.app.model.Book;
 import me.gavin.app.model.Page;
 import me.gavin.base.recycler.RecyclerAdapter;
@@ -42,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
 //        snapHelper.attachToRecyclerView(mBinding.recycler);
 
         mBinding.recycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            int pagingPreCount = 0;
+            int pagingPreCount = 1;
 
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
@@ -95,17 +98,27 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void getData(boolean isLast) {
-        mBinding.recycler.post(() -> { // TODO: 2017/12/18
-            Page cur = list.get(isLast ? 0 : list.size() - 1);
-            int index = isLast ? 0 : list.size();
-            list.add(index, Page.fromBook(cur.book, cur.pageStart + (isLast ? 0 : cur.pageLimit), isLast));
-            mBinding.recycler.getAdapter().notifyItemInserted(index);
-            if (isLast) {
-                pagingLoading2 = false;
-            } else {
-                pagingLoading = false;
-            }
-        });
+        Observable.just(isLast ? 0 : list.size() - 1)
+                .map(list::get)
+                .map(page -> {
+                    long offset = page.pageStart + (isLast ? 0 : page.pageLimit);
+                    return Page.fromBook(page.book, offset, isLast);
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnComplete(() -> {
+                    if (isLast) {
+                        pagingLoading2 = false;
+                    } else {
+                        pagingLoading = false;
+                    }
+                })
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribe(page -> {
+                    int index = isLast ? 0 : list.size();
+                    list.add(index, page);
+                    mBinding.recycler.getAdapter().notifyItemInserted(index);
+                }, Throwable::printStackTrace);
     }
 
     public static class Adapter extends RecyclerAdapter<Page, ItemTextBinding> {

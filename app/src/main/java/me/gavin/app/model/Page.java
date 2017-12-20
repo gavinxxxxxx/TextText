@@ -1,7 +1,6 @@
 package me.gavin.app.model;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -80,10 +79,12 @@ public class Page {
             int start = 0;
             while (start < segment.length()) {
                 String remaining = segment.substring(start);
-                if (!reverseFlag && y + Config.textBottom - 2 > height - Config.bottomPadding) {
+                if (!reverseFlag && y + Config.textBottom > height - Config.bottomPadding) {
+                    L.e(System.currentTimeMillis());
                     pageLimit = mText.indexOf(subText); // 计算字符数量
                     pageEnd = pageStart + pageLimit;
                     isLast = pageEnd >= book.getLength();
+                    L.e(pageEnd + " - " + book.getLength() + " - " + y);
                     return;
                 }
 
