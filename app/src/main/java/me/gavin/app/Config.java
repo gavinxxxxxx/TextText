@@ -51,16 +51,16 @@ public final class Config {
     public static final Paint textPaint, debugPaint;
 
     static {
-        textSize = SPUtil.getFloat("textSize", 41f);
+        textSize = SPUtil.getFloat("textSize", 30f);
         textColor = SPUtil.getInt("textColor", 0xFF000000);
 
-        topPadding = SPUtil.getFloat("topPadding", 53f);
+        topPadding = SPUtil.getFloat("topPadding", 58f);
         bottomPadding = topPadding;
         leftPadding = SPUtil.getFloat("leftPadding", 50f);
         rightPadding = leftPadding;
 
-        segmentSpacing = textSize * SPUtil.getFloat("segmentSpacing", 0.5f);
-        lineSpacing = textSize * SPUtil.getFloat("lineSpacing", 0.5f);
+        segmentSpacing = textSize * SPUtil.getFloat("segmentSpacing", 0.f);
+        lineSpacing = textSize * SPUtil.getFloat("lineSpacing", 0.f);
         indent = textSize * SPUtil.getFloat("indent", 2f);
         wordSpacingMax = textSize * 0.5f;
 

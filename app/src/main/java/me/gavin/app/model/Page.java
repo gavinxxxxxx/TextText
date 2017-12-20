@@ -9,7 +9,6 @@ import me.gavin.app.Config;
 import me.gavin.app.StreamHelper;
 import me.gavin.app.Utils;
 import me.gavin.util.DisplayUtil;
-import me.gavin.util.L;
 
 /**
  * ViewModel
@@ -71,47 +70,43 @@ public class Page {
 
     private void layoutText() {
         lineList.clear();
-
         float y = Config.topPadding - Config.textTop;
-        String subText = mText; // 子字符串 - 计算字符数量
+        String subText = Utils.trim(mText);
         for (int i = 0; i < mTextSp.length; i++) {
             String segment = mTextSp[i];
             int start = 0;
             while (start < segment.length()) {
-                String remaining = segment.substring(start);
-                if (!reverseFlag && y + Config.textBottom > height - Config.bottomPadding) {
-                    L.e(System.currentTimeMillis());
-                    pageLimit = mText.indexOf(subText); // 计算字符数量
+                if (!isReverse && y + Config.textBottom > height - Config.bottomPadding) {
+                    pageLimit = mText.indexOf(subText);
                     pageEnd = pageStart + pageLimit;
-                    isLast = pageEnd >= book.getLength();
-                    L.e(pageEnd + " - " + book.getLength() + " - " + y);
+                    isLast = pageEnd > book.getLength();
                     return;
                 }
-
+                String remaining = segment.substring(start);
                 boolean lineIndent = i == 0 && start == 0 && firstLineIndent
                         || i != 0 && start == 0;
                 int count = breakText(remaining, lineIndent);
-                boolean lineAlign = start + Math.abs(count) >= segment.length()
+                String suffix = count < 0 ? "-" : "";
+                count = Math.abs(count);
+                String text = segment.substring(start, start + count);
+                boolean lineAlignNo = start + count >= segment.length() // 不对齐 - 段落尾行 && 非反向最后一行
                         && !(isReverse && lastLineAlign && i == mTextSp.length - 1);
-
-                String text = segment.substring(start, start + Math.abs(count));
-                Line line = new Line(text.trim() + (count > 0 ? "" : "-"), y, lineIndent, lineAlign);
+                Line line = new Line(Utils.trim(text), suffix, y, lineIndent, lineAlignNo);
                 lineList.add(line);
 
-                y = y + Config.textHeight + Config.lineSpacing; // TODO: 2017/12/18 *? | 分段没分好
-                start += Math.abs(count);
+                y += Config.textHeight + Config.lineSpacing;
+                start += count;
                 subText = subText.substring(subText.indexOf(text) + text.length());
             }
-            // 段间距
             y += Config.segmentSpacing;
         }
         if (reverseFlag) {
-            float maxY = y - Config.segmentSpacing - Config.lineSpacing; // y 最大值
-            float extraY = maxY - height + Config.bottomPadding - Config.textTop;
+            y = y - Config.segmentSpacing - Config.lineSpacing;
+            float ey = y + Config.textBottom - height + Config.bottomPadding + Config.topPadding;
             subText = mText; // 子字符串 - 计算字符数量
             for (Line line : lineList) {
-                if (line.y - 2 < extraY) { // TODO: 2017/12/18 *? -> line
-                    subText = subText.substring(subText.indexOf(line.text) + line.text.length());
+                if (line.y < ey) { // TODO: 2017/12/18 *? -> line
+                    subText = subText.substring(subText.indexOf(line.src) + line.src.length());
                 } else {
                     break;
                 }
@@ -119,13 +114,12 @@ public class Page {
             pageLimit = subText.length();
             pageStart = pageEnd - pageLimit;
             isFirst = pageStart <= 0;
-            mText = Utils.trim(mText.substring(mText.length() - pageLimit));
+            mText = Utils.trim(subText);
             mTextSp = mText.split(Config.REGEX_SEGMENT);
             reverseFlag = false;
             layoutText();
         }
     }
-
 
     private int breakText(String remaining, boolean lineIndent) {
         int count = Config.textPaint.breakText(remaining, true, width

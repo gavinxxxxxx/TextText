@@ -11,7 +11,6 @@ import java.util.regex.Pattern;
 
 import me.gavin.app.model.Line;
 import me.gavin.app.model.Page;
-import me.gavin.util.L;
 
 /**
  * TextTextView
