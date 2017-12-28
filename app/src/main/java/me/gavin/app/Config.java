@@ -29,39 +29,39 @@ public final class Config {
     public static int pagePreCount; // 页面预加载字符数
     public static int segmentPreCount; // 段落预加载字符数
 
-    public static float textSize; // 文字大小
+    public static int textSize; // 文字大小
     public static float textAscent;
     public static float textDescent;
     public static float textLeading;
-    public static float textTop;
-    public static float textBottom;
-    public static float textHeight; // 文字高度
+    public static int textTop;
+    public static int textBottom;
+    public static int textHeight; // 文字高度
     public static int textColor; // 文字颜色
 
-    public static float topPadding;
-    public static float bottomPadding;
-    public static float leftPadding;
-    public static float rightPadding;
+    public static int topPadding;
+    public static int bottomPadding;
+    public static int leftPadding;
+    public static int rightPadding;
 
-    public static float segmentSpacing; // 段间距
-    public static float lineSpacing; // 行间距
+    public static int segmentSpacing; // 段间距
+    public static int lineSpacing; // 行间距
     public static float indent; // 首行缩进
     public static float wordSpacingMax; // 单词最大间距
 
     public static final Paint textPaint, debugPaint;
 
     static {
-        textSize = SPUtil.getFloat("textSize", 30f);
+        textSize = SPUtil.getInt("textSize", 40);
         textColor = SPUtil.getInt("textColor", 0xFF000000);
 
-        topPadding = SPUtil.getFloat("topPadding", 58f);
+        topPadding = SPUtil.getInt("topPadding", 80);
         bottomPadding = topPadding;
-        leftPadding = SPUtil.getFloat("leftPadding", 50f);
+        leftPadding = SPUtil.getInt("leftPadding", 50);
         rightPadding = leftPadding;
 
-        segmentSpacing = textSize * SPUtil.getFloat("segmentSpacing", 0.f);
-        lineSpacing = textSize * SPUtil.getFloat("lineSpacing", 0.f);
-        indent = textSize * SPUtil.getFloat("indent", 2f);
+        segmentSpacing = SPUtil.getInt("segmentSpacing", textSize / 2);
+        lineSpacing = SPUtil.getInt("lineSpacing", textSize / 4);
+        indent = SPUtil.getFloat("indent", textSize * 2f);
         wordSpacingMax = textSize * 0.5f;
 
         textPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
@@ -75,8 +75,8 @@ public final class Config {
         textAscent = fontMetrics.ascent; // textAscent = textSize * -0.9277344f;
         textDescent = fontMetrics.descent; // textDescent = textSize * 0.24414062f;
         textLeading = fontMetrics.leading;
-        textTop = fontMetrics.top;
-        textBottom = fontMetrics.bottom;
+        textTop = (int) Math.ceil(fontMetrics.top); // -1.5 -> -1
+        textBottom = (int) Math.floor(fontMetrics.bottom); // 1.5 -> 1
         textHeight = textBottom - textTop; // textHeight = textSize * 1.3271484f;
 
         int lineCount = textPaint.breakText(Config.TEXT_A, true,

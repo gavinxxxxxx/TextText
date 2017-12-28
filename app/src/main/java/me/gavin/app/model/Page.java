@@ -9,6 +9,7 @@ import me.gavin.app.Config;
 import me.gavin.app.StreamHelper;
 import me.gavin.app.Utils;
 import me.gavin.util.DisplayUtil;
+import me.gavin.util.L;
 
 /**
  * ViewModel
@@ -30,7 +31,6 @@ public class Page {
     public boolean lastLineAlign; // 最后一行对齐 - 只反向有用
 
     public boolean isReverse;
-    public boolean reverseFlag;
 
     public String mText;
     public String[] mTextSp;
@@ -48,7 +48,6 @@ public class Page {
         Page page = new Page();
         page.book = book;
         page.isReverse = isReverse;
-        page.reverseFlag = isReverse;
         if (!isReverse) { // 正向
             page.pageStart = offset;
             page.isFirst = page.pageStart <= 0;
@@ -70,54 +69,60 @@ public class Page {
 
     private void layoutText() {
         lineList.clear();
-        float y = Config.topPadding - Config.textTop;
+        int y = Config.topPadding;
         String subText = Utils.trim(mText);
         for (int i = 0; i < mTextSp.length; i++) {
             String segment = mTextSp[i];
-            int start = 0;
-            while (start < segment.length()) {
-                if (!isReverse && y + Config.textBottom > height - Config.bottomPadding) {
+            int segmentStart = 0;
+            while (segmentStart < segment.length()) {
+                if (!isReverse && y + Config.textHeight > height - Config.bottomPadding) {
                     pageLimit = mText.indexOf(subText);
                     pageEnd = pageStart + pageLimit;
                     isLast = pageEnd > book.getLength();
                     return;
                 }
-                String remaining = segment.substring(start);
-                boolean lineIndent = i == 0 && start == 0 && firstLineIndent
-                        || i != 0 && start == 0;
+                String remaining = segment.substring(segmentStart);
+                boolean lineIndent = i == 0 && segmentStart == 0 && firstLineIndent
+                        || i != 0 && segmentStart == 0;
                 int count = breakText(remaining, lineIndent);
                 String suffix = count < 0 ? "-" : "";
                 count = Math.abs(count);
-                String text = segment.substring(start, start + count);
-                boolean lineAlignNo = start + count >= segment.length() // 不对齐 - 段落尾行 && 非反向最后一行
+                String text = segment.substring(segmentStart, segmentStart + count);
+                boolean lineAlignNo = segmentStart + count >= segment.length() // 不对齐 - 段落尾行 && 非反向最后一行
                         && !(isReverse && lastLineAlign && i == mTextSp.length - 1);
-                Line line = new Line(Utils.trim(text), suffix, y, lineIndent, lineAlignNo);
+                Line line = new Line(Utils.trim(text), suffix, y - Config.textTop, lineIndent, lineAlignNo);
                 lineList.add(line);
 
                 y += Config.textHeight + Config.lineSpacing;
-                start += count;
+                segmentStart += count;
                 subText = subText.substring(subText.indexOf(text) + text.length());
             }
             y += Config.segmentSpacing;
         }
-        if (reverseFlag) {
+        if (isReverse) {
+            List<Line> lines = new ArrayList<>();
             y = y - Config.segmentSpacing - Config.lineSpacing;
-            float ey = y + Config.textBottom - height + Config.bottomPadding + Config.topPadding;
             subText = mText; // 子字符串 - 计算字符数量
+
+            int ey = y - height + Config.bottomPadding + Config.topPadding;
             for (Line line : lineList) {
-                if (line.y < ey) { // TODO: 2017/12/18 *? -> line
+                if (line.y + Config.textTop < ey) {
                     subText = subText.substring(subText.indexOf(line.src) + line.src.length());
                 } else {
-                    break;
+                    lines.add(line);
                 }
             }
+
+            ey = lines.get(0).y - Config.topPadding;
+            for (Line line : lines) {
+                line.y = line.y - ey + Config.textSize;
+            }
+            lineList.clear();
+            lineList.addAll(lines);
+
             pageLimit = subText.length();
             pageStart = pageEnd - pageLimit;
             isFirst = pageStart <= 0;
-            mText = Utils.trim(subText);
-            mTextSp = mText.split(Config.REGEX_SEGMENT);
-            reverseFlag = false;
-            layoutText();
         }
     }
 

@@ -43,4 +43,12 @@ public class ExampleUnitTest {
         String str = "我石fewfe fewfe";
         System.out.println(str.matches(".*[A-Za-z0-9-]+"));
     }
+
+    @Test
+    public void matches4() {
+        double a = -1.55d;
+        System.out.println(Math.floor(a));
+        System.out.println(Math.round(a));
+        System.out.println(Math.ceil(a));
+    }
 }
