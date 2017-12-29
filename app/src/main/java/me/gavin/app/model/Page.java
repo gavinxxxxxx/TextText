@@ -9,7 +9,6 @@ import me.gavin.app.Config;
 import me.gavin.app.StreamHelper;
 import me.gavin.app.Utils;
 import me.gavin.util.DisplayUtil;
-import me.gavin.util.L;
 
 /**
  * ViewModel
@@ -34,7 +33,6 @@ public class Page {
 
     public String mText;
     public String[] mTextSp;
-    public String fix;
 
     public int width = DisplayUtil.getScreenWidth();
     public int height = DisplayUtil.getScreenHeight();
@@ -52,21 +50,22 @@ public class Page {
         if (!isReverse) { // 正向
             page.pageStart = offset;
             page.isFirst = page.pageStart <= 0;
-            page.mText = StreamHelper.getText(book.open(), page.pageStart, Config.pagePreCount);
-            page.fix = StreamHelper.getText(book.open(), page.pageStart - Config.segmentPreCount, Config.segmentPreCount);
+            page.mText = StreamHelper.getText(book.open(), page.pageStart, (int) Math.min(Config.pagePreCount, book.getLength() - page.pageStart));
             page.mTextSp = page.mText == null ? null : Utils.trim(page.mText).split(Config.REGEX_SEGMENT);
-            page.firstLineIndent = page.mText.matches(Config.REGEX_SEGMENT_SUFFIX) || page.fix.matches(Config.REGEX_SEGMENT_PREFIX);
             page.lastLineAlign = true;
+            // TODO: 2017/12/29  
+            String fix = StreamHelper.getText(book.open(), page.pageStart - Config.segmentPreCount, Config.segmentPreCount);
+            page.firstLineIndent = page.mText.matches(Config.REGEX_SEGMENT_SUFFIX) || fix.matches(Config.REGEX_SEGMENT_PREFIX);
         } else { // 反向
             page.pageEnd = offset;
             page.isLast = page.pageEnd >= book.getLength();
-            page.mText = StreamHelper.getText(book.open(), Math.max(page.pageEnd - Config.pagePreCount, 0), Config.pagePreCount);
-            page.fix = StreamHelper.getText(book.open(), page.pageEnd, Config.segmentPreCount);
+            page.mText = StreamHelper.getText(book.open(), Math.max(page.pageEnd - Config.pagePreCount, 0), (int) Math.min(Config.pagePreCount, page.pageEnd));
             page.mTextSp = page.mText == null ? null : Utils.trim(page.mText).split(Config.REGEX_SEGMENT);
             page.firstLineIndent = true;
-            page.lastLineAlign = !page.mText.matches(Config.REGEX_SEGMENT_PREFIX) && !page.fix.matches(Config.REGEX_SEGMENT_SUFFIX);
+            // TODO: 2017/12/29  
+            String fix = StreamHelper.getText(book.open(), page.pageEnd, Config.segmentPreCount);
+            page.lastLineAlign = !page.mText.matches(Config.REGEX_SEGMENT_PREFIX) && !fix.matches(Config.REGEX_SEGMENT_SUFFIX);
         }
-        L.e(page.mText.length());
         page.layoutText();
         return page;
     }
@@ -82,7 +81,7 @@ public class Page {
                 if (!isReverse && y + Config.textHeight > height - Config.bottomPadding) {
                     pageLimit = mText.indexOf(subText);
                     pageEnd = pageStart + pageLimit;
-                    isLast = pageEnd > book.getLength();
+                    isLast = pageEnd >= book.getLength();
                     return;
                 }
                 String remaining = segment.substring(segmentStart);
@@ -103,7 +102,11 @@ public class Page {
             }
             y += Config.segmentSpacing;
         }
-        if (isReverse) {
+        if (!isReverse && y + Config.textHeight <= height - Config.bottomPadding) { // 正向 & 还能显示确没有了
+            pageEnd = book.getLength();
+            pageLimit = (int) (pageEnd - pageStart);
+            isLast = true;
+        } else if (isReverse) { // 反向
             List<Line> lines = new ArrayList<>();
             y = y - Config.segmentSpacing - Config.lineSpacing;
             subText = mText; // 子字符串 - 计算字符数量

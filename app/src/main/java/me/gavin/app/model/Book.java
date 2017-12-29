@@ -8,6 +8,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import me.gavin.app.StreamHelper;
 import me.gavin.base.App;
 
 /**
@@ -73,7 +74,7 @@ public class Book {
 
     public static Book fromFile(File file) {
         Book book = fromUri(Uri.fromFile(file));
-        book.length = file.length();
+        book.length = StreamHelper.getLength(book.open());
         return book;
     }
 
