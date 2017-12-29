@@ -13,18 +13,18 @@ import me.gavin.util.SPUtil;
  */
 public final class Config {
 
-    public static final String REGEX_SEGMENT = "[\\s　]*\\n[\\s　]*"; // 分段
-    public static final String REGEX_GROUP = "\\w+"; // 连续的字母或数字 - 不可分割
+    public static final String REGEX_SEGMENT = "\\s*\\n\\s*"; // 分段
+    public static final String REGEX_SEGMENT_PREFIX = "[\\s\\S]+\\s*\\n\\s*"; // 分段 - 段前
+    public static final String REGEX_SEGMENT_SUFFIX = "\\s*\\n\\s*[\\s\\S]+"; // 分段 - 段后
+    public static final String REGEX_WORD = "[A-Za-z0-9\\-]+"; // 单词
+    public static final String REGEX_CHARACTER = "([A-Za-z0-9\\-]+|[^A-Za-z0-9\\-])"; // 文字
     public static final String REGEX_PUNCTUATION = "[`~!@#$^&*()=|{}':;',\\[\\].<>/?~！@#￥……&*（）——|{}【】‘；：”“'。，、？]"; // 标点符号
     public static final String REGEX_PUNCTUATION_LEFT = "[({'\\[<（｛【‘“]"; // 标点符号
     public static final String REGEX_PUNCTUATION_RIGHT = "[)}'\\]>）｝】’”]"; // 标点符号
     public static final String REGEX_PUNCTUATION_N = "[`~!@#$^&*)=|}:;,\\].>/?~！@#￥……&*）——|}】‘；：”'。，、？]"; // 标点符号
-    public static final String REGEX_WORD = "[A-Za-z0-9\\-]"; // 单词
-    public static final String REGEX_WORD2 = "[A-Za-z0-9\\-]+"; // 单词
-    public static final String REGEX_WORD3 = "([A-Za-z0-9\\-]+|[^A-Za-z0-9\\-])"; // 单词
-    public static final String TEXT_A = "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz"; // 示范
-    public static final String TEXT_B = "iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii"; // 示范
 
+    public static int width;
+    public static int height;
 
     public static int pagePreCount; // 页面预加载字符数
     public static int segmentPreCount; // 段落预加载字符数
@@ -51,7 +51,10 @@ public final class Config {
     public static final Paint textPaint, debugPaint;
 
     static {
-        textSize = SPUtil.getInt("textSize", 40);
+        width = DisplayUtil.getScreenWidth();
+        height = DisplayUtil.getScreenHeight();
+
+        textSize = SPUtil.getInt("textSize", 30);
         textColor = SPUtil.getInt("textColor", 0xFF000000);
 
         topPadding = SPUtil.getInt("topPadding", 80);
@@ -79,10 +82,17 @@ public final class Config {
         textBottom = (int) Math.floor(fontMetrics.bottom); // 1.5 -> 1
         textHeight = textBottom - textTop; // textHeight = textSize * 1.3271484f;
 
-        int lineCount = textPaint.breakText(Config.TEXT_A, true,
-                DisplayUtil.getScreenWidth() - leftPadding - rightPadding, null);
-        pagePreCount = lineCount * (int) Math.ceil((DisplayUtil.getScreenHeight() - topPadding - bottomPadding) / textHeight);
-        segmentPreCount = 20;
+        int lineCount = (int) ((width - leftPadding - rightPadding) / getLetterMinWidth());
+        pagePreCount = lineCount * (int) Math.ceil((height - topPadding - bottomPadding) / textHeight);
+        segmentPreCount = lineCount;
+    }
+
+    private static float getLetterMinWidth() {
+        String[] ss = {"f", "i", "j", "l", "r", "1"};
+        float min = Float.MAX_VALUE;
+        for (String s : ss)
+            min = Math.min(min, textPaint.measureText(s));
+        return min;
     }
 
 }

@@ -43,14 +43,14 @@ public class MainActivity extends AppCompatActivity {
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
 
         Book book = Book.fromSDCard("/gavin/book/zx.8.txt");
-        list.add(Page.fromBook(book, 630000, false));
+        list.add(Page.fromBook(book, 10000, false));
 //        list.add(Page.fromBook(book, 1630000, false));
         mBinding.recycler.setAdapter(new Adapter(this, list));
-//        SnapHelper snapHelper = new PagerSnapHelper();
-//        snapHelper.attachToRecyclerView(mBinding.recycler);
+        SnapHelper snapHelper = new PagerSnapHelper();
+        snapHelper.attachToRecyclerView(mBinding.recycler);
 
         mBinding.recycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            int pagingPreCount = 1;
+            int pagingPreCount = 0;
 
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {

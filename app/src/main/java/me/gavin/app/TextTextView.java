@@ -72,7 +72,7 @@ public class TextTextView extends View {
             return;
         }
 
-        Matcher matcher = Pattern.compile(Config.REGEX_WORD3).matcher(line.text);
+        Matcher matcher = Pattern.compile(Config.REGEX_CHARACTER).matcher(line.text);
         int workCount = 0;
         while (matcher.find()) {
             workCount++;

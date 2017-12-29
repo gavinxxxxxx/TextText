@@ -40,8 +40,9 @@ public class ExampleUnitTest {
 
     @Test
     public void matches3() {
-        String str = "我石fewfe fewfe";
-        System.out.println(str.matches(".*[A-Za-z0-9-]+"));
+        String str = "。\n" +
+                "　　同时，金瓶儿";
+        System.out.println(str.matches("。\\s*\\n\\s*.+"));
     }
 
     @Test

@@ -34,6 +34,7 @@ public class Page {
 
     public String mText;
     public String[] mTextSp;
+    public String fix;
 
     public int width = DisplayUtil.getScreenWidth();
     public int height = DisplayUtil.getScreenHeight();
@@ -52,17 +53,20 @@ public class Page {
             page.pageStart = offset;
             page.isFirst = page.pageStart <= 0;
             page.mText = StreamHelper.getText(book.open(), page.pageStart, Config.pagePreCount);
+            page.fix = StreamHelper.getText(book.open(), page.pageStart - Config.segmentPreCount, Config.segmentPreCount);
             page.mTextSp = page.mText == null ? null : Utils.trim(page.mText).split(Config.REGEX_SEGMENT);
-            page.firstLineIndent = true;
+            page.firstLineIndent = page.mText.matches(Config.REGEX_SEGMENT_SUFFIX) || page.fix.matches(Config.REGEX_SEGMENT_PREFIX);
             page.lastLineAlign = true;
         } else { // 反向
             page.pageEnd = offset;
             page.isLast = page.pageEnd >= book.getLength();
             page.mText = StreamHelper.getText(book.open(), Math.max(page.pageEnd - Config.pagePreCount, 0), Config.pagePreCount);
+            page.fix = StreamHelper.getText(book.open(), page.pageEnd, Config.segmentPreCount);
             page.mTextSp = page.mText == null ? null : Utils.trim(page.mText).split(Config.REGEX_SEGMENT);
             page.firstLineIndent = true;
-            page.lastLineAlign = true;
+            page.lastLineAlign = !page.mText.matches(Config.REGEX_SEGMENT_PREFIX) && !page.fix.matches(Config.REGEX_SEGMENT_SUFFIX);
         }
+        L.e(page.mText.length());
         page.layoutText();
         return page;
     }
@@ -144,9 +148,9 @@ public class Page {
                 count -= 1;
                 return countReset(remaining, count, lineIndent);
             }
-        } else if (remaining.substring(count - 1, count + 1).matches(Config.REGEX_WORD2)) { // 上一行最后一个字符和下一行第一个字符符合单词形式
+        } else if (remaining.substring(count - 1, count + 1).matches(Config.REGEX_WORD)) { // 上一行最后一个字符和下一行第一个字符符合单词形式
             String line = remaining.substring(0, count);
-            Matcher matcher = Pattern.compile(Config.REGEX_WORD3).matcher(line);
+            Matcher matcher = Pattern.compile(Config.REGEX_CHARACTER).matcher(line);
             int groupCount = 0;
             String group = "";
             while (matcher.find()) {
