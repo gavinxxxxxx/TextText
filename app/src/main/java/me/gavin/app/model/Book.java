@@ -75,6 +75,7 @@ public class Book {
     public static Book fromFile(File file) {
         Book book = fromUri(Uri.fromFile(file));
         book.length = StreamHelper.getLength(book.open());
+        StreamHelper.getChapters(book.open());
         return book;
     }
 

@@ -13,6 +13,8 @@ import me.gavin.util.SPUtil;
  */
 public final class Config {
 
+    public static final String REGEX_CHAPTER = "\\s第([0-9零一二三四五六七八九十百千万]{1,9})(章|节|集|卷|部|篇|回|话)([^\\n]{0,30})"; // 章节
+    public static final String REGEX_CHAPTER2 = "\\s{1}第(.{1,5})(章|节|集|卷|部|篇)"; // 章节
     public static final String REGEX_SEGMENT = "\\s*\\n\\s*"; // 分段
     public static final String REGEX_SEGMENT_PREFIX = "[\\s\\S]+\\s*\\n\\s*"; // 分段 - 段前
     public static final String REGEX_SEGMENT_SUFFIX = "\\s*\\n\\s*[\\s\\S]+"; // 分段 - 段后
