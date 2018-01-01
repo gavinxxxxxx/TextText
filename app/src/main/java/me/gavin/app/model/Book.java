@@ -20,8 +20,11 @@ public class Book {
 
     private String name;
     private String author;
+    private String charset;
     private long length;
     private Uri uri;
+    private String MD5; // TODO: 2018/1/1 文件一致性校验
+    private String SHA1; // TODO: 2018/1/1 文件一致性校验
 
     private Book() {
     }
@@ -42,6 +45,14 @@ public class Book {
         this.author = author;
     }
 
+    public String getCharset() {
+        return charset;
+    }
+
+    public void setCharset(String charset) {
+        this.charset = charset;
+    }
+
     public long getLength() {
         return length;
     }
@@ -56,6 +67,14 @@ public class Book {
 
     public void setUri(Uri uri) {
         this.uri = uri;
+    }
+
+    public String getMD5() {
+        return MD5;
+    }
+
+    public void setMD5(String MD5) {
+        this.MD5 = MD5;
     }
 
     public static Book fromUri(Uri uri) {
@@ -74,8 +93,9 @@ public class Book {
 
     public static Book fromFile(File file) {
         Book book = fromUri(Uri.fromFile(file));
-        book.length = StreamHelper.getLength(book.open());
-        StreamHelper.getChapters(book.open());
+        book.charset = StreamHelper.getCharset(book.open());
+        book.length = StreamHelper.getLength(book.open(), book.getCharset());
+        StreamHelper.getChapters(book.open(), book.getCharset());
         return book;
     }
 

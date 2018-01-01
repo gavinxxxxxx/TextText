@@ -41,7 +41,8 @@ public class MainActivity extends AppCompatActivity {
         }
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
 
-        Book book = Book.fromSDCard("/gavin/book/zx.8.txt");
+//        Book book = Book.fromSDCard("/gavin/book/zx.8.txt");
+        Book book = Book.fromSDCard("/gavin/book/dpcq.a.txt");
         L.e(book.getLength());
         list.add(Page.fromBook(book, 0, false));
 //        list.add(Page.fromBook(book, 1630600, false));

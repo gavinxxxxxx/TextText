@@ -50,23 +50,23 @@ public class Page {
         if (!isReverse) { // 正向
             page.pageStart = offset;
             page.isFirst = page.pageStart <= 0;
-            page.mText = StreamHelper.getText(book.open(), page.pageStart, (int) Math.min(Config.pagePreCount, book.getLength() - page.pageStart));
+            page.mText = StreamHelper.getText(book.open(), book.getCharset(), page.pageStart, (int) Math.min(Config.pagePreCount, book.getLength() - page.pageStart));
             page.mTextSp = page.mText == null ? null : Utils.trim(page.mText).split(Config.REGEX_SEGMENT);
             page.lastLineAlign = true;
             if (page.isFirst || page.mText.matches(Config.REGEX_SEGMENT_SUFFIX)) {
                 page.firstLineIndent = true;
             } else {
                 int preCount = (int) (page.pageStart >= Config.segmentPreCount ? Config.segmentPreCount : page.pageStart);
-                String fix = StreamHelper.getText(book.open(), page.pageStart - preCount, preCount);
+                String fix = StreamHelper.getText(book.open(), book.getCharset(), page.pageStart - preCount, preCount);
                 page.firstLineIndent = fix.matches(Config.REGEX_SEGMENT_PREFIX);
             }
         } else { // 反向
             page.pageEnd = offset;
             page.isLast = page.pageEnd >= book.getLength();
-            page.mText = StreamHelper.getText(book.open(), Math.max(page.pageEnd - Config.pagePreCount, 0), (int) Math.min(Config.pagePreCount, page.pageEnd));
+            page.mText = StreamHelper.getText(book.open(), book.getCharset(), Math.max(page.pageEnd - Config.pagePreCount, 0), (int) Math.min(Config.pagePreCount, page.pageEnd));
             page.mTextSp = page.mText == null ? null : Utils.trim(page.mText).split(Config.REGEX_SEGMENT);
             page.firstLineIndent = true;
-            String fix = StreamHelper.getText(book.open(), page.pageEnd, Config.segmentPreCount);
+            String fix = StreamHelper.getText(book.open(), book.getCharset(), page.pageEnd, Config.segmentPreCount);
             page.lastLineAlign = !page.mText.matches(Config.REGEX_SEGMENT_PREFIX) && !fix.matches(Config.REGEX_SEGMENT_SUFFIX);
         }
         page.layoutText();
