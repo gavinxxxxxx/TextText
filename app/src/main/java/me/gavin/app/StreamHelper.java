@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -20,6 +21,7 @@ public class StreamHelper {
             bis.mark(4);
             byte[] first3bytes = new byte[3];
             bis.read(first3bytes);
+            L.e(BinaryToHexString(first3bytes));
             if (first3bytes[0] == (byte) 0xEF && first3bytes[1] == (byte) 0xBB && first3bytes[2] == (byte) 0xBF) {
                 return "utf-8";
             } else if (first3bytes[0] == (byte) 0xFF && first3bytes[1] == (byte) 0xFE) {
@@ -36,6 +38,20 @@ public class StreamHelper {
             L.e(e);
         }
         return null;
+    }
+
+    private static String hexStr =  "0123456789ABCDEF";  //全局
+    public static String BinaryToHexString(byte[] bytes){
+        String result = "";
+        String hex = "";
+        for(int i=0;i<bytes.length;i++){
+            //字节高4位
+            hex = String.valueOf(hexStr.charAt((bytes[i]&0xF0)>>4));
+            //字节低4位
+           hex += String.valueOf(hexStr.charAt(bytes[i]&0x0F));
+                    result +=hex;
+        }
+        return result;
     }
 
     public static String getText(InputStream is, String charset, long offset, int limit) {

@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
 
 //        Book book = Book.fromSDCard("/gavin/book/zx.8.txt");
         Book book = Book.fromSDCard("/gavin/book/dpcq.a.txt");
-        L.e(book.getLength());
+        L.e(book.getCharset() + " - " + book.getLength());
         list.add(Page.fromBook(book, 0, false));
 //        list.add(Page.fromBook(book, 1630600, false));
         mBinding.recycler.setAdapter(new Adapter(this, list));
