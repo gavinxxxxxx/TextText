@@ -23,7 +23,7 @@ public class StreamHelper {
     }
 
     public static long getLength(InputStream is) {
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(is))) {
+         try (BufferedReader reader = new BufferedReader(new InputStreamReader(is))) {
             return reader.skip(Long.MAX_VALUE);
         } catch (IOException e) {
             e.printStackTrace();

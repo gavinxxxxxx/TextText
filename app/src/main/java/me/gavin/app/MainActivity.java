@@ -23,7 +23,6 @@ import me.gavin.base.recycler.RecyclerHolder;
 import me.gavin.text.R;
 import me.gavin.text.databinding.ActivityMainBinding;
 import me.gavin.text.databinding.ItemTextBinding;
-import me.gavin.util.DisplayUtil;
 import me.gavin.util.L;
 
 public class MainActivity extends AppCompatActivity {
@@ -44,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
 
         Book book = Book.fromSDCard("/gavin/book/zx.8.txt");
         L.e(book.getLength());
-        list.add(Page.fromBook(book, 1000, false));
+        list.add(Page.fromBook(book, 0, false));
 //        list.add(Page.fromBook(book, 1630600, false));
         mBinding.recycler.setAdapter(new Adapter(this, list));
         SnapHelper snapHelper = new PagerSnapHelper();

@@ -53,16 +53,19 @@ public class Page {
             page.mText = StreamHelper.getText(book.open(), page.pageStart, (int) Math.min(Config.pagePreCount, book.getLength() - page.pageStart));
             page.mTextSp = page.mText == null ? null : Utils.trim(page.mText).split(Config.REGEX_SEGMENT);
             page.lastLineAlign = true;
-            // TODO: 2017/12/29  
-            String fix = StreamHelper.getText(book.open(), page.pageStart - Config.segmentPreCount, Config.segmentPreCount);
-            page.firstLineIndent = page.mText.matches(Config.REGEX_SEGMENT_SUFFIX) || fix.matches(Config.REGEX_SEGMENT_PREFIX);
+            if (page.isFirst || page.mText.matches(Config.REGEX_SEGMENT_SUFFIX)) {
+                page.firstLineIndent = true;
+            } else {
+                int preCount = (int) (page.pageStart >= Config.segmentPreCount ? Config.segmentPreCount : page.pageStart);
+                String fix = StreamHelper.getText(book.open(), page.pageStart - preCount, preCount);
+                page.firstLineIndent = fix.matches(Config.REGEX_SEGMENT_PREFIX);
+            }
         } else { // 反向
             page.pageEnd = offset;
             page.isLast = page.pageEnd >= book.getLength();
             page.mText = StreamHelper.getText(book.open(), Math.max(page.pageEnd - Config.pagePreCount, 0), (int) Math.min(Config.pagePreCount, page.pageEnd));
             page.mTextSp = page.mText == null ? null : Utils.trim(page.mText).split(Config.REGEX_SEGMENT);
             page.firstLineIndent = true;
-            // TODO: 2017/12/29  
             String fix = StreamHelper.getText(book.open(), page.pageEnd, Config.segmentPreCount);
             page.lastLineAlign = !page.mText.matches(Config.REGEX_SEGMENT_PREFIX) && !fix.matches(Config.REGEX_SEGMENT_SUFFIX);
         }
