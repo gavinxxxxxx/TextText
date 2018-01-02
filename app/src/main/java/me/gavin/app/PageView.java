@@ -17,19 +17,19 @@ import me.gavin.app.model.Page;
  *
  * @author gavin.xiong 2017/12/13
  */
-public class TextTextView extends View {
+public class PageView extends View {
 
     private Page mPage;
 
-    public TextTextView(Context context) {
+    public PageView(Context context) {
         this(context, null);
     }
 
-    public TextTextView(Context context, @Nullable AttributeSet attrs) {
+    public PageView(Context context, @Nullable AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public TextTextView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    public PageView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 

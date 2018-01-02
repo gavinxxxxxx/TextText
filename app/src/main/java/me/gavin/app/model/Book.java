@@ -3,13 +3,18 @@ package me.gavin.app.model;
 import android.net.Uri;
 import android.os.Environment;
 
+import org.greenrobot.greendao.annotation.Id;
+import org.greenrobot.greendao.annotation.Transient;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
 import me.gavin.app.StreamHelper;
 import me.gavin.base.App;
+import me.gavin.util.L;
 
 /**
  * Book
@@ -18,13 +23,20 @@ import me.gavin.base.App;
  */
 public class Book {
 
+    @Id(autoincrement = true)
+    private long _Id;
     private String name;
     private String author;
     private String charset;
     private long length;
     private Uri uri;
     private String MD5; // TODO: 2018/1/1 文件一致性校验
-    private String SHA1; // TODO: 2018/1/1 文件一致性校验
+
+    @Transient
+    private List<Chapter> chapterList;
+
+    private long offset; // 阅读进度
+    private long time; // 阅读时间
 
     private Book() {
     }
@@ -93,8 +105,9 @@ public class Book {
 
     public static Book fromFile(File file) {
         Book book = fromUri(Uri.fromFile(file));
-        book.charset = StreamHelper.getCharset(book.open());
+        book.charset = StreamHelper.getCharsetByJUniversalCharDet(file);
         book.length = StreamHelper.getLength(book.open(), book.getCharset());
+        L.e(StreamHelper.getFileMD5(file));
         StreamHelper.getChapters(book.open(), book.getCharset());
         return book;
     }
@@ -113,4 +126,5 @@ public class Book {
         }
         return null;
     }
+
 }

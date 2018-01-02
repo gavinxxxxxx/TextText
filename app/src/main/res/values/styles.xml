@@ -15,9 +15,17 @@
         <item name="android:statusBarColor">@android:color/transparent</item>
     </style>
 
-
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <style name="ToolbarLightOverflow" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- title 颜色  -->
+        <item name="android:textColorPrimary">@color/colorTitle</item>
+        <!-- 菜单展开图标颜色 三点 -->
+        <item name="android:textColorSecondary">@color/colorVector</item>
+        <!-- 非展开巷 title 颜色 -->
+        <item name="android:textColor">@color/textColorPrimary</item>
+    </style>
 
 </resources>
