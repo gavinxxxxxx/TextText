@@ -12,4 +12,7 @@
     <string name="label_loading_empty">什么都没有</string>
     <string name="label_loading_period">再也没有了&#46;&#46;&#46;</string>
     <string name="label_loading_error">玩坏了&#46;&#46;&#46;</string>
+
+
+    <string name="label_explorer_sub">%1$d 个文件夹，%2$d 个文本文件</string>
 </resources>

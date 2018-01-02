@@ -1,10 +1,8 @@
 package me.gavin.app;
 
 import android.content.Context;
-import android.databinding.DataBindingUtil;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.PagerSnapHelper;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SnapHelper;
@@ -18,6 +16,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import me.gavin.app.model.Book;
 import me.gavin.app.model.Page;
+import me.gavin.base.BindingActivity;
 import me.gavin.base.recycler.RecyclerAdapter;
 import me.gavin.base.recycler.RecyclerHolder;
 import me.gavin.text.R;
@@ -25,26 +24,21 @@ import me.gavin.text.databinding.ActivityMainBinding;
 import me.gavin.text.databinding.ItemTextBinding;
 import me.gavin.util.L;
 
-public class MainActivity extends AppCompatActivity {
-
-    private ActivityMainBinding mBinding;
+public class MainActivity extends BindingActivity<ActivityMainBinding> {
 
     private List<Page> list = new ArrayList<>();
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        // 状态栏深色图标
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            getWindow().getDecorView().setSystemUiVisibility(
-                    View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
-        }
-        mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
+    protected int getLayoutId() {
+        return R.layout.activity_main;
+    }
 
+    @Override
+    protected void afterCreate(@Nullable Bundle savedInstanceState) {
 //        Book book = Book.fromSDCard("/gavin/book/zx.8.txt");
         Book book = Book.fromSDCard("/gavin/book/dpcq.a.txt");
         L.e(book.getCharset() + " - " + book.getLength());
-        list.add(Page.fromBook(book, 0, false));
+        list.add(Page.fromBook(book, 120000, false));
 //        list.add(Page.fromBook(book, 1630600, false));
         mBinding.recycler.setAdapter(new Adapter(this, list));
         SnapHelper snapHelper = new PagerSnapHelper();

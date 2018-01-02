@@ -10,11 +10,11 @@ import android.databinding.ViewDataBinding;
  */
 public abstract class BindingActivity<T extends ViewDataBinding> extends BaseActivity {
 
-    protected T binding;
+    protected T mBinding;
 
     @Override
     public void setContentView() {
-        binding = DataBindingUtil.setContentView(this, getLayoutId());
+        mBinding = DataBindingUtil.setContentView(this, getLayoutId());
     }
 
     protected abstract int getLayoutId();

@@ -56,7 +56,7 @@ public final class Config {
         width = DisplayUtil.getScreenWidth();
         height = DisplayUtil.getScreenHeight();
 
-        textSize = SPUtil.getInt("textSize", 36);
+        textSize = SPUtil.getInt("textSize", 40);
         textColor = SPUtil.getInt("textColor", 0xFF000000);
 
         topPadding = SPUtil.getInt("topPadding", 80);

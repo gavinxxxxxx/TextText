@@ -28,4 +28,10 @@
         <item name="android:textColor">@color/textColorPrimary</item>
     </style>
 
+    <style name="Toolbar.TitleOverlay" parent="TextAppearance.Widget.AppCompat.Toolbar.Title" />
+
+    <style name="Toolbar.SubtitleOverlay" parent="TextAppearance.Widget.AppCompat.Toolbar.Subtitle">
+        <item name="android:textSize">10sp</item>
+    </style>
+
 </resources>
