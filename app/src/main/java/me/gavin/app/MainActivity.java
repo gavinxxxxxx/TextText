@@ -3,6 +3,7 @@ package me.gavin.app;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PagerSnapHelper;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SnapHelper;
@@ -23,10 +24,11 @@ import me.gavin.text.R;
 import me.gavin.text.databinding.ActivityMainBinding;
 import me.gavin.text.databinding.ItemTextBinding;
 import me.gavin.util.L;
+import me.gavin.util.SPUtil;
 
 public class MainActivity extends BindingActivity<ActivityMainBinding> {
 
-    private List<Page> list = new ArrayList<>();
+    private List<Page> mPageList = new ArrayList<>();
 
     @Override
     protected int getLayoutId() {
@@ -38,9 +40,9 @@ public class MainActivity extends BindingActivity<ActivityMainBinding> {
 //        Book book = Book.fromSDCard("/gavin/book/zx.8.txt");
         Book book = Book.fromSDCard("/gavin/book/dpcq.a.txt");
         L.e(book.getCharset() + " - " + book.getLength());
-        list.add(Page.fromBook(book, 120000, false));
-//        list.add(Page.fromBook(book, 1630600, false));
-        mBinding.recycler.setAdapter(new Adapter(this, list));
+        mPageList.add(Page.fromBook(book, SPUtil.getLong("offset", 220000), false));
+//        mPageList.add(Page.fromBook(book, 1630600, false));
+        mBinding.recycler.setAdapter(new Adapter(this, mPageList));
         SnapHelper snapHelper = new PagerSnapHelper();
         snapHelper.attachToRecyclerView(mBinding.recycler);
 
@@ -73,13 +75,21 @@ public class MainActivity extends BindingActivity<ActivityMainBinding> {
         });
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        LinearLayoutManager layoutManager = (LinearLayoutManager) mBinding.recycler.getLayoutManager();
+        int position = layoutManager.findFirstVisibleItemPosition();
+        SPUtil.putLong("offset", mPageList.get(position).pageStart);
+    }
+
     private boolean pagingLoading = false;
 
     /**
      * 执行加载更多
      */
     public void performPagingLoad() {
-        if (!list.get(list.size() - 1).isLast && !pagingLoading) {
+        if (!mPageList.get(mPageList.size() - 1).isLast && !pagingLoading) {
             pagingLoading = true;
             getData(false);
         }
@@ -91,23 +101,23 @@ public class MainActivity extends BindingActivity<ActivityMainBinding> {
      * 执行加载更多
      */
     public void performPagingLoad2() {
-        if (!list.get(0).isFirst && !pagingLoading2) {
+        if (!mPageList.get(0).isFirst && !pagingLoading2) {
             pagingLoading2 = true;
             getData(true);
         }
     }
 
-    public void getData(boolean isLast) {
-        Observable.just(isLast ? 0 : list.size() - 1)
-                .map(list::get)
+    public void getData(boolean isReverse) {
+        Observable.just(isReverse ? 0 : mPageList.size() - 1)
+                .map(mPageList::get)
                 .map(page -> {
-                    long offset = page.pageStart + (isLast ? 0 : page.pageLimit);
-                    return Page.fromBook(page.book, offset, isLast);
+                    long offset = page.pageStart + (isReverse ? 0 : page.pageLimit);
+                    return Page.fromBook(page.book, offset, isReverse);
                 })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnComplete(() -> {
-                    if (isLast) {
+                    if (isReverse) {
                         pagingLoading2 = false;
                     } else {
                         pagingLoading = false;
@@ -115,8 +125,8 @@ public class MainActivity extends BindingActivity<ActivityMainBinding> {
                 })
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe(page -> {
-                    int index = isLast ? 0 : list.size();
-                    list.add(index, page);
+                    int index = isReverse ? 0 : mPageList.size();
+                    mPageList.add(index, page);
                     mBinding.recycler.getAdapter().notifyItemInserted(index);
                 }, Throwable::printStackTrace);
     }

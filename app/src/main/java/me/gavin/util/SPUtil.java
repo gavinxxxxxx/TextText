@@ -50,6 +50,20 @@ public class SPUtil {
         }
     }
 
+    public static Long getLong(String key) {
+        return contains(key) ? getSharedPreferences().getLong(key, 0L) : null;
+    }
+
+    public static long getLong(String key, long defVal) {
+        return getSharedPreferences().getLong(key, defVal);
+    }
+
+    public static void putLong(String key, Long value) {
+        if (removeIfPutNull(key, value)) {
+            getEditor().putLong(key, value).apply();
+        }
+    }
+
     public static Float getFloat(String key) {
         return contains(key) ? getSharedPreferences().getFloat(key, 0f) : null;
     }
