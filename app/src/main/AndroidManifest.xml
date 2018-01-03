@@ -3,7 +3,6 @@
     package="me.gavin.text">
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:name="me.gavin.base.App"
@@ -17,12 +16,11 @@
         <activity android:name="me.gavin.app.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <activity android:name="me.gavin.app.explorer.ExplorerActivity" >
+        <activity android:name="me.gavin.app.explorer.ExplorerActivity">
             <intent-filter>
                 <action android:name="android.intent.action.TEST" />
                 <category android:name="android.intent.category.TEST" />
