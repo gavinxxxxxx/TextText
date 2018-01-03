@@ -4,7 +4,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:showIn="@layout/activity_explorer">
 
+    <data>
+
+        <variable
+            name="item"
+            type="me.gavin.app.explorer.FileItem" />
+    </data>
+
     <LinearLayout
+        android:id="@+id/item"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?attr/selectableItemBackground"
@@ -36,6 +44,7 @@
                 android:layout_height="wrap_content"
                 android:paddingBottom="6dp"
                 android:paddingStart="14dp"
+                android:text="@{item.name}"
                 android:textColor="?attr/editTextColor"
                 android:textSize="15sp"
                 tools:ignore="RtlSymmetry"
@@ -51,6 +60,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="start"
                     android:paddingStart="14dp"
+                    android:text="@{item.sub}"
                     android:textColor="#99000000"
                     android:textSize="10sp"
                     tools:ignore="RtlSymmetry,SmallSp"
@@ -61,6 +71,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="end"
+                    android:text="@{item.time}"
                     android:textColor="#99000000"
                     android:textSize="10sp"
                     tools:ignore="RelativeOverlap,SmallSp"
