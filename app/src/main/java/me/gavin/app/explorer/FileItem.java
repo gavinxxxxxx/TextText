@@ -9,6 +9,7 @@ import java.util.Locale;
 import io.reactivex.Observable;
 import io.reactivex.ObservableTransformer;
 import me.gavin.app.RxTransformer;
+import me.gavin.text.R;
 
 /**
  * 这里是萌萌哒注释君
@@ -22,6 +23,8 @@ public class FileItem {
     private boolean dir;
     private String sub;
     private String type;
+    private int icon;
+    private int color = 0xff33b5e5;
     private String time;
 
     public FileItem(@NonNull File file) {
@@ -30,6 +33,8 @@ public class FileItem {
         this.dir = file.isDirectory();
         this.time = SimpleDateFormat.getDateTimeInstance().format(file.lastModified());
         this.sub = dir ? "dir" : "file";
+        this.icon = dir ? R.drawable.ic_folder_black_24dp : R.drawable.ic_description_black_24dp;
+        this.color = dir ? 0xff33b5e5 : 0xff99cc00;
     }
 
     public static ObservableTransformer<File, FileItem> fromFile() {
@@ -108,4 +113,19 @@ public class FileItem {
         this.type = type;
     }
 
+    public int getIcon() {
+        return icon;
+    }
+
+    public void setIcon(int icon) {
+        this.icon = icon;
+    }
+
+    public int getColor() {
+        return color;
+    }
+
+    public void setColor(int color) {
+        this.color = color;
+    }
 }

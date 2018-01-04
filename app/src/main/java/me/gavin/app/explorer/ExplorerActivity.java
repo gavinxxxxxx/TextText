@@ -3,7 +3,7 @@ package me.gavin.app.explorer;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.design.widget.Snackbar;
-import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 import java.io.File;
@@ -30,8 +30,7 @@ public class ExplorerActivity extends BindingActivity<ActivityExplorerBinding> {
     private BindingAdapter mAdapter;
 
     private File mRoot;
-
-    private Map<String, int[]> mMap;
+    private Map<String, Integer> mOffsetMap;
 
     @Override
     protected int getLayoutId() {
@@ -40,16 +39,16 @@ public class ExplorerActivity extends BindingActivity<ActivityExplorerBinding> {
 
     protected void afterCreate(Bundle savedInstanceState) {
         mBinding.includeToolbar.toolbar.setNavigationIcon(R.drawable.ic_arrow_back_24dp);
-        mBinding.includeToolbar.toolbar.setNavigationOnClickListener(v -> finish());
+        mBinding.includeToolbar.toolbar.setNavigationOnClickListener(v -> onBackPressedSupport());
 
         mList = new ArrayList<>();
         mAdapter = new BindingAdapter<>(this, mList, R.layout.item_explorer);
         mAdapter.setOnItemClickListener(i -> {
             FileItem item = mList.get(i);
             if (item.isDir()) {
-                putP();
+                putOffset(false);
                 mRoot = item.getFile();
-                listFiles();
+                listChild();
             } else {
                 Snackbar.make(mBinding.recycler, item.getFile().getPath(), Snackbar.LENGTH_LONG).show();
             }
@@ -57,38 +56,42 @@ public class ExplorerActivity extends BindingActivity<ActivityExplorerBinding> {
         mBinding.recycler.setAdapter(mAdapter);
 
         mRoot = Environment.getExternalStorageDirectory();
-        mMap = new HashMap<>();
+        mOffsetMap = new HashMap<>();
 
         Observable.just(mRoot)
                 .compose(FileItem.fromFile())
                 .subscribe(fileItem -> {
                     mBinding.includeToolbar.toolbar.setSubtitle(fileItem.getSub());
-                    listFiles();
+                    listChild();
                 }, Throwable::printStackTrace);
     }
 
-    private void putP() {
-        LinearLayoutManager layoutManager = (LinearLayoutManager) mBinding.recycler.getLayoutManager();
-        int position = layoutManager.findFirstVisibleItemPosition();
-        View child = layoutManager.findViewByPosition(position);
-        if (child != null) {
-            int offset = child.getTop();
-            mMap.put(mRoot.getPath(), new int[]{position, offset});
+    private void putOffset(boolean remove) {
+        if (remove) {
+            mOffsetMap.remove(mRoot.getPath());
+        } else {
+            RecyclerView.LayoutManager layoutManager = mBinding.recycler.getLayoutManager();
+            View child = layoutManager.getChildAt(0);
+            if (child != null) {
+                int itemHeight = child.getHeight();
+                int offset = itemHeight * layoutManager.getPosition(child) - child.getTop();
+                mOffsetMap.put(mRoot.getPath(), offset);
+            }
         }
     }
 
     @Override
     public void onBackPressedSupport() {
         if (!mRoot.equals(Environment.getExternalStorageDirectory())) {
-            putP();
+            putOffset(true);
             mRoot = mRoot.getParentFile();
-            listFiles();
+            listChild();
         } else {
             super.onBackPressedSupport();
         }
     }
 
-    private void listFiles() {
+    private void listChild() {
         Observable.fromArray(mRoot.listFiles())
                 .compose(RxTransformer.fileFilter())
                 .compose(FileItem.fromFile())
@@ -99,11 +102,9 @@ public class ExplorerActivity extends BindingActivity<ActivityExplorerBinding> {
                     mList.clear();
                     mList.addAll(list);
                     mAdapter.notifyDataSetChanged();
-                    if (mMap.containsKey(mRoot.getPath())) {
-                        mBinding.recycler.post(() -> {
-                            mBinding.recycler.scrollToPosition(mMap.get(mRoot.getPath())[0]);
-//                        mBinding.recycler.scrollBy(0, mMap.get(mRoot.getPath())[1]);
-                        });
+                    if (mOffsetMap.containsKey(mRoot.getPath())) {
+                        mBinding.recycler.scrollToPosition(0);
+                        mBinding.recycler.scrollBy(0, mOffsetMap.get(mRoot.getPath()));
                     }
                 }, Throwable::printStackTrace);
     }
