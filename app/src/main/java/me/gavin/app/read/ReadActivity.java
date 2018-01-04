@@ -1,8 +1,6 @@
 package me.gavin.app.read;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -18,7 +16,6 @@ import java.util.List;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
-import me.gavin.app.explorer.ExplorerActivity;
 import me.gavin.app.model.Book;
 import me.gavin.app.model.Page;
 import me.gavin.base.BindingActivity;
@@ -88,14 +85,6 @@ public class ReadActivity extends BindingActivity<ActivityReadBinding> {
         SPUtil.putLong("offset", mPageList.get(position).pageStart);
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK && data != null && data.getData() != null) {
-            openBook(data.getData().getPath());
-        }
-    }
-
     private void openBook(String path) {
         L.e(path);
         Book book = Book.fromSDCard(path);
@@ -161,8 +150,6 @@ public class ReadActivity extends BindingActivity<ActivityReadBinding> {
         @Override
         protected void onBind(RecyclerHolder<ItemTextBinding> holder, Page t, int position) {
             holder.binding.text.set(t);
-            holder.binding.text.setOnClickListener(v ->
-                    ((Activity) mContext).startActivityForResult(new Intent(mContext, ExplorerActivity.class), 0));
         }
     }
 }

@@ -3,11 +3,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <LinearLayout
+    <android.support.design.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fitsSystemWindows="true"
-        android:orientation="vertical">
+        android:fitsSystemWindows="true">
 
         <include
             android:id="@+id/includeToolbar"
@@ -20,9 +19,20 @@
             android:clipToPadding="false"
             android:padding="16dp"
             app:layoutManager="GridLayoutManager"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
             app:spanCount="3"
             tools:listitem="@layout/item_shelf_book" />
 
-    </LinearLayout>
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="@dimen/fab_margin"
+            android:tint="@android:color/white"
+            app:fabSize="normal"
+            app:srcCompat="@drawable/ic_add_black_24dp" />
+
+    </android.support.design.widget.CoordinatorLayout>
 
 </layout>

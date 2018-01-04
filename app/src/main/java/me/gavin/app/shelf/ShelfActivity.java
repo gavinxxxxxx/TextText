@@ -1,6 +1,7 @@
 package me.gavin.app.shelf;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 
@@ -9,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.Observable;
+import me.gavin.app.explorer.ExplorerActivity;
 import me.gavin.app.model.Book;
 import me.gavin.app.read.ReadActivity;
 import me.gavin.base.BindingActivity;
@@ -33,6 +35,9 @@ public class ShelfActivity extends BindingActivity<ActivityShelfBinding> {
 
     @Override
     protected void afterCreate(@Nullable Bundle savedInstanceState) {
+        mBinding.fab.setOnClickListener(v ->
+                startActivityForResult(new Intent(this, ExplorerActivity.class), 0));
+
         mList = new ArrayList<>();
         Observable.just("/storage/emulated/0/gavin/book/")
                 .map(File::new)
@@ -47,8 +52,17 @@ public class ShelfActivity extends BindingActivity<ActivityShelfBinding> {
                     mAdapter = new BindingAdapter<>(this, mList, R.layout.item_shelf_book);
                     mAdapter.setOnItemClickListener(i ->
                             startActivity(new Intent(this, ReadActivity.class)
-                                    .setData(mList.get(i).getUri())));
+                                    .setData(Uri.parse(mList.get(i).getUri())) ));
                     mBinding.recycler.setAdapter(mAdapter);
                 });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK && data != null && data.getData() != null) {
+            startActivity(new Intent(this, ReadActivity.class)
+                    .setData(data.getData()));
+        }
     }
 }
