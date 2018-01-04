@@ -1,7 +1,6 @@
 package me.gavin.app.model;
 
 import android.net.Uri;
-import android.os.Environment;
 
 import org.greenrobot.greendao.annotation.Id;
 import org.greenrobot.greendao.annotation.Transient;
@@ -95,16 +94,13 @@ public class Book {
         return book;
     }
 
-    public static Book fromAsset(String path) {
-        return fromUri(Uri.parse("file:///android_asset/" + path));
-    }
-
     public static Book fromSDCard(String path) {
-        return fromFile(new File(Environment.getExternalStorageDirectory().getAbsolutePath() + path));
+        return fromFile(new File(path));
     }
 
     public static Book fromFile(File file) {
         Book book = fromUri(Uri.fromFile(file));
+        book.name = file.getName().substring(0, file.getName().lastIndexOf("."));
         book.charset = StreamHelper.getCharsetByJUniversalCharDet(file);
         book.length = StreamHelper.getLength(book.open(), book.getCharset());
         L.e(StreamHelper.getFileMD5(file));

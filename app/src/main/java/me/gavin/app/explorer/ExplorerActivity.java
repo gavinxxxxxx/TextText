@@ -1,8 +1,9 @@
 package me.gavin.app.explorer;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
@@ -50,7 +51,10 @@ public class ExplorerActivity extends BindingActivity<ActivityExplorerBinding> {
                 mRoot = item.getFile();
                 listChild();
             } else {
-                Snackbar.make(mBinding.recycler, item.getFile().getPath(), Snackbar.LENGTH_LONG).show();
+                Intent intent = new Intent();
+                intent.setData(Uri.fromFile(item.getFile()));
+                setResult(RESULT_OK, intent);
+                finish();
             }
         });
         mBinding.recycler.setAdapter(mAdapter);

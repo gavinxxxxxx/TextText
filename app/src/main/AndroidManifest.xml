@@ -13,14 +13,23 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar">
 
-        <activity android:name="me.gavin.app.MainActivity">
+        <activity android:name="me.gavin.app.IndexActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
+        <activity android:name="me.gavin.app.read.ReadActivity" />
+
         <activity android:name="me.gavin.app.explorer.ExplorerActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.TEST" />
+                <category android:name="android.intent.category.TEST" />
+            </intent-filter>
+        </activity>
+
+        <activity android:name="me.gavin.app.shelf.ShelfActivity">
             <intent-filter>
                 <action android:name="android.intent.action.TEST" />
                 <category android:name="android.intent.category.TEST" />

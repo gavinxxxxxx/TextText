@@ -1,6 +1,9 @@
-package me.gavin.app;
+package me.gavin.app.read;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
@@ -15,34 +18,36 @@ import java.util.List;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
+import me.gavin.app.explorer.ExplorerActivity;
 import me.gavin.app.model.Book;
 import me.gavin.app.model.Page;
 import me.gavin.base.BindingActivity;
 import me.gavin.base.recycler.RecyclerAdapter;
 import me.gavin.base.recycler.RecyclerHolder;
 import me.gavin.text.R;
-import me.gavin.text.databinding.ActivityMainBinding;
+import me.gavin.text.databinding.ActivityReadBinding;
 import me.gavin.text.databinding.ItemTextBinding;
 import me.gavin.util.L;
 import me.gavin.util.SPUtil;
 
-public class MainActivity extends BindingActivity<ActivityMainBinding> {
+public class ReadActivity extends BindingActivity<ActivityReadBinding> {
 
     private List<Page> mPageList = new ArrayList<>();
 
     @Override
     protected int getLayoutId() {
-        return R.layout.activity_main;
+        return R.layout.activity_read;
     }
 
     @Override
     protected void afterCreate(@Nullable Bundle savedInstanceState) {
-//        Book book = Book.fromSDCard("/gavin/book/zx.8.txt");
-        Book book = Book.fromSDCard("/gavin/book/dpcq.a.txt");
-        L.e(book.getCharset() + " - " + book.getLength());
-        mPageList.add(Page.fromBook(book, SPUtil.getLong("offset", 220000), false));
-//        mPageList.add(Page.fromBook(book, 1630600, false));
-        mBinding.recycler.setAdapter(new Adapter(this, mPageList));
+        Uri uri = getIntent().getData();
+        if (uri == null) {
+            return;
+        }
+
+        openBook(uri.getPath());
+
         SnapHelper snapHelper = new PagerSnapHelper();
         snapHelper.attachToRecyclerView(mBinding.recycler);
 
@@ -81,6 +86,22 @@ public class MainActivity extends BindingActivity<ActivityMainBinding> {
         LinearLayoutManager layoutManager = (LinearLayoutManager) mBinding.recycler.getLayoutManager();
         int position = layoutManager.findFirstVisibleItemPosition();
         SPUtil.putLong("offset", mPageList.get(position).pageStart);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK && data != null && data.getData() != null) {
+            openBook(data.getData().getPath());
+        }
+    }
+
+    private void openBook(String path) {
+        L.e(path);
+        Book book = Book.fromSDCard(path);
+        mPageList.clear();
+        mPageList.add(Page.fromBook(book, SPUtil.getLong("offset", 220000), false));
+        mBinding.recycler.setAdapter(new Adapter(this, mPageList));
     }
 
     private boolean pagingLoading = false;
@@ -140,6 +161,8 @@ public class MainActivity extends BindingActivity<ActivityMainBinding> {
         @Override
         protected void onBind(RecyclerHolder<ItemTextBinding> holder, Page t, int position) {
             holder.binding.text.set(t);
+            holder.binding.text.setOnClickListener(v ->
+                    ((Activity) mContext).startActivityForResult(new Intent(mContext, ExplorerActivity.class), 0));
         }
     }
 }
