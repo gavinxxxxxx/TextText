@@ -8,6 +8,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.reactivex.Observable;
 import me.gavin.app.model.Book;
 import me.gavin.app.read.ReadActivity;
 import me.gavin.base.BindingActivity;
@@ -33,13 +34,21 @@ public class ShelfActivity extends BindingActivity<ActivityShelfBinding> {
     @Override
     protected void afterCreate(@Nullable Bundle savedInstanceState) {
         mList = new ArrayList<>();
-        for (File file : new File("/storage/emulated/0/gavin/book/").listFiles()) {
-            mList.add(Book.fromSDCard(file.getPath()));
-        }
-        mAdapter = new BindingAdapter<>(this, mList, R.layout.item_shelf_book);
-        mAdapter.setOnItemClickListener(i ->
-                startActivity(new Intent(this, ReadActivity.class)
-                        .setData(mList.get(i).getUri())));
-        mBinding.recycler.setAdapter(mAdapter);
+        Observable.just("/storage/emulated/0/gavin/book/")
+                .map(File::new)
+                .map(File::listFiles)
+                .flatMap(Observable::fromArray)
+                .filter(file -> !file.getName().contains("从零开始"))
+                .map(File::getPath)
+                .map(Book::fromSDCard)
+                .toList()
+                .subscribe(books -> {
+                    mList.addAll(books);
+                    mAdapter = new BindingAdapter<>(this, mList, R.layout.item_shelf_book);
+                    mAdapter.setOnItemClickListener(i ->
+                            startActivity(new Intent(this, ReadActivity.class)
+                                    .setData(mList.get(i).getUri())));
+                    mBinding.recycler.setAdapter(mAdapter);
+                });
     }
 }
