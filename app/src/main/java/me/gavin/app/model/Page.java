@@ -1,5 +1,6 @@
 package me.gavin.app.model;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -43,7 +44,7 @@ public class Page {
         lineList = new ArrayList<>();
     }
 
-    public static Page fromBook(Book book, long offset, boolean isReverse) {
+    public static Page fromBook(Book book, long offset, boolean isReverse) throws IOException {
         Page page = new Page();
         page.book = book;
         page.isReverse = isReverse;

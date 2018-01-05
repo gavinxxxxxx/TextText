@@ -15,7 +15,22 @@ import me.gavin.service.base.DataLayer;
 public class ShelfManager extends BaseManager implements DataLayer.ShelfService {
 
     @Override
-    public Observable<List<Book>> getBooks() {
+    public Observable<Long> insertBook(Book book) {
+        return Observable.just(getDaoSession().getBookDao().insert(book));
+    }
+
+    @Override
+    public Observable<Book> loadBook(long bookId) {
+        return Observable.just(getDaoSession().getBookDao().load(bookId));
+    }
+
+    @Override
+    public void updateBook(Book book) {
+        getDaoSession().getBookDao().update(book);
+    }
+
+    @Override
+    public Observable<List<Book>> loadAllBooks() {
         return Observable.just(getDaoSession().getBookDao().loadAll());
     }
 }

@@ -1,7 +1,6 @@
 package me.gavin.app.read;
 
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
@@ -24,9 +23,10 @@ import me.gavin.base.recycler.RecyclerHolder;
 import me.gavin.text.R;
 import me.gavin.text.databinding.ActivityReadBinding;
 import me.gavin.text.databinding.ItemTextBinding;
-import me.gavin.util.SPUtil;
 
 public class ReadActivity extends BindingActivity<ActivityReadBinding> {
+
+    private Book mBook;
 
     private List<Page> mPageList = new ArrayList<>();
 
@@ -37,12 +37,20 @@ public class ReadActivity extends BindingActivity<ActivityReadBinding> {
 
     @Override
     protected void afterCreate(@Nullable Bundle savedInstanceState) {
-        Uri uri = getIntent().getData();
-        if (uri == null) {
+        if (!getIntent().hasExtra("bookId")) {
             return;
         }
 
-        openBook(uri.getPath());
+        Observable.just(getIntent())
+                .map(intent -> intent.getLongExtra("bookId", 0))
+                .flatMap(id -> getDataLayer().getShelfService().loadBook(id))
+                .map(book -> Page.fromBook(book, book.getOffset(), false))
+                .subscribe(page -> {
+                    mBook = page.book;
+                    mPageList.clear();
+                    mPageList.add(page);
+                    mBinding.recycler.setAdapter(new Adapter(this, mPageList));
+                }, Throwable::printStackTrace);
 
         SnapHelper snapHelper = new PagerSnapHelper();
         snapHelper.attachToRecyclerView(mBinding.recycler);
@@ -81,14 +89,8 @@ public class ReadActivity extends BindingActivity<ActivityReadBinding> {
         super.onPause();
         LinearLayoutManager layoutManager = (LinearLayoutManager) mBinding.recycler.getLayoutManager();
         int position = layoutManager.findFirstVisibleItemPosition();
-        SPUtil.putLong("offset", mPageList.get(position).pageStart);
-    }
-
-    private void openBook(String path) {
-        Book book = Book.fromSDCard(path);
-        mPageList.clear();
-        mPageList.add(Page.fromBook(book, SPUtil.getLong("offset", 220000), false));
-        mBinding.recycler.setAdapter(new Adapter(this, mPageList));
+        mBook.setOffset(mPageList.get(position).pageStart);
+        getDataLayer().getShelfService().updateBook(mBook);
     }
 
     private boolean pagingLoading = false;

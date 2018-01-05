@@ -9,12 +9,12 @@ import org.greenrobot.greendao.annotation.Transient;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
 import me.gavin.app.StreamHelper;
-import me.gavin.base.App;
 
 /**
  * Book
@@ -130,37 +130,24 @@ public class Book {
         this.time = time;
     }
 
-
-    public static Book fromUri(Uri uri) {
-        Book book = new Book();
-        book.uri = uri.toString();
-        return book;
+    public static Book fromUri(Uri uri) throws IOException {
+        if ("file".equals(uri.getScheme())) {
+            File file = new File(uri.getPath());
+            if (!file.exists()) throw new FileNotFoundException();
+            Book book = new Book();
+            book.uri = uri.toString();
+            book.name = file.getName().substring(0, file.getName().lastIndexOf("."));
+            book.charset = StreamHelper.getCharsetByJUniversalCharDet(file);
+            book.length = StreamHelper.getLength(book.open(), book.charset);
+            return book;
+        }
+        throw new IOException("UNKNOWN");
     }
 
-    public static Book fromSDCard(String path) {
-        return fromFile(new File(path));
-    }
-
-    public static Book fromFile(File file) {
-        Book book = fromUri(Uri.fromFile(file));
-        book.name = file.getName().substring(0, file.getName().lastIndexOf("."));
-        book.charset = StreamHelper.getCharsetByJUniversalCharDet(file);
-        book.length = StreamHelper.getLength(book.open(), book.charset);
-        StreamHelper.getChapters(book.open(), book.charset);
-        return book;
-    }
-
-    public InputStream open() {
-        try {
-            if (Uri.parse(uri).getScheme().equals("file")) {
-                String path = Uri.parse(uri).getPath();
-                if (path.startsWith("/android_asset")) {
-                    return App.get().getAssets().open(path.substring(15));
-                }
-                return new FileInputStream(path);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+    public InputStream open() throws IOException {
+        Uri uri = Uri.parse(this.uri);
+        if (uri.getScheme().equals("file")) {
+            return new FileInputStream(uri.getPath());
         }
         return null;
     }

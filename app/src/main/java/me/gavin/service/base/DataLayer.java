@@ -34,7 +34,13 @@ public class DataLayer {
     }
 
     public interface ShelfService {
-        Observable<List<Book>> getBooks();
+        Observable<Long> insertBook(Book book);
+
+        void updateBook(Book book);
+
+        Observable<Book> loadBook(long bookId);
+
+        Observable<List<Book>> loadAllBooks();
     }
 
 }

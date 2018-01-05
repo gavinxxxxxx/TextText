@@ -1,15 +1,14 @@
 package me.gavin.app.shelf;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.Observable;
+import me.gavin.app.RxTransformer;
 import me.gavin.app.explorer.ExplorerActivity;
 import me.gavin.app.model.Book;
 import me.gavin.app.read.ReadActivity;
@@ -17,7 +16,6 @@ import me.gavin.base.BindingActivity;
 import me.gavin.base.recycler.BindingAdapter;
 import me.gavin.text.R;
 import me.gavin.text.databinding.ActivityShelfBinding;
-import me.gavin.util.L;
 
 /**
  * 书架
@@ -26,7 +24,7 @@ import me.gavin.util.L;
  */
 public class ShelfActivity extends BindingActivity<ActivityShelfBinding> {
 
-    private List<Book> mList;
+    private final List<Book> mList = new ArrayList<>();
     private BindingAdapter mAdapter;
 
     @Override
@@ -36,29 +34,21 @@ public class ShelfActivity extends BindingActivity<ActivityShelfBinding> {
 
     @Override
     protected void afterCreate(@Nullable Bundle savedInstanceState) {
-        getDataLayer().getShelfService().getBooks()
-                .subscribe(books -> {
-                    L.e(books);
-                });
-
         mBinding.fab.setOnClickListener(v ->
                 startActivityForResult(new Intent(this, ExplorerActivity.class), 0));
 
-        mList = new ArrayList<>();
-        Observable.just("/storage/emulated/0/gavin/book/")
-                .map(File::new)
-                .map(File::listFiles)
-                .flatMap(Observable::fromArray)
-                .filter(file -> !file.getName().contains("从零开始"))
-                .map(File::getPath)
-                .map(Book::fromSDCard)
-                .toList()
+        getDataLayer().getShelfService().loadAllBooks()
+                .compose(RxTransformer.applySchedulers())
+                .doOnSubscribe(disposable -> {
+                    mCompositeDisposable.add(disposable);
+                    mList.clear();
+                })
                 .subscribe(books -> {
                     mList.addAll(books);
                     mAdapter = new BindingAdapter<>(this, mList, R.layout.item_shelf_book);
                     mAdapter.setOnItemClickListener(i ->
                             startActivity(new Intent(this, ReadActivity.class)
-                                    .setData(Uri.parse(mList.get(i).getUri()))));
+                                    .putExtra("bookId", mList.get(i).get_Id())));
                     mBinding.recycler.setAdapter(mAdapter);
                 });
     }
@@ -67,8 +57,13 @@ public class ShelfActivity extends BindingActivity<ActivityShelfBinding> {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK && data != null && data.getData() != null) {
-            startActivity(new Intent(this, ReadActivity.class)
-                    .setData(data.getData()));
+            Observable.just(data.getData())
+                    .map(Book::fromUri)
+                    .flatMap(book -> getDataLayer().getShelfService().insertBook(book))
+                    .subscribe(id -> {
+                        startActivity(new Intent(this, ReadActivity.class)
+                                .putExtra("bookId", id));
+                    }, Throwable::printStackTrace);
         }
     }
 }
