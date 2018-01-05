@@ -26,10 +26,8 @@ public class DBHelper {
 
     public static void init(String dbName, boolean debug) {
         DB_NAME = dbName;
-        if (debug) {
-            QueryBuilder.LOG_SQL = true;
-            QueryBuilder.LOG_VALUES = true;
-        }
+        QueryBuilder.LOG_SQL = debug;
+        QueryBuilder.LOG_VALUES = debug;
     }
 
     private static DaoMaster getDaoMaster(Context context) {
