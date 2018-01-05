@@ -34,8 +34,8 @@ public class DBHelper {
 
     private static DaoMaster getDaoMaster(Context context) {
         if (daoMaster == null) {
-            DaoMaster.DevOpenHelper devOpenHelper = new DaoMaster.DevOpenHelper(context, DB_NAME, null);
-            daoMaster = new DaoMaster(devOpenHelper.getWritableDatabase());
+            DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(context, DB_NAME);
+            daoMaster = new DaoMaster(helper.getWritableDatabase());
         }
         return daoMaster;
     }
