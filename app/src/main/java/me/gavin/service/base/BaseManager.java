@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 
 import javax.inject.Inject;
 
+import me.gavin.db.dao.DaoSession;
 import me.gavin.inject.component.ApplicationComponent;
 import me.gavin.net.ClientAPI;
 
@@ -18,6 +19,8 @@ public abstract class BaseManager {
     ClientAPI mApi;
     @Inject
     Gson mGson;
+    @Inject
+    DaoSession mDaoSession;
 
     public BaseManager() {
         ApplicationComponent.Instance.get().inject(this);
@@ -25,6 +28,10 @@ public abstract class BaseManager {
 
     public ClientAPI getApi() {
         return mApi;
+    }
+
+    public DaoSession getDaoSession() {
+        return mDaoSession;
     }
 
     public Gson getGson() {

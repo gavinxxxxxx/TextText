@@ -1,4 +1,4 @@
-package me.gavin.db.util;
+package me.gavin.db;
 
 import android.content.Context;
 
@@ -8,28 +8,28 @@ import me.gavin.db.dao.DaoMaster;
 import me.gavin.db.dao.DaoSession;
 
 /**
- * greenDao 核心
+ * 数据库工具类
  *
- * @author lizhangqu(513163535@qq.com) 2015/9/01
+ * @author gavin.xiong 2018/1/5
  */
-public class DbCore {
+public class DBHelper {
 
-    private static final String DEFAULT_DB_NAME = "primary.db";
+    private static final String DEFAULT_DB_NAME = "text.db";
+
+    private static String DB_NAME;
     private static DaoMaster daoMaster;
     private static DaoSession daoSession;
 
-    private static String DB_NAME;
-
-    public static void init(Context context) {
-        init(context, DEFAULT_DB_NAME);
+    public static void init(boolean debug) {
+        init(DEFAULT_DB_NAME, debug);
     }
 
-    public static void init(Context context, String dbName) {
-        if (context == null) {
-            throw new IllegalArgumentException("context can't be null");
-        }
+    public static void init(String dbName, boolean debug) {
         DB_NAME = dbName;
-        enableQueryBuilderLog();
+        if (debug) {
+            QueryBuilder.LOG_SQL = true;
+            QueryBuilder.LOG_VALUES = true;
+        }
     }
 
     private static DaoMaster getDaoMaster(Context context) {
@@ -50,8 +50,4 @@ public class DbCore {
         return daoSession;
     }
 
-    private static void enableQueryBuilderLog() {
-        QueryBuilder.LOG_SQL = true;
-        QueryBuilder.LOG_VALUES = true;
-    }
 }

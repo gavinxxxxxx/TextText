@@ -109,7 +109,6 @@ public class StreamHelper {
                 while (matcher.find()) {
                     String title = matcher.group().trim();
                     long index = offset + str.indexOf(title);
-                    L.e(title + " - " + index);
                     result.add(new Chapter(index, title));
                 }
                 offset += buffer.length;
@@ -141,7 +140,6 @@ public class StreamHelper {
      * @return md5
      */
     public static String getFileMD5(@NonNull File file) {
-        long s = System.currentTimeMillis();
         try (RandomAccessFile randomAccessFile = new RandomAccessFile(file, "r")) {
             MessageDigest messageDigest = MessageDigest.getInstance("MD5");
             byte[] buffer = new byte[1024 * 10];
@@ -154,7 +152,6 @@ public class StreamHelper {
             while (md5.length() < 32) {
                 md5 = "0" + md5;
             }
-            L.e(System.currentTimeMillis() - s);
             return md5;
         } catch (NoSuchAlgorithmException | IOException e) {
             e.printStackTrace();

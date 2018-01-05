@@ -15,7 +15,6 @@ import java.util.List;
 
 import me.gavin.app.StreamHelper;
 import me.gavin.base.App;
-import me.gavin.util.L;
 
 /**
  * Book
@@ -147,7 +146,6 @@ public class Book {
         book.name = file.getName().substring(0, file.getName().lastIndexOf("."));
         book.charset = StreamHelper.getCharsetByJUniversalCharDet(file);
         book.length = StreamHelper.getLength(book.open(), book.charset);
-        L.e(StreamHelper.getFileMD5(file));
         StreamHelper.getChapters(book.open(), book.charset);
         return book;
     }

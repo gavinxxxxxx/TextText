@@ -1,6 +1,9 @@
 package me.gavin.service.base;
 
+import java.util.List;
+
 import io.reactivex.Observable;
+import me.gavin.app.model.Book;
 import okhttp3.ResponseBody;
 
 /**
@@ -10,10 +13,16 @@ import okhttp3.ResponseBody;
  */
 public class DataLayer {
 
+    private ShelfService mShelfService;
     private SettingService mSettingService;
 
-    public DataLayer(SettingService settingService) {
+    public DataLayer(ShelfService shelfService, SettingService settingService) {
+        mShelfService = shelfService;
         mSettingService = settingService;
+    }
+
+    public ShelfService getShelfService() {
+        return mShelfService;
     }
 
     public SettingService getSettingService() {
@@ -22,6 +31,10 @@ public class DataLayer {
 
     public interface SettingService {
         Observable<ResponseBody> download(String url);
+    }
+
+    public interface ShelfService {
+        Observable<List<Book>> getBooks();
     }
 
 }

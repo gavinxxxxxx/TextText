@@ -24,7 +24,6 @@ import me.gavin.base.recycler.RecyclerHolder;
 import me.gavin.text.R;
 import me.gavin.text.databinding.ActivityReadBinding;
 import me.gavin.text.databinding.ItemTextBinding;
-import me.gavin.util.L;
 import me.gavin.util.SPUtil;
 
 public class ReadActivity extends BindingActivity<ActivityReadBinding> {
@@ -86,7 +85,6 @@ public class ReadActivity extends BindingActivity<ActivityReadBinding> {
     }
 
     private void openBook(String path) {
-        L.e(path);
         Book book = Book.fromSDCard(path);
         mPageList.clear();
         mPageList.add(Page.fromBook(book, SPUtil.getLong("offset", 220000), false));

@@ -9,6 +9,7 @@ import javax.inject.Inject;
 
 import io.reactivex.disposables.CompositeDisposable;
 import me.gavin.inject.component.ApplicationComponent;
+import me.gavin.service.base.DataLayer;
 import me.yokeyword.fragmentation.SupportActivity;
 import me.yokeyword.fragmentation.anim.DefaultVerticalAnimator;
 import me.yokeyword.fragmentation.anim.FragmentAnimator;
@@ -22,6 +23,8 @@ public abstract class BaseActivity extends SupportActivity {
 
     @Inject
     protected CompositeDisposable mCompositeDisposable;
+    @Inject
+    protected DataLayer mDataLayer;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -50,5 +53,9 @@ public abstract class BaseActivity extends SupportActivity {
     public abstract void setContentView();
 
     protected abstract void afterCreate(@Nullable Bundle savedInstanceState);
+
+    protected DataLayer getDataLayer() {
+        return mDataLayer;
+    }
 
 }

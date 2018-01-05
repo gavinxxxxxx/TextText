@@ -17,6 +17,7 @@ import me.gavin.base.BindingActivity;
 import me.gavin.base.recycler.BindingAdapter;
 import me.gavin.text.R;
 import me.gavin.text.databinding.ActivityShelfBinding;
+import me.gavin.util.L;
 
 /**
  * 书架
@@ -35,6 +36,11 @@ public class ShelfActivity extends BindingActivity<ActivityShelfBinding> {
 
     @Override
     protected void afterCreate(@Nullable Bundle savedInstanceState) {
+        getDataLayer().getShelfService().getBooks()
+                .subscribe(books -> {
+                    L.e(books);
+                });
+
         mBinding.fab.setOnClickListener(v ->
                 startActivityForResult(new Intent(this, ExplorerActivity.class), 0));
 
@@ -52,7 +58,7 @@ public class ShelfActivity extends BindingActivity<ActivityShelfBinding> {
                     mAdapter = new BindingAdapter<>(this, mList, R.layout.item_shelf_book);
                     mAdapter.setOnItemClickListener(i ->
                             startActivity(new Intent(this, ReadActivity.class)
-                                    .setData(Uri.parse(mList.get(i).getUri())) ));
+                                    .setData(Uri.parse(mList.get(i).getUri()))));
                     mBinding.recycler.setAdapter(mAdapter);
                 });
     }
