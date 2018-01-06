@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="@layout/fragment_chapter">
+
+    <data>
+
+        <variable
+            name="item"
+            type="me.gavin.app.model.Chapter" />
+    </data>
+
+    <FrameLayout
+        android:id="@+id/item"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:gravity="center_vertical"
+            android:padding="16dp"
+            android:singleLine="true"
+            android:text="@{item.title}"
+            tools:text="@string/app_name" />
+
+    </FrameLayout>
+
+</layout>

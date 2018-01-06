@@ -37,6 +37,12 @@ public class ShelfActivity extends BindingActivity<ActivityShelfBinding> {
         mBinding.fab.setOnClickListener(v ->
                 startActivityForResult(new Intent(this, ExplorerActivity.class), 0));
 
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
         getDataLayer().getShelfService().loadAllBooks()
                 .compose(RxTransformer.applySchedulers())
                 .doOnSubscribe(disposable -> {
@@ -48,7 +54,7 @@ public class ShelfActivity extends BindingActivity<ActivityShelfBinding> {
                     mAdapter = new BindingAdapter<>(this, mList, R.layout.item_shelf_book);
                     mAdapter.setOnItemClickListener(i ->
                             startActivity(new Intent(this, ReadActivity.class)
-                                    .putExtra("bookId", mList.get(i).get_Id())));
+                                    .putExtra("bookId", mList.get(i).get_id())));
                     mBinding.recycler.setAdapter(mAdapter);
                 });
     }

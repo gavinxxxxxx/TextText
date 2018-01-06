@@ -19,7 +19,7 @@ public class DatabaseModule {
 
     @Singleton
     @Provides
-    public DaoSession provideDaoSession(Application application) {
+    DaoSession provideDaoSession(Application application) {
         return DBHelper.getDaoSession(application);
     }
 

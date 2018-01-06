@@ -1,7 +1,15 @@
 package me.gavin.text;
 
+import android.support.annotation.NonNull;
+
 import org.junit.Test;
 
+import java.text.Collator;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -51,5 +59,38 @@ public class ExampleUnitTest {
         System.out.println(Math.floor(a));
         System.out.println(Math.round(a));
         System.out.println(Math.ceil(a));
+    }
+
+    @Test
+    public void testCollator(@NonNull String a) {
+        List<String> list = new ArrayList<>();
+        list.add("中国");
+        list.add("英国");
+        list.add("美国");
+        list.add("档案酷");
+        list.add("abc");
+        list.add("知乎.fe");
+        list.add("lll");
+        System.out.println("排序前-->" + list);
+        Collections.sort(list, new Comparator<String>() {
+            @Override
+            public int compare(String s1, String s2) {
+                String o1 = "";
+                String o2 = "";
+                if (s1 != null) {
+                    o1 = s1;
+                }
+                if (s2 != null) {
+                    o2 = s2;
+                }
+                Collator instance = Collator.getInstance(Locale.CHINA);
+                return instance.compare(o1, o2);
+            }
+        });
+
+        System.out.println("排序后-->" + list);
+        Collections.reverse(list);
+        System.out.println("排序后逆序-->" + list);
+
     }
 }

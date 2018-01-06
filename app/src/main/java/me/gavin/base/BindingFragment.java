@@ -13,29 +13,15 @@ import android.view.ViewGroup;
  *
  * @author gavin.xiong 2017/8/15
  */
-public abstract class BindingFragment<DB extends ViewDataBinding, VM extends BaseViewModel> extends BaseFragment {
+public abstract class BindingFragment<T extends ViewDataBinding> extends BaseFragment {
 
-    protected DB mBinding;
-    protected VM mViewModel;
+    protected T mBinding;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         mBinding = DataBindingUtil.inflate(inflater, getLayoutId(), container, false);
-        bindViewModel(savedInstanceState);
         return mBinding.getRoot();
     }
 
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        if (mViewModel != null && !mViewModel.isDisposed()) {
-            mViewModel.dispose();
-        }
-    }
-
-    /**
-     * 绑定 ViewModel
-     */
-    protected abstract void bindViewModel(@Nullable Bundle savedInstanceState);
 }

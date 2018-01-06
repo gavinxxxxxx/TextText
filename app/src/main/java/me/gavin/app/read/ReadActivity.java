@@ -1,6 +1,5 @@
 package me.gavin.app.read;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
@@ -15,14 +14,15 @@ import java.util.List;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
+import me.gavin.app.RxTransformer;
+import me.gavin.app.StreamHelper;
 import me.gavin.app.model.Book;
 import me.gavin.app.model.Page;
 import me.gavin.base.BindingActivity;
-import me.gavin.base.recycler.RecyclerAdapter;
-import me.gavin.base.recycler.RecyclerHolder;
+import me.gavin.base.recycler.BindingAdapter;
 import me.gavin.text.R;
 import me.gavin.text.databinding.ActivityReadBinding;
-import me.gavin.text.databinding.ItemTextBinding;
+import me.gavin.util.DisplayUtil;
 
 public class ReadActivity extends BindingActivity<ActivityReadBinding> {
 
@@ -44,12 +44,20 @@ public class ReadActivity extends BindingActivity<ActivityReadBinding> {
         Observable.just(getIntent())
                 .map(intent -> intent.getLongExtra("bookId", 0))
                 .flatMap(id -> getDataLayer().getShelfService().loadBook(id))
-                .map(book -> Page.fromBook(book, book.getOffset(), false))
-                .subscribe(page -> {
-                    mBook = page.book;
-                    mPageList.clear();
-                    mPageList.add(page);
-                    mBinding.recycler.setAdapter(new Adapter(this, mPageList));
+                .subscribe(book -> {
+                    mBook = book;
+                    offset(book.getOffset());
+                }, Throwable::printStackTrace);
+
+        mBinding.rvChapter.getLayoutParams().width = DisplayUtil.getScreenWidth() / 3 * 2;
+        Observable.just(mBook)
+                .map(Book::open)
+                .map(is -> StreamHelper.getChapters(is, mBook.getCharset()))
+                .compose(RxTransformer.applySchedulers())
+                .subscribe(chapters -> {
+                    BindingAdapter adapter = new BindingAdapter<>(this, chapters, R.layout.item_chapter);
+                    adapter.setOnItemClickListener(i -> offset(chapters.get(i).offset));
+                    mBinding.rvChapter.setAdapter(adapter);
                 }, Throwable::printStackTrace);
 
         SnapHelper snapHelper = new PagerSnapHelper();
@@ -87,10 +95,24 @@ public class ReadActivity extends BindingActivity<ActivityReadBinding> {
     @Override
     protected void onPause() {
         super.onPause();
-        LinearLayoutManager layoutManager = (LinearLayoutManager) mBinding.recycler.getLayoutManager();
-        int position = layoutManager.findFirstVisibleItemPosition();
-        mBook.setOffset(mPageList.get(position).pageStart);
-        getDataLayer().getShelfService().updateBook(mBook);
+        if (mBook != null) {
+            LinearLayoutManager layoutManager = (LinearLayoutManager) mBinding.recycler.getLayoutManager();
+            int position = layoutManager.findFirstVisibleItemPosition();
+            mBook.setOffset(mPageList.get(position).pageStart);
+            mBook.setTime(System.currentTimeMillis());
+            getDataLayer().getShelfService().updateBook(mBook);
+        }
+    }
+
+    private void offset(long offset) {
+        Observable.just(offset)
+                .map(off -> Page.fromBook(mBook, off, false))
+                .subscribe(page -> {
+                    mBinding.drawer.closeDrawers();
+                    mPageList.clear();
+                    mPageList.add(page);
+                    mBinding.recycler.setAdapter(new PageAdapter(this, mPageList));
+                }, Throwable::printStackTrace);
     }
 
     private boolean pagingLoading = false;
@@ -139,17 +161,5 @@ public class ReadActivity extends BindingActivity<ActivityReadBinding> {
                     mPageList.add(index, page);
                     mBinding.recycler.getAdapter().notifyItemInserted(index);
                 }, Throwable::printStackTrace);
-    }
-
-    public static class Adapter extends RecyclerAdapter<Page, ItemTextBinding> {
-
-        Adapter(Context context, List<Page> list) {
-            super(context, list, R.layout.item_text);
-        }
-
-        @Override
-        protected void onBind(RecyclerHolder<ItemTextBinding> holder, Page t, int position) {
-            holder.binding.text.set(t);
-        }
     }
 }

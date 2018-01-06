@@ -25,7 +25,7 @@ import me.gavin.app.StreamHelper;
 public class Book {
 
     @Id(autoincrement = true)
-    private long _Id;
+    private Long _id;
     private String name;
     private String author;
     private String charset;
@@ -40,10 +40,10 @@ public class Book {
     private long time; // 阅读时间
 
 
-    @Generated(hash = 399209597)
-    public Book(long _Id, String name, String author, String charset, long length,
-                String uri, String MD5, long offset, long time) {
-        this._Id = _Id;
+    @Generated(hash = 694976937)
+    public Book(Long _id, String name, String author, String charset, long length, String uri,
+                String MD5, long offset, long time) {
+        this._id = _id;
         this.name = name;
         this.author = author;
         this.charset = charset;
@@ -58,12 +58,12 @@ public class Book {
     public Book() {
     }
 
-    public long get_Id() {
-        return this._Id;
+    public Long get_id() {
+        return this._id;
     }
 
-    public void set_Id(long _Id) {
-        this._Id = _Id;
+    public void set_id(Long _id) {
+        this._id = _id;
     }
 
     public String getName() {
@@ -138,7 +138,9 @@ public class Book {
             book.uri = uri.toString();
             book.name = file.getName().substring(0, file.getName().lastIndexOf("."));
             book.charset = StreamHelper.getCharsetByJUniversalCharDet(file);
+            book.MD5 = StreamHelper.getFileMD5(file);
             book.length = StreamHelper.getLength(book.open(), book.charset);
+            book.time = System.currentTimeMillis();
             return book;
         }
         throw new IOException("UNKNOWN");

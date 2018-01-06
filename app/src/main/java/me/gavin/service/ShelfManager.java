@@ -4,6 +4,7 @@ import java.util.List;
 
 import io.reactivex.Observable;
 import me.gavin.app.model.Book;
+import me.gavin.db.dao.BookDao;
 import me.gavin.service.base.BaseManager;
 import me.gavin.service.base.DataLayer;
 
@@ -31,6 +32,6 @@ public class ShelfManager extends BaseManager implements DataLayer.ShelfService 
 
     @Override
     public Observable<List<Book>> loadAllBooks() {
-        return Observable.just(getDaoSession().getBookDao().loadAll());
+        return Observable.just(getDaoSession().getBookDao().queryBuilder().orderDesc(BookDao.Properties.Time).list());
     }
 }
