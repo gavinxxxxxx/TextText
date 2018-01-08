@@ -136,5 +136,7 @@ dependencies {
 
     implementation 'org.greenrobot:greendao:3.2.2'
 
+    implementation 'com.github.SilenceDut:jpinyin:v1.0'
+
     implementation files('libs/juniversalchardet-1.0.3.jar')
 }
