@@ -57,15 +57,15 @@ public final class Config {
         height = DisplayUtil.getScreenHeight();
 
         textSize = SPUtil.getInt("textSize", 40);
-        textColor = SPUtil.getInt("textColor", 0xFF000000);
+        textColor = SPUtil.getInt("textColor", 0xFFA9B7C6);
 
         topPadding = SPUtil.getInt("topPadding", 80);
-        bottomPadding = topPadding;
+        bottomPadding = SPUtil.getInt("bottomPadding", 50);
         leftPadding = SPUtil.getInt("leftPadding", 50);
-        rightPadding = leftPadding;
+        rightPadding = SPUtil.getInt("rightPadding", leftPadding);
 
-        segmentSpacing = SPUtil.getInt("segmentSpacing", textSize / 2);
-        lineSpacing = SPUtil.getInt("lineSpacing", textSize / 4);
+        segmentSpacing = SPUtil.getInt("segmentSpacing", textSize);
+        lineSpacing = SPUtil.getInt("lineSpacing", textSize / 2);
         indent = SPUtil.getFloat("indent", textSize * 2f);
         wordSpacingMax = textSize * 0.5f;
 

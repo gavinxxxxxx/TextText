@@ -1,5 +1,6 @@
 package me.gavin.app.read;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
@@ -39,6 +40,11 @@ public class ReadActivity extends BindingActivity<ActivityReadBinding> {
     protected void afterCreate(@Nullable Bundle savedInstanceState) {
         if (!getIntent().hasExtra("bookId")) {
             return;
+        }
+
+        // 状态栏浅色图标
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
         }
 
         Observable.just(getIntent())

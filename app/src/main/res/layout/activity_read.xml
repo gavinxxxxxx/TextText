@@ -13,6 +13,7 @@
             android:id="@+id/recycler"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:background="#2B2B2B"
             android:orientation="horizontal"
             app:layoutManager="LinearLayoutManager" />
 
@@ -29,18 +30,19 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="start"
-            android:background="@android:color/white"
+            android:background="#3C3F41"
             android:fitsSystemWindows="false"
             android:scrollbars="vertical"
             app:layoutManager="LinearLayoutManager"
+            tools:itemCount="12"
             tools:listitem="@layout/item_chapter" />
 
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_gravity="end"
-            android:background="@android:color/white"
-            android:fitsSystemWindows="false" />
+        <!--<FrameLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:layout_gravity="end"-->
+        <!--android:background="@android:color/white"-->
+        <!--android:fitsSystemWindows="false" />-->
 
         <!--<android.support.design.widget.NavigationView-->
         <!--android:id="@+id/navigation"-->

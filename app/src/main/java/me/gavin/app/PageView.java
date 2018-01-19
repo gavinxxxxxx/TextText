@@ -42,9 +42,9 @@ public class PageView extends View {
     protected void onDraw(Canvas canvas) {
         if (mPage == null) return;
 
-        canvas.drawColor(Config.debugPaint.getColor());
-        canvas.drawRect(Config.leftPadding, Config.topPadding, getWidth() - Config.rightPadding,
-                getHeight() - Config.bottomPadding, Config.debugPaint);
+//        canvas.drawColor(Config.debugPaint.getColor());
+//        canvas.drawRect(Config.leftPadding, Config.topPadding, getWidth() - Config.rightPadding,
+//                getHeight() - Config.bottomPadding, Config.debugPaint);
 
         for (Line line : mPage.lineList) {
             drawLine(canvas, line);

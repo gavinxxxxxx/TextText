@@ -32,6 +32,11 @@ public class ShelfManager extends BaseManager implements DataLayer.ShelfService 
 
     @Override
     public Observable<List<Book>> loadAllBooks() {
-        return Observable.just(getDaoSession().getBookDao().queryBuilder().orderDesc(BookDao.Properties.Time).list());
+        return Observable.just(getDaoSession()
+                .getBookDao()
+                .queryBuilder()
+                .orderDesc(BookDao.Properties.Time)
+                // .orderAsc(BookDao.Properties.Name) 多重排序
+                .list());
     }
 }

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:showIn="@layout/fragment_chapter">
+    tools:showIn="@layout/activity_read">
 
     <data>
 
@@ -23,6 +23,7 @@
             android:padding="16dp"
             android:singleLine="true"
             android:text="@{item.title}"
+            android:textColor="#BBBBBB"
             tools:text="@string/app_name" />
 
     </FrameLayout>
