@@ -3,6 +3,7 @@ package me.gavin.app.read;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PagerSnapHelper;
 import android.support.v7.widget.RecyclerView;
@@ -18,6 +19,7 @@ import io.reactivex.schedulers.Schedulers;
 import me.gavin.app.RxTransformer;
 import me.gavin.app.StreamHelper;
 import me.gavin.app.model.Book;
+import me.gavin.app.model.Chapter;
 import me.gavin.app.model.Page;
 import me.gavin.base.BindingActivity;
 import me.gavin.base.recycler.BindingAdapter;
@@ -61,9 +63,30 @@ public class ReadActivity extends BindingActivity<ActivityReadBinding> {
                 .map(is -> StreamHelper.getChapters(is, mBook.getCharset()))
                 .compose(RxTransformer.applySchedulers())
                 .subscribe(chapters -> {
-                    BindingAdapter adapter = new BindingAdapter<>(this, chapters, R.layout.item_chapter);
-                    adapter.setOnItemClickListener(i -> offset(chapters.get(i).offset));
-                    mBinding.rvChapter.setAdapter(adapter);
+                    if (chapters.isEmpty()) {
+                        Snackbar.make(mBinding.rvChapter, "暂无章节信息", Snackbar.LENGTH_LONG).show();
+                    } else {
+                        Chapter curr = chapters.get(0);
+                        for (Chapter t : chapters) {
+                            if (t.offset > mBook.getOffset())
+                                break;
+                            curr = t;
+                        }
+                        curr.selected = true;
+
+                        BindingAdapter adapter = new BindingAdapter<>(this, chapters, R.layout.item_chapter);
+                        adapter.setOnItemClickListener(i -> {
+                            for (Chapter t : chapters) {
+                                t.selected = false;
+                            }
+                            chapters.get(i).selected = true;
+                            adapter.notifyDataSetChanged();
+                            offset(chapters.get(i).offset);
+                        });
+                        mBinding.rvChapter.setAdapter(adapter);
+
+                        mBinding.rvChapter.scrollToPosition(chapters.indexOf(curr));
+                    }
                 }, Throwable::printStackTrace);
 
         SnapHelper snapHelper = new PagerSnapHelper();

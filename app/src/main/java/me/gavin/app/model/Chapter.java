@@ -9,10 +9,12 @@ public class Chapter {
 
     public long offset;
     public String title;
+    public boolean selected;
 
     public Chapter(long offset, String title) {
         this.offset = offset;
         this.title = title;
+        this.selected = false;
     }
 
     @Override

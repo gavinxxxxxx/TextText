@@ -21,9 +21,10 @@
             android:ellipsize="end"
             android:gravity="center_vertical"
             android:padding="16dp"
+            android:selected="@{item.selected}"
             android:singleLine="true"
             android:text="@{item.title}"
-            android:textColor="#BBBBBB"
+            android:textColor="@color/sl_chapter"
             tools:text="@string/app_name" />
 
     </FrameLayout>
