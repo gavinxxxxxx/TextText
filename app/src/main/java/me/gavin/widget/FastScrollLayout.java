@@ -1,17 +1,14 @@
 package me.gavin.widget;
 
 import android.content.Context;
-import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
-import android.view.MotionEvent;
 import android.widget.FrameLayout;
-
-import me.gavin.util.L;
 
 /**
  * 这里是萌萌哒注释菌
+ * {@link android.support.v7.widget.FastScroller}
  *
  * @author gavin.xiong 2018/1/20.
  */
