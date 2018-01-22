@@ -13,6 +13,7 @@ import me.gavin.app.explorer.ExplorerActivity;
 import me.gavin.app.model.Book;
 import me.gavin.app.read.ReadActivity;
 import me.gavin.base.BindingActivity;
+import me.gavin.base.BundleKey;
 import me.gavin.base.recycler.BindingAdapter;
 import me.gavin.text.R;
 import me.gavin.text.databinding.ActivityShelfBinding;
@@ -54,7 +55,7 @@ public class ShelfActivity extends BindingActivity<ActivityShelfBinding> {
                     mAdapter = new BindingAdapter<>(this, mList, R.layout.item_shelf_book);
                     mAdapter.setOnItemClickListener(i ->
                             startActivity(new Intent(this, ReadActivity.class)
-                                    .putExtra("bookId", mList.get(i).get_id())));
+                                    .putExtra(BundleKey.BOOK_ID, mList.get(i).get_id())));
                     mBinding.recycler.setAdapter(mAdapter);
                 });
     }
@@ -68,7 +69,7 @@ public class ShelfActivity extends BindingActivity<ActivityShelfBinding> {
                     .flatMap(book -> getDataLayer().getShelfService().insertBook(book))
                     .subscribe(id -> {
                         startActivity(new Intent(this, ReadActivity.class)
-                                .putExtra("bookId", id));
+                                .putExtra(BundleKey.BOOK_ID, id));
                     }, Throwable::printStackTrace);
         }
     }

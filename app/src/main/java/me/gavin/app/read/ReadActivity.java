@@ -22,6 +22,7 @@ import me.gavin.app.model.Book;
 import me.gavin.app.model.Chapter;
 import me.gavin.app.model.Page;
 import me.gavin.base.BindingActivity;
+import me.gavin.base.BundleKey;
 import me.gavin.base.recycler.BindingAdapter;
 import me.gavin.text.R;
 import me.gavin.text.databinding.ActivityReadBinding;
@@ -31,7 +32,8 @@ public class ReadActivity extends BindingActivity<ActivityReadBinding> {
 
     private Book mBook;
 
-    private List<Page> mPageList = new ArrayList<>();
+    private final List<Page> mPageList = new ArrayList<>();
+    private final List<Chapter> mChapterList = new ArrayList<>();
 
     @Override
     protected int getLayoutId() {
@@ -40,7 +42,7 @@ public class ReadActivity extends BindingActivity<ActivityReadBinding> {
 
     @Override
     protected void afterCreate(@Nullable Bundle savedInstanceState) {
-        if (!getIntent().hasExtra("bookId")) {
+        if (!getIntent().hasExtra(BundleKey.BOOK_ID)) {
             return;
         }
 
@@ -63,35 +65,59 @@ public class ReadActivity extends BindingActivity<ActivityReadBinding> {
                 .map(is -> StreamHelper.getChapters(is, mBook.getCharset()))
                 .compose(RxTransformer.applySchedulers())
                 .subscribe(chapters -> {
-                    if (chapters.isEmpty()) {
+                    mChapterList.addAll(chapters);
+                    if (mChapterList.isEmpty()) {
                         Snackbar.make(mBinding.rvChapter, "暂无章节信息", Snackbar.LENGTH_LONG).show();
                     } else {
-                        Chapter curr = chapters.get(0);
-                        for (Chapter t : chapters) {
+                        Chapter curr = mChapterList.get(0);
+                        for (Chapter t : mChapterList) {
                             if (t.offset > mBook.getOffset())
                                 break;
                             curr = t;
                         }
                         curr.selected = true;
 
-                        BindingAdapter adapter = new BindingAdapter<>(this, chapters, R.layout.item_chapter);
+                        BindingAdapter adapter = new BindingAdapter<>(this, mChapterList, R.layout.item_chapter);
                         adapter.setOnItemClickListener(i -> {
-                            for (Chapter t : chapters) {
+                            for (Chapter t : mChapterList) {
                                 t.selected = false;
                             }
-                            chapters.get(i).selected = true;
+                            mChapterList.get(i).selected = true;
                             adapter.notifyDataSetChanged();
-                            offset(chapters.get(i).offset);
+                            offset(mChapterList.get(i).offset);
                         });
                         mBinding.rvChapter.setAdapter(adapter);
 
-                        mBinding.rvChapter.scrollToPosition(chapters.indexOf(curr));
+                        mBinding.rvChapter.scrollToPosition(mChapterList.indexOf(curr));
                     }
                 }, Throwable::printStackTrace);
 
         SnapHelper snapHelper = new PagerSnapHelper();
         snapHelper.attachToRecyclerView(mBinding.recycler);
 
+        // 章节进度定位
+        mBinding.recycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                if (newState == RecyclerView.SCROLL_STATE_IDLE && mBinding.rvChapter.getAdapter() != null) {
+                    LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+                    int position = layoutManager.findFirstVisibleItemPosition();
+                    long offset = mPageList.get(position).pageStart;
+                    Chapter curr = mChapterList.get(0);
+                    for (Chapter t : mChapterList) {
+                        t.selected = false;
+                        if (t.offset <= offset) {
+                            curr = t;
+                        }
+                    }
+                    curr.selected = true;
+                    mBinding.rvChapter.getAdapter().notifyDataSetChanged();
+                    mBinding.rvChapter.scrollToPosition(mChapterList.indexOf(curr));
+                }
+            }
+        });
+
+        // 翻页数据预加载
         mBinding.recycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
             int pagingPreCount = 0;
 
