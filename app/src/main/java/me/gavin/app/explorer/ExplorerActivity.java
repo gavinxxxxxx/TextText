@@ -7,13 +7,9 @@ import android.os.Environment;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
-import com.github.stuxuhai.jpinyin.PinyinFormat;
-import com.github.stuxuhai.jpinyin.PinyinHelper;
-
 import java.io.File;
 import java.text.Collator;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -25,6 +21,7 @@ import me.gavin.base.BindingActivity;
 import me.gavin.base.recycler.BindingAdapter;
 import me.gavin.text.R;
 import me.gavin.text.databinding.ActivityExplorerBinding;
+import me.gavin.widget.FastScrollerExtension;
 
 /**
  * 文件浏览
@@ -48,6 +45,7 @@ public class ExplorerActivity extends BindingActivity<ActivityExplorerBinding> {
         mBinding.includeToolbar.toolbar.setNavigationIcon(R.drawable.ic_arrow_back_24dp);
         mBinding.includeToolbar.toolbar.setNavigationOnClickListener(v -> onBackPressedSupport());
 
+        new FastScrollerExtension(mBinding.recycler);
         mAdapter = new BindingAdapter<>(this, mList, R.layout.item_explorer);
         mAdapter.setOnItemClickListener(i -> {
             FileItem item = mList.get(i);
@@ -105,21 +103,9 @@ public class ExplorerActivity extends BindingActivity<ActivityExplorerBinding> {
         Observable.fromArray(mRoot.listFiles())
                 .compose(RxTransformer.fileFilter())
                 .compose(FileItem.fromFile())
-                .toSortedList(new Comparator<FileItem>() {
-                    Collator collator = Collator.getInstance(Locale.CHINESE);
-                    @Override
-                    public int compare(FileItem o1, FileItem o2) {
-                        return o1.isDir() != o2.isDir()
-                                ? (o1.isDir() ? Integer.MIN_VALUE : Integer.MAX_VALUE)
-                                : collator.compare(o1.getName(), o2.getName());
-                    }
-                })
-//                .toSortedList((o1, o2) -> o1.isDir() != o2.isDir()
-//                        ? (o1.isDir() ? Integer.MIN_VALUE : Integer.MAX_VALUE)
-//                        : PinyinHelper.convertToPinyinString(o1.getName(), "", PinyinFormat.WITHOUT_TONE).compare(o1.getName(), o2.getName()))
-//                .toSortedList((o1, o2) -> o1.isDir() != o2.isDir()
-//                        ? (o1.isDir() ? Integer.MIN_VALUE : Integer.MAX_VALUE)
-//                        : o1.getName().toLowerCase().compareTo(o2.getName().toLowerCase()))
+                .toSortedList((o1, o2) -> o1.isDir() != o2.isDir()
+                        ? o1.isDir() ? Integer.MIN_VALUE : Integer.MAX_VALUE
+                        : Collator.getInstance(Locale.CHINESE).compare(o1.getName(), o2.getName()))
                 .toObservable()
                 .compose(RxTransformer.applySchedulers())
                 .subscribe(list -> {

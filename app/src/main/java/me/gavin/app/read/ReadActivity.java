@@ -27,6 +27,7 @@ import me.gavin.base.recycler.BindingAdapter;
 import me.gavin.text.R;
 import me.gavin.text.databinding.ActivityReadBinding;
 import me.gavin.util.DisplayUtil;
+import me.gavin.widget.FastScrollerExtension;
 
 public class ReadActivity extends BindingActivity<ActivityReadBinding> {
 
@@ -89,6 +90,8 @@ public class ReadActivity extends BindingActivity<ActivityReadBinding> {
                         mBinding.rvChapter.setAdapter(adapter);
 
                         mBinding.rvChapter.scrollToPosition(mChapterList.indexOf(curr));
+
+                        new FastScrollerExtension(mBinding.rvChapter);
                     }
                 }, Throwable::printStackTrace);
 

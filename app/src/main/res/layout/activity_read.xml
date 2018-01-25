@@ -25,12 +25,6 @@
         <!--android:background="@android:color/white"-->
         <!--android:fitsSystemWindows="false" />-->
 
-        <!--<me.gavin.widget.FastScrollLayout-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="match_parent"-->
-        <!--android:layout_gravity="start"-->
-        <!--android:fitsSystemWindows="false">-->
-
         <android.support.v7.widget.RecyclerView
             android:id="@+id/rvChapter"
             android:layout_width="match_parent"
@@ -38,16 +32,14 @@
             android:layout_gravity="start"
             android:background="#3C3F41"
             android:fitsSystemWindows="false"
-            app:fastScrollEnabled="true"
+            app:fastScrollEnabled="false"
             app:fastScrollHorizontalThumbDrawable="@drawable/sn_thumb_scroll_bar"
-            app:fastScrollHorizontalTrackDrawable="@drawable/sn_track_scroll_bar"
+            app:fastScrollHorizontalTrackDrawable="@drawable/bg_track_scroll_bar"
             app:fastScrollVerticalThumbDrawable="@drawable/sn_thumb_scroll_bar"
-            app:fastScrollVerticalTrackDrawable="@drawable/sn_track_scroll_bar"
+            app:fastScrollVerticalTrackDrawable="@drawable/bg_track_scroll_bar"
             app:layoutManager="LinearLayoutManager"
             tools:itemCount="12"
             tools:listitem="@layout/item_chapter" />
-
-        <!--</me.gavin.widget.FastScrollLayout>-->
 
         <!--<FrameLayout-->
         <!--android:layout_width="match_parent"-->
