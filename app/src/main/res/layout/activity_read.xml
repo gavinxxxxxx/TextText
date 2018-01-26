@@ -32,11 +32,8 @@
             android:layout_gravity="start"
             android:background="#3C3F41"
             android:fitsSystemWindows="false"
-            app:fastScrollEnabled="false"
-            app:fastScrollHorizontalThumbDrawable="@drawable/sn_thumb_scroll_bar"
-            app:fastScrollHorizontalTrackDrawable="@drawable/bg_track_scroll_bar"
-            app:fastScrollVerticalThumbDrawable="@drawable/sn_thumb_scroll_bar"
-            app:fastScrollVerticalTrackDrawable="@drawable/bg_track_scroll_bar"
+            app:fastScrollExtensionEnabled="@{true}"
+            app:fastScrollExtensionWidth="@{0}"
             app:layoutManager="LinearLayoutManager"
             tools:itemCount="12"
             tools:listitem="@layout/item_chapter" />

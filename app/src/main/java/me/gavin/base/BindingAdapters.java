@@ -2,12 +2,14 @@ package me.gavin.base;
 
 import android.databinding.BindingAdapter;
 import android.support.design.widget.Snackbar;
+import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 
 import me.gavin.text.R;
 import me.gavin.util.ImageLoader;
+import me.gavin.widget.FastScrollerExtension;
 
 /**
  * 数据绑定适配器
@@ -41,7 +43,6 @@ public class BindingAdapters {
             imageView.setImageResource(R.mipmap.ic_launcher);
         } else {
             imageView.setImageResource(resId);
-//            Glide.with(imageView.getContext()).load(resId).into(imageView);
         }
     }
 
@@ -54,6 +55,13 @@ public class BindingAdapters {
     public static void showMsg(View view, String msg) {
         if (!TextUtils.isEmpty(msg)) {
             Snackbar.make(view, msg, Snackbar.LENGTH_LONG).show();
+        }
+    }
+
+    @BindingAdapter({"fastScrollExtensionEnabled", "fastScrollExtensionWidth"})
+    public static void setFastScrollExtension(RecyclerView recyclerView, boolean enable, int width) {
+        if (enable) {
+            new FastScrollerExtension(recyclerView);
         }
     }
 
