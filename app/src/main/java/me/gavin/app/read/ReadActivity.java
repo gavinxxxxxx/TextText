@@ -8,6 +8,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PagerSnapHelper;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SnapHelper;
+import android.view.Gravity;
 import android.view.View;
 
 import java.util.ArrayList;
@@ -156,6 +157,16 @@ public class ReadActivity extends BindingActivity<ActivityReadBinding> {
             mBook.setOffset(mPageList.get(position).pageStart);
             mBook.setTime(System.currentTimeMillis());
             getDataLayer().getShelfService().updateBook(mBook);
+        }
+    }
+
+    @Override
+    public void onBackPressedSupport() {
+        if (mBinding.drawer.isDrawerOpen(Gravity.START)
+                || mBinding.drawer.isDrawerOpen(Gravity.END)) {
+            mBinding.drawer.closeDrawers();
+        } else {
+            super.onBackPressedSupport();
         }
     }
 

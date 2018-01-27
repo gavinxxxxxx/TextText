@@ -108,15 +108,14 @@ public class FastScrollerEx extends ItemDecoration implements OnItemTouchListene
         return x >= mRecyclerViewWidth - mScrollbarWidth * 2;
     }
 
-    private int mScrollMaxOffset;
-
     /**
      * recyclerView 定位
      */
     private void scrollTo() {
-        int offset = (int) (mScrollbarY / (mRecyclerViewHeight - mScrollHeight) * mScrollMaxOffset);
+        int offset = (int) (mScrollbarY / (mRecyclerViewHeight - mScrollHeight)
+                * (mRecyclerView.computeVerticalScrollRange() - mRecyclerView.computeVerticalScrollExtent()));
         int oldOffset = mRecyclerView.computeVerticalScrollOffset();
-        mRecyclerView.scrollBy(0, offset - oldOffset); // TODO: 2018/1/27 scrollBy 大量数据时效率低 待优化
+        mRecyclerView.scrollBy(0, offset - oldOffset); // TODO: 2018/1/27 大量数据时频繁 scrollBy 效率低
         // mRecyclerView.invalidate();
     }
 
@@ -126,11 +125,10 @@ public class FastScrollerEx extends ItemDecoration implements OnItemTouchListene
     private void updateScrollbar() {
         // maxOffset + extent = range
         // extent + paddingTB = getHeight
-        if (mScrollMaxOffset == 0) {
-            mScrollMaxOffset = mRecyclerView.computeVerticalScrollRange() - mRecyclerView.computeVerticalScrollExtent();
-        }
         if (!mIsDrag) {
-            mScrollbarY = (float) mRecyclerView.computeVerticalScrollOffset() / mScrollMaxOffset * (mRecyclerViewHeight - mScrollHeight);
+            mScrollbarY = (float) mRecyclerView.computeVerticalScrollOffset()
+                    / (mRecyclerView.computeVerticalScrollRange() - mRecyclerView.computeVerticalScrollExtent())
+                    * (mRecyclerViewHeight - mScrollHeight);
         }
     }
 
