@@ -9,7 +9,7 @@ import android.widget.ImageView;
 
 import me.gavin.text.R;
 import me.gavin.util.ImageLoader;
-import me.gavin.widget.FastScrollerExtension;
+import me.gavin.widget.FastScrollerEx;
 
 /**
  * 数据绑定适配器
@@ -61,7 +61,7 @@ public class BindingAdapters {
     @BindingAdapter({"fastScrollExtensionEnabled", "fastScrollExtensionWidth"})
     public static void setFastScrollExtension(RecyclerView recyclerView, boolean enable, int width) {
         if (enable) {
-            new FastScrollerExtension(recyclerView);
+            new FastScrollerEx(recyclerView);
         }
     }
 
