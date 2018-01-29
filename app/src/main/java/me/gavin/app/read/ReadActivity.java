@@ -17,6 +17,7 @@ import java.util.List;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
+import me.gavin.app.Config;
 import me.gavin.app.RxTransformer;
 import me.gavin.app.StreamHelper;
 import me.gavin.app.model.Book;
@@ -27,7 +28,6 @@ import me.gavin.base.BundleKey;
 import me.gavin.base.recycler.BindingAdapter;
 import me.gavin.text.R;
 import me.gavin.text.databinding.ActivityReadBinding;
-import me.gavin.util.DisplayUtil;
 
 public class ReadActivity extends BindingActivity<ActivityReadBinding> {
 
@@ -52,15 +52,20 @@ public class ReadActivity extends BindingActivity<ActivityReadBinding> {
             getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
         }
 
-        Observable.just(getIntent())
-                .map(intent -> intent.getLongExtra("bookId", 0))
-                .flatMap(id -> getDataLayer().getShelfService().loadBook(id))
-                .subscribe(book -> {
-                    mBook = book;
-                    offset(book.getOffset());
-                }, Throwable::printStackTrace);
+        SnapHelper snapHelper = new PagerSnapHelper();
+        snapHelper.attachToRecyclerView(mBinding.recycler);
 
-        mBinding.rvChapter.getLayoutParams().width = DisplayUtil.getScreenWidth() / 3 * 2;
+        long bookId = getIntent().getLongExtra("bookId", 0);
+        mBook = getDataLayer().getShelfService().loadBook(bookId);
+
+        mBinding.recycler.post(() -> {
+            Config.onSizeChange(mBinding.recycler.getWidth(), mBinding.recycler.getHeight());
+            init();
+        });
+    }
+
+    private void init() {
+        offset(mBook.getOffset());
         Observable.just(mBook)
                 .map(Book::open)
                 .map(is -> StreamHelper.getChapters(is, mBook.getCharset()))
@@ -93,8 +98,6 @@ public class ReadActivity extends BindingActivity<ActivityReadBinding> {
                     }
                 }, Throwable::printStackTrace);
 
-        SnapHelper snapHelper = new PagerSnapHelper();
-        snapHelper.attachToRecyclerView(mBinding.recycler);
 
         // 章节进度定位
         mBinding.recycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -104,6 +107,9 @@ public class ReadActivity extends BindingActivity<ActivityReadBinding> {
                     LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
                     int position = layoutManager.findFirstVisibleItemPosition();
                     long offset = mPageList.get(position).pageStart;
+
+                    mBook.setOffset(offset);
+
                     Chapter curr = mChapterList.get(0);
                     for (Chapter t : mChapterList) {
                         t.selected = false;
@@ -152,9 +158,6 @@ public class ReadActivity extends BindingActivity<ActivityReadBinding> {
     protected void onPause() {
         super.onPause();
         if (mBook != null) {
-            LinearLayoutManager layoutManager = (LinearLayoutManager) mBinding.recycler.getLayoutManager();
-            int position = layoutManager.findFirstVisibleItemPosition();
-            mBook.setOffset(mPageList.get(position).pageStart);
             mBook.setTime(System.currentTimeMillis());
             getDataLayer().getShelfService().updateBook(mBook);
         }

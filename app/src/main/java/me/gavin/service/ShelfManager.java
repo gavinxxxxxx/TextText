@@ -21,8 +21,8 @@ public class ShelfManager extends BaseManager implements DataLayer.ShelfService 
     }
 
     @Override
-    public Observable<Book> loadBook(long bookId) {
-        return Observable.just(getDaoSession().getBookDao().load(bookId));
+    public Book loadBook(long bookId) {
+        return getDaoSession().getBookDao().load(bookId);
     }
 
     @Override

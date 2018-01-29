@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.ImageView;
 
 import me.gavin.text.R;
+import me.gavin.util.DisplayUtil;
 import me.gavin.util.ImageLoader;
 import me.gavin.widget.FastScrollerEx;
 
@@ -56,6 +57,16 @@ public class BindingAdapters {
         if (!TextUtils.isEmpty(msg)) {
             Snackbar.make(view, msg, Snackbar.LENGTH_LONG).show();
         }
+    }
+
+    @BindingAdapter({"widthRatioOfDisplay"})
+    public static void setWidthRatio(View view, float ratio) {
+        view.getLayoutParams().width = (int) (DisplayUtil.getScreenWidth() * ratio);
+    }
+
+    @BindingAdapter({"heightRatioOfDisplay"})
+    public static void setHeightRatio(View view, float ratio) {
+        view.getLayoutParams().height = (int) (DisplayUtil.getScreenHeight() * ratio);
     }
 
     @BindingAdapter({"fastScrollExtensionEnabled", "fastScrollExtensionWidth"})

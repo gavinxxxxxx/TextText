@@ -53,9 +53,6 @@ public final class Config {
     public static final Paint textPaint, debugPaint;
 
     static {
-        width = DisplayUtil.getScreenWidth();
-        height = DisplayUtil.getScreenHeight();
-
         textSize = SPUtil.getInt("textSize", 40);
         textColor = SPUtil.getInt("textColor", 0xFFA9B7C6);
 
@@ -83,6 +80,11 @@ public final class Config {
         textTop = (int) Math.ceil(fontMetrics.top); // -1.5 -> -1
         textBottom = (int) Math.floor(fontMetrics.bottom); // 1.5 -> 1
         textHeight = textBottom - textTop; // textHeight = textSize * 1.3271484f;
+    }
+
+    public static void onSizeChange(int w, int h) {
+        width = w;
+        height = h;
 
         int lineCount = (int) ((width - leftPadding - rightPadding) / getLetterMinWidth());
         pagePreCount = lineCount * (int) Math.ceil((height - topPadding - bottomPadding) / textHeight);

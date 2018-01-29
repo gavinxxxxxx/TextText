@@ -9,7 +9,6 @@ import java.util.regex.Pattern;
 import me.gavin.app.Config;
 import me.gavin.app.StreamHelper;
 import me.gavin.app.Utils;
-import me.gavin.util.DisplayUtil;
 
 /**
  * ViewModel
@@ -34,9 +33,6 @@ public class Page {
 
     public String mText;
     public String[] mTextSp;
-
-    public int width = DisplayUtil.getScreenWidth();
-    public int height = DisplayUtil.getScreenHeight();
 
     public final List<Line> lineList;
 
@@ -82,7 +78,7 @@ public class Page {
             String segment = mTextSp[i];
             int segmentStart = 0;
             while (segmentStart < segment.length()) {
-                if (!isReverse && y + Config.textHeight > height - Config.bottomPadding) {
+                if (!isReverse && y + Config.textHeight > Config.height - Config.bottomPadding) {
                     pageLimit = mText.indexOf(subText);
                     pageEnd = pageStart + pageLimit;
                     isLast = pageEnd >= book.getLength();
@@ -106,7 +102,7 @@ public class Page {
             }
             y += Config.segmentSpacing;
         }
-        if (!isReverse && y + Config.textHeight <= height - Config.bottomPadding) { // 正向 & 还能显示确没有了
+        if (!isReverse && y + Config.textHeight <= Config.height - Config.bottomPadding) { // 正向 & 还能显示却没有了
             pageEnd = book.getLength();
             pageLimit = (int) (pageEnd - pageStart);
             isLast = true;
@@ -115,7 +111,7 @@ public class Page {
             y = y - Config.segmentSpacing - Config.lineSpacing;
             subText = mText; // 子字符串 - 计算字符数量
 
-            int ey = y - height + Config.bottomPadding + Config.topPadding;
+            int ey = y - Config.height + Config.bottomPadding + Config.topPadding;
             for (Line line : lineList) {
                 if (line.y + Config.textTop < ey) {
                     subText = subText.substring(subText.indexOf(line.src) + line.src.length());
@@ -138,7 +134,7 @@ public class Page {
     }
 
     private int breakText(String remaining, boolean lineIndent) {
-        int count = Config.textPaint.breakText(remaining, true, width
+        int count = Config.textPaint.breakText(remaining, true, Config.width
                 - Config.leftPadding - Config.rightPadding - (lineIndent ? Config.indent : 0), null);
         return count >= remaining.length() ? count : countReset(remaining, count, lineIndent);
     }
@@ -168,7 +164,7 @@ public class Page {
 
             float indent = lineIndent ? Config.indent : 0;
             float textWidth = Config.textPaint.measureText(line.substring(0, end));
-            float lineWidth = width - Config.leftPadding - Config.rightPadding - indent;
+            float lineWidth = Config.width - Config.leftPadding - Config.rightPadding - indent;
             float extraSpace = lineWidth - textWidth; // 剩余空间
 
             float spacing = extraSpace / (groupCount > 1 ? groupCount - 1 : 1);
