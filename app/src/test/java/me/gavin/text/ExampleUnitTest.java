@@ -1,9 +1,13 @@
 package me.gavin.text;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 
 import org.junit.Test;
 
+import java.io.InputStream;
+import java.lang.reflect.Array;
 import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -62,7 +66,7 @@ public class ExampleUnitTest {
     }
 
     @Test
-    public void testCollator(@NonNull String a) {
+    public void testCollator() {
         List<String> list = new ArrayList<>();
         list.add("中国");
         list.add("英国");

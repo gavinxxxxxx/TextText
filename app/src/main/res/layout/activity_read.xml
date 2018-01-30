@@ -35,7 +35,7 @@
             app:fastScrollExtensionEnabled="@{true}"
             app:fastScrollExtensionWidth="@{0}"
             app:layoutManager="LinearLayoutManager"
-            app:widthRatioOfDisplay="@{0.67f}"
+            app:widthRatio="@{0.67f}"
             tools:itemCount="12"
             tools:listitem="@layout/item_chapter" />
 

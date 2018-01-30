@@ -8,7 +8,6 @@ import android.view.View;
 import android.widget.ImageView;
 
 import me.gavin.text.R;
-import me.gavin.util.DisplayUtil;
 import me.gavin.util.ImageLoader;
 import me.gavin.widget.FastScrollerEx;
 
@@ -59,14 +58,18 @@ public class BindingAdapters {
         }
     }
 
-    @BindingAdapter({"widthRatioOfDisplay"})
-    public static void setWidthRatio(View view, float ratio) {
-        view.getLayoutParams().width = (int) (DisplayUtil.getScreenWidth() * ratio);
+    @BindingAdapter({"widthRatio"})
+    public static void setWidthRatio(View v, float ratio) {
+        if (v.getParent() instanceof View) {
+            v.post(() -> v.getLayoutParams().width = (int) (((View) v.getParent()).getWidth() * ratio));
+        }
     }
 
-    @BindingAdapter({"heightRatioOfDisplay"})
-    public static void setHeightRatio(View view, float ratio) {
-        view.getLayoutParams().height = (int) (DisplayUtil.getScreenHeight() * ratio);
+    @BindingAdapter({"heightRatio"})
+    public static void setHeightRatio(View v, float ratio) {
+        if (v.getParent() instanceof View) {
+            v.post(() -> v.getLayoutParams().height = (int) (((View) v.getParent()).getHeight() * ratio));
+        }
     }
 
     @BindingAdapter({"fastScrollExtensionEnabled", "fastScrollExtensionWidth"})

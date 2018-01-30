@@ -35,12 +35,11 @@
             android:ellipsize="end"
             android:gravity="center"
             android:lines="2"
-            android:text="@{item.name}"
+            android:text="@{item.name, default=@string/app_name}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/imageView"
-            tools:text="@string/app_name" />
+            app:layout_constraintTop_toBottomOf="@+id/imageView" />
 
     </android.support.constraint.ConstraintLayout>
 
