@@ -98,6 +98,9 @@ public class StreamHelper {
         return -1;
     }
 
+    /**
+     * 生成章节信息
+     */
     public static List<Chapter> getChapters(InputStream is, String charset) {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(is, charset))) {
             List<Chapter> result = new ArrayList<>();
@@ -158,5 +161,4 @@ public class StreamHelper {
         }
         return "";
     }
-
 }

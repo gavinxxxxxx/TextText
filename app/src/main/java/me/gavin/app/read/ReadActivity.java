@@ -18,6 +18,7 @@ import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import me.gavin.app.Config;
+import me.gavin.app.PagerLayoutManager;
 import me.gavin.app.RxTransformer;
 import me.gavin.app.StreamHelper;
 import me.gavin.app.model.Book;
@@ -28,6 +29,7 @@ import me.gavin.base.BundleKey;
 import me.gavin.base.recycler.BindingAdapter;
 import me.gavin.text.R;
 import me.gavin.text.databinding.ActivityReadBinding;
+import me.gavin.util.L;
 
 public class ReadActivity extends BindingActivity<ActivityReadBinding> {
 
@@ -52,8 +54,8 @@ public class ReadActivity extends BindingActivity<ActivityReadBinding> {
             getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
         }
 
-        SnapHelper snapHelper = new PagerSnapHelper();
-        snapHelper.attachToRecyclerView(mBinding.recycler);
+//        SnapHelper snapHelper = new PagerSnapHelper();
+//        snapHelper.attachToRecyclerView(mBinding.recycler);
 
         long bookId = getIntent().getLongExtra("bookId", 0);
         mBook = getDataLayer().getShelfService().loadBook(bookId);
@@ -66,70 +68,71 @@ public class ReadActivity extends BindingActivity<ActivityReadBinding> {
 
     private void init() {
         offset(mBook.getOffset());
-        Observable.just(mBook)
-                .map(Book::open)
-                .map(is -> StreamHelper.getChapters(is, mBook.getCharset()))
-                .compose(RxTransformer.applySchedulers())
-                .subscribe(chapters -> {
-                    mChapterList.addAll(chapters);
-                    if (mChapterList.isEmpty()) {
-                        Snackbar.make(mBinding.rvChapter, "暂无章节信息", Snackbar.LENGTH_LONG).show();
-                    } else {
-                        Chapter curr = mChapterList.get(0);
-                        for (Chapter t : mChapterList) {
-                            if (t.offset > mBook.getOffset())
-                                break;
-                            curr = t;
-                        }
-                        curr.selected = true;
+//        Observable.just(mBook)
+//                .map(Book::open)
+//                .map(is -> StreamHelper.getChapters(is, mBook.getCharset()))
+//                .compose(RxTransformer.applySchedulers())
+//                .subscribe(chapters -> {
+//                    mChapterList.addAll(chapters);
+//                    if (mChapterList.isEmpty()) {
+//                        Snackbar.make(mBinding.rvChapter, "暂无章节信息", Snackbar.LENGTH_LONG).show();
+//                    } else {
+//                        Chapter curr = mChapterList.get(0);
+//                        for (Chapter t : mChapterList) {
+//                            if (t.offset > mBook.getOffset())
+//                                break;
+//                            curr = t;
+//                        }
+//                        curr.selected = true;
+//
+//                        BindingAdapter adapter = new BindingAdapter<>(this, mChapterList, R.layout.item_chapter);
+//                        adapter.setOnItemClickListener(i -> {
+//                            for (Chapter t : mChapterList) {
+//                                t.selected = false;
+//                            }
+//                            mChapterList.get(i).selected = true;
+//                            adapter.notifyDataSetChanged();
+//                            offset(mChapterList.get(i).offset);
+//                        });
+//                        mBinding.rvChapter.setAdapter(adapter);
+//
+//                        mBinding.rvChapter.scrollToPosition(mChapterList.indexOf(curr));
+//                    }
+//                }, Throwable::printStackTrace);
 
-                        BindingAdapter adapter = new BindingAdapter<>(this, mChapterList, R.layout.item_chapter);
-                        adapter.setOnItemClickListener(i -> {
-                            for (Chapter t : mChapterList) {
-                                t.selected = false;
-                            }
-                            mChapterList.get(i).selected = true;
-                            adapter.notifyDataSetChanged();
-                            offset(mChapterList.get(i).offset);
-                        });
-                        mBinding.rvChapter.setAdapter(adapter);
 
-                        mBinding.rvChapter.scrollToPosition(mChapterList.indexOf(curr));
-                    }
-                }, Throwable::printStackTrace);
-
-
-        // 章节进度定位
-        mBinding.recycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                if (newState == RecyclerView.SCROLL_STATE_IDLE && mBinding.rvChapter.getAdapter() != null) {
-                    LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
-                    int position = layoutManager.findFirstVisibleItemPosition();
-                    long offset = mPageList.get(position).pageStart;
-
-                    mBook.setOffset(offset);
-
-                    Chapter curr = mChapterList.get(0);
-                    for (Chapter t : mChapterList) {
-                        t.selected = false;
-                        if (t.offset <= offset) {
-                            curr = t;
-                        }
-                    }
-                    curr.selected = true;
-                    mBinding.rvChapter.getAdapter().notifyDataSetChanged();
-                    mBinding.rvChapter.scrollToPosition(mChapterList.indexOf(curr));
-                }
-            }
-        });
-
+//        // 章节进度定位
+//        mBinding.recycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
+//            @Override
+//            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+//                if (newState == RecyclerView.SCROLL_STATE_IDLE && mBinding.rvChapter.getAdapter() != null) {
+//                    LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+//                    int position = layoutManager.findFirstVisibleItemPosition();
+//                    long offset = mPageList.get(position).pageStart;
+//
+//                    mBook.setOffset(offset);
+//
+//                    Chapter curr = mChapterList.get(0);
+//                    for (Chapter t : mChapterList) {
+//                        t.selected = false;
+//                        if (t.offset <= offset) {
+//                            curr = t;
+//                        }
+//                    }
+//                    curr.selected = true;
+//                    mBinding.rvChapter.getAdapter().notifyDataSetChanged();
+//                    mBinding.rvChapter.scrollToPosition(mChapterList.indexOf(curr));
+//                }
+//            }
+//        });
+//
         // 翻页数据预加载
         mBinding.recycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            int pagingPreCount = 0;
+            int pagingPreCount = 1;
 
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                L.e("onScrolled - " + dx);
                 //得到当前显示的最后一个item的view
                 RecyclerView.LayoutManager layoutManager = recyclerView.getLayoutManager();
                 View firstChild = layoutManager.getChildAt(0);
@@ -137,6 +140,7 @@ public class ReadActivity extends BindingActivity<ActivityReadBinding> {
                 if (lastChild != null) {
                     //通过这个lastChildView得到这个view当前的position值
                     int lastPosition = layoutManager.getPosition(lastChild);
+                    L.e("lastPosition - " + lastPosition);
                     //判断lastPosition是不是最后一个position
                     if (lastPosition > layoutManager.getItemCount() - 2 - pagingPreCount) {
                         performPagingLoad();
@@ -145,6 +149,7 @@ public class ReadActivity extends BindingActivity<ActivityReadBinding> {
                 if (firstChild != null) {
                     //通过这个lastChildView得到这个view当前的position值
                     int firstPosition = layoutManager.getPosition(firstChild);
+                    L.e("firstPosition - " + firstPosition);
                     //判断lastPosition是不是最后一个position
                     if (firstPosition < 1 + pagingPreCount) {
                         performPagingLoad2();
@@ -181,6 +186,7 @@ public class ReadActivity extends BindingActivity<ActivityReadBinding> {
                     mPageList.clear();
                     mPageList.add(page);
                     mBinding.recycler.setAdapter(new PageAdapter(this, mPageList));
+                    mBinding.recycler.setLayoutManager(new PagerLayoutManager());
                 }, Throwable::printStackTrace);
     }
 
