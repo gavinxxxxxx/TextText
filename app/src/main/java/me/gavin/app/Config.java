@@ -50,6 +50,8 @@ public final class Config {
     public static float indent; // 首行缩进
     public static float wordSpacingMax; // 单词最大间距
 
+    public static final int elevation; // 页高度
+
     public static final Paint textPaint, debugPaint;
 
     static {
@@ -65,6 +67,8 @@ public final class Config {
         lineSpacing = SPUtil.getInt("lineSpacing", textSize / 2);
         indent = SPUtil.getFloat("indent", textSize * 2f);
         wordSpacingMax = textSize * 0.5f;
+
+        elevation = DisplayUtil.dp2px(8);
 
         textPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
         textPaint.setTextSize(textSize);

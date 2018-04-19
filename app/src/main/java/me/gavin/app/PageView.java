@@ -49,6 +49,8 @@ public class PageView extends View {
         for (Line line : mPage.lineList) {
             drawLine(canvas, line);
         }
+
+        canvas.drawText(mPage.pageStart + "~" + mPage.pageEnd, 10, 40, Config.textPaint);
     }
 
     /**
