@@ -139,7 +139,7 @@ public class ReadActivity extends BindingActivity<ActivityReadBinding> {
                 if (lastChild != null) {
                     //通过这个lastChildView得到这个view当前的position值
                     int lastPosition = layoutManager.getPosition(lastChild);
-                    L.e("lastPosition - " + lastPosition);
+//                    L.e("lastPosition - " + lastPosition);
                     //判断lastPosition是不是最后一个position
                     if (lastPosition > layoutManager.getItemCount() - 2 - pagingPreCount) {
                         performPagingLoad();
@@ -148,8 +148,8 @@ public class ReadActivity extends BindingActivity<ActivityReadBinding> {
                 if (firstChild != null) {
                     //通过这个lastChildView得到这个view当前的position值
                     int firstPosition = layoutManager.getPosition(firstChild);
-                    L.e("firstPosition - " + firstPosition);
-                    //判断lastPosition是不是最后一个position
+//                    L.e("firstPosition - " + firstPosition);
+                    //判断lastPosition是 不是最后一个position
                     if (firstPosition < 1 + pagingPreCount) {
                         performPagingLoad2();
                     }
