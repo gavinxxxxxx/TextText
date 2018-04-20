@@ -1,6 +1,5 @@
 package me.gavin.app;
 
-import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
@@ -15,6 +14,8 @@ public class PagerLayoutManager extends RecyclerView.LayoutManager {
 
     private int mCurrentPosition;
     private int mCurrentPositionIndex;
+
+    private int mScrollState;
 
     @Override
     public RecyclerView.LayoutParams generateDefaultLayoutParams() {
@@ -61,6 +62,34 @@ public class PagerLayoutManager extends RecyclerView.LayoutManager {
     }
 
     @Override
+    public void onScrollStateChanged(int state) {
+        mScrollState = state;
+//        if (state != RecyclerView.SCROLL_STATE_DRAGGING) {
+//            View curr = getChildAt(mCurrentPositionIndex);
+//            if (curr != null) {
+//                if (curr.getLeft() < -getWidth() / 2) {
+//                    curr.offsetLeftAndRight(-getWidth() - curr.getLeft());
+//                    mCurrentPosition++;
+//                    requestLayout();
+//                }
+//            }
+//            View last = getChildAt(mCurrentPositionIndex + 1);
+//            if (last != null) {
+//                if (last.getLeft() > -getWidth() / 2) {
+//                    last.offsetLeftAndRight(0 - last.getLeft());
+//                    mCurrentPosition--;
+//                    requestLayout();
+//                }
+//            }
+//        }
+    }
+
+    @Override
+    public void scrollToPosition(int position) {
+        super.scrollToPosition(position);
+    }
+
+    @Override
     public void onItemsAdded(RecyclerView recyclerView, int positionStart, int itemCount) {
         L.e("onItemsAdded - " + positionStart + " - " + itemCount);
         if (positionStart <= mCurrentPosition) {
@@ -70,14 +99,16 @@ public class PagerLayoutManager extends RecyclerView.LayoutManager {
 
     @Override
     public boolean canScrollHorizontally() {
-        return true;
+        return mScrollState != RecyclerView.SCROLL_STATE_SETTLING;
     }
 
     @Override
     public int scrollHorizontallyBy(int dx, RecyclerView.Recycler recycler, RecyclerView.State state) {
         L.e("scrollHorizontallyBy - " + mCurrentPositionIndex + " - " + getItemCount());
 //        detachAndScrapAttachedViews(recycler);
-        if (mCurrentPositionIndex < 1 || mCurrentPositionIndex >= getItemCount() - 1) {
+
+        if (mScrollState != RecyclerView.SCROLL_STATE_DRAGGING
+                || mCurrentPositionIndex < 1 || mCurrentPositionIndex >= getItemCount() - 1) {
             return dx;
         }
 
@@ -115,4 +146,5 @@ public class PagerLayoutManager extends RecyclerView.LayoutManager {
 //        fill(recycler, state);
         return dx;
     }
+
 }

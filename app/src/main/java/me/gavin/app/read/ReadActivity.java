@@ -101,38 +101,37 @@ public class ReadActivity extends BindingActivity<ActivityReadBinding> {
 //                }, Throwable::printStackTrace);
 
 
-//        // 章节进度定位
-//        mBinding.recycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
-//            @Override
-//            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-//                if (newState == RecyclerView.SCROLL_STATE_IDLE && mBinding.rvChapter.getAdapter() != null) {
-//                    LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
-//                    int position = layoutManager.findFirstVisibleItemPosition();
-//                    long offset = mPageList.get(position).pageStart;
-//
-//                    mBook.setOffset(offset);
-//
-//                    Chapter curr = mChapterList.get(0);
-//                    for (Chapter t : mChapterList) {
-//                        t.selected = false;
-//                        if (t.offset <= offset) {
-//                            curr = t;
-//                        }
-//                    }
-//                    curr.selected = true;
-//                    mBinding.rvChapter.getAdapter().notifyDataSetChanged();
-//                    mBinding.rvChapter.scrollToPosition(mChapterList.indexOf(curr));
-//                }
-//            }
-//        });
-//
+        // 章节进度定位
+        mBinding.recycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                if (newState == RecyclerView.SCROLL_STATE_IDLE && mBinding.rvChapter.getAdapter() != null) {
+                    LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+                    int position = layoutManager.findFirstVisibleItemPosition();
+                    long offset = mPageList.get(position).pageStart;
+
+                    mBook.setOffset(offset);
+
+                    Chapter curr = mChapterList.get(0);
+                    for (Chapter t : mChapterList) {
+                        t.selected = false;
+                        if (t.offset <= offset) {
+                            curr = t;
+                        }
+                    }
+                    curr.selected = true;
+                    mBinding.rvChapter.getAdapter().notifyDataSetChanged();
+                    mBinding.rvChapter.scrollToPosition(mChapterList.indexOf(curr));
+                }
+            }
+        });
+
         // 翻页数据预加载
         mBinding.recycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
             int pagingPreCount = 1;
 
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                L.e("onScrolled - " + dx);
                 //得到当前显示的最后一个item的view
                 RecyclerView.LayoutManager layoutManager = recyclerView.getLayoutManager();
                 View firstChild = layoutManager.getChildAt(0);
