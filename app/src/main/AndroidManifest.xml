@@ -23,6 +23,7 @@
         </activity>
 
         <activity android:name="me.gavin.app.read.ReadActivity" />
+        <activity android:name="me.gavin.app.read.NewReadActivity" />
 
         <activity android:name="me.gavin.app.explorer.ExplorerActivity">
             <intent-filter>

@@ -21,21 +21,18 @@ public class PageView extends View {
 
     private Page mPage;
 
-    public PageView(Context context) {
-        this(context, null);
-    }
-
     public PageView(Context context, @Nullable AttributeSet attrs) {
-        this(context, attrs, 0);
-    }
-
-    public PageView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
+        super(context, attrs);
+        setKeepScreenOn(true);
     }
 
     public void set(Page page) {
         this.mPage = page;
         invalidate();
+    }
+
+    public boolean isNull() {
+        return mPage == null;
     }
 
     @Override

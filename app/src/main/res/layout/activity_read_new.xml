@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <android.support.v4.widget.DrawerLayout
+        android:id="@+id/drawer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:openDrawer="start">
+
+        <me.gavin.app.PagerLayout
+            android:id="@+id/pager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#2B2B2B" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rvChapter"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="start"
+            android:background="#3C3F41"
+            android:fitsSystemWindows="false"
+            app:fastScrollExtensionEnabled="@{true}"
+            app:fastScrollExtensionWidth="@{0}"
+            app:layoutManager="LinearLayoutManager"
+            app:widthRatio="@{0.67f}"
+            tools:itemCount="12"
+            tools:listitem="@layout/item_chapter" />
+
+    </android.support.v4.widget.DrawerLayout>
+
+</layout>

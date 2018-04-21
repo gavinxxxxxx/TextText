@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="PagerLayout">
+        <attr name="pl_pageCount" format="integer" />
+        <attr name="mlm_originRadius" format="dimension" />
+        <attr name="mlm_originBgColor" format="color" />
+        <attr name="mlm_originPadding" format="dimension" />
+        <attr name="mlm_originIcon" format="reference" />
+        <attr name="mlm_originIconColor" format="color" />
+        <attr name="mlm_menuItemMargin" format="dimension" />
+        <attr name="mlm_menuItemRadius" format="dimension" />
+        <attr name="mlm_menuItemBgColor" format="color" />
+        <attr name="mlm_menuItemElevation" format="dimension" />
+        <attr name="mlm_menuItemPadding" format="dimension" />
+        <attr name="mlm_menuItemIconColor" format="color" />
+        <attr name="mlm_menuVertical" format="reference" />
+        <attr name="mlm_menuHorizontal" format="reference" />
+        <attr name="mlm_mode" format="enum">
+            <enum name="A" value="0" />
+            <enum name="B" value="1" />
+        </attr>
+    </declare-styleable>
+
+</resources>

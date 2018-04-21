@@ -68,37 +68,37 @@ public class ReadActivity extends BindingActivity<ActivityReadBinding> {
 
     private void init() {
         offset(mBook.getOffset());
-//        Observable.just(mBook)
-//                .map(Book::open)
-//                .map(is -> StreamHelper.getChapters(is, mBook.getCharset()))
-//                .compose(RxTransformer.applySchedulers())
-//                .subscribe(chapters -> {
-//                    mChapterList.addAll(chapters);
-//                    if (mChapterList.isEmpty()) {
-//                        Snackbar.make(mBinding.rvChapter, "暂无章节信息", Snackbar.LENGTH_LONG).show();
-//                    } else {
-//                        Chapter curr = mChapterList.get(0);
-//                        for (Chapter t : mChapterList) {
-//                            if (t.offset > mBook.getOffset())
-//                                break;
-//                            curr = t;
-//                        }
-//                        curr.selected = true;
-//
-//                        BindingAdapter adapter = new BindingAdapter<>(this, mChapterList, R.layout.item_chapter);
-//                        adapter.setOnItemClickListener(i -> {
-//                            for (Chapter t : mChapterList) {
-//                                t.selected = false;
-//                            }
-//                            mChapterList.get(i).selected = true;
-//                            adapter.notifyDataSetChanged();
-//                            offset(mChapterList.get(i).offset);
-//                        });
-//                        mBinding.rvChapter.setAdapter(adapter);
-//
-//                        mBinding.rvChapter.scrollToPosition(mChapterList.indexOf(curr));
-//                    }
-//                }, Throwable::printStackTrace);
+        Observable.just(mBook)
+                .map(Book::open)
+                .map(is -> StreamHelper.getChapters(is, mBook.getCharset()))
+                .compose(RxTransformer.applySchedulers())
+                .subscribe(chapters -> {
+                    mChapterList.addAll(chapters);
+                    if (mChapterList.isEmpty()) {
+                        Snackbar.make(mBinding.rvChapter, "暂无章节信息", Snackbar.LENGTH_LONG).show();
+                    } else {
+                        Chapter curr = mChapterList.get(0);
+                        for (Chapter t : mChapterList) {
+                            if (t.offset > mBook.getOffset())
+                                break;
+                            curr = t;
+                        }
+                        curr.selected = true;
+
+                        BindingAdapter adapter = new BindingAdapter<>(this, mChapterList, R.layout.item_chapter);
+                        adapter.setOnItemClickListener(i -> {
+                            for (Chapter t : mChapterList) {
+                                t.selected = false;
+                            }
+                            mChapterList.get(i).selected = true;
+                            adapter.notifyDataSetChanged();
+                            offset(mChapterList.get(i).offset);
+                        });
+                        mBinding.rvChapter.setAdapter(adapter);
+
+                        mBinding.rvChapter.scrollToPosition(mChapterList.indexOf(curr));
+                    }
+                }, Throwable::printStackTrace);
 
 
         // 章节进度定位
