@@ -31,10 +31,10 @@ public class Page {
 
     public boolean isReverse;
 
-    public String mText;
-    public String[] mTextSp;
+    public String mText; // 页面预加载文字 - 直接读取
+    public String[] mTextSp; // 页面段落数组
 
-    public final List<Line> lineList;
+    public final List<Line> lineList; // 页面文字分行
 
     private Page() {
         lineList = new ArrayList<>();
@@ -72,13 +72,13 @@ public class Page {
 
     private void layoutText() {
         lineList.clear();
-        int y = Config.topPadding;
+        int y = Config.topPadding; // 行文字顶部
         String subText = Utils.trim(mText);
         for (int i = 0; i < mTextSp.length; i++) {
             String segment = mTextSp[i];
             int segmentStart = 0;
             while (segmentStart < segment.length()) {
-                if (!isReverse && y + Config.textHeight > Config.height - Config.bottomPadding) {
+                if (!isReverse && y + Config.textHeight > Config.height - Config.bottomPadding) { // 正向 & 已排满页面
                     pageLimit = mText.indexOf(subText);
                     pageEnd = pageStart + pageLimit;
                     isLast = pageEnd >= book.getLength();
@@ -108,19 +108,19 @@ public class Page {
             isLast = true;
         } else if (isReverse) { // 反向
             List<Line> lines = new ArrayList<>();
-            y = y - Config.segmentSpacing - Config.lineSpacing;
+            y = y - Config.segmentSpacing - Config.lineSpacing; // 最后一行文字底部 - 去掉多余的空隙
             subText = mText; // 子字符串 - 计算字符数量
 
-            int ey = y - Config.height + Config.bottomPadding + Config.topPadding;
+            int ey = y - Config.height + Config.bottomPadding + Config.topPadding; // 超出的高度
             for (Line line : lineList) {
-                if (line.y + Config.textTop < ey) {
+                if (line.y + Config.textTop < ey) { // 底部对齐后去掉顶部超出的行
                     subText = subText.substring(subText.indexOf(line.src) + line.src.length());
                 } else {
                     lines.add(line);
                 }
             }
 
-            ey = lines.get(0).y - Config.topPadding;
+            ey = lines.isEmpty() ? -1 : lines.get(0).y - Config.topPadding; // 距顶部对齐行偏移量
             for (Line line : lines) {
                 line.y = line.y - ey + Config.textSize;
             }

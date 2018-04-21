@@ -4,6 +4,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
+import android.support.v4.widget.DrawerLayout;
 import android.view.Gravity;
 import android.view.View;
 
@@ -50,6 +51,8 @@ public class NewReadActivity extends BindingActivity<ActivityReadNewBinding> {
         long bookId = getIntent().getLongExtra("bookId", 0);
         mBook = getDataLayer().getShelfService().loadBook(bookId);
 
+        mBinding.drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+
         mBinding.pager.post(() -> {
             Config.onSizeChange(mBinding.pager.getWidth(), mBinding.pager.getHeight());
             init();
@@ -73,16 +76,18 @@ public class NewReadActivity extends BindingActivity<ActivityReadNewBinding> {
                 // 更新进度
                 mBook.setOffset(mPages[1].pageStart);
                 // 章节定位
-                Chapter curr = mChapterList.get(0);
-                for (Chapter t : mChapterList) {
-                    t.selected = false;
-                    if (t.offset <= mBook.getOffset()) {
-                        curr = t;
+                if (!mChapterList.isEmpty()) {
+                    Chapter curr = mChapterList.get(0);
+                    for (Chapter t : mChapterList) {
+                        t.selected = false;
+                        if (t.offset <= mBook.getOffset()) {
+                            curr = t;
+                        }
                     }
+                    curr.selected = true;
+                    mBinding.rvChapter.getAdapter().notifyDataSetChanged();
+                    mBinding.rvChapter.scrollToPosition(mChapterList.indexOf(curr));
                 }
-                curr.selected = true;
-                mBinding.rvChapter.getAdapter().notifyDataSetChanged();
-                mBinding.rvChapter.scrollToPosition(mChapterList.indexOf(curr));
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -117,6 +122,7 @@ public class NewReadActivity extends BindingActivity<ActivityReadNewBinding> {
                         mBinding.rvChapter.setAdapter(adapter);
 
                         mBinding.rvChapter.scrollToPosition(mChapterList.indexOf(curr));
+                        mBinding.drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
                     }
                 }, Throwable::printStackTrace);
 
