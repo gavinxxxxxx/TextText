@@ -8,13 +8,13 @@ import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
+import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
 
 import me.gavin.app.model.Page;
 import me.gavin.base.function.Consumer;
 import me.gavin.text.R;
-import me.gavin.util.L;
 
 /**
  * PagerLayout
@@ -24,6 +24,16 @@ import me.gavin.util.L;
 public class PagerLayout extends ViewGroup {
 
     private final PageView[] mItems = new PageView[Config.pageCount]; // last -> curr -> next
+
+    private final static int SCROLL_TARGET_NONE = 0;
+    private final static int SCROLL_TARGET_CURR = 1;
+    private final static int SCROLL_TARGET_LAST = 2;
+    private int mScrollTarget; // 当前滑动页面
+
+    private float mXFlag;
+    private VelocityTracker mVelocityTracker; // 滑动速度跟踪器
+    private ObjectAnimator mAnimator; // 翻页动画
+    private boolean mTouching; // 触摸中 - 手指是否在屏幕上
 
     private Consumer<Boolean> onPageChangeCallback;
 
@@ -69,140 +79,101 @@ public class PagerLayout extends ViewGroup {
         mAnimator.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
-                if (!mTouchFlag) {
-                    if (mScrollTarget == SCROLL_CURR && (float) mAnimator.getAnimatedValue() == -getWidth()) {
+                if (!mTouching) {
+                    if (mScrollTarget == SCROLL_TARGET_CURR && (float) mAnimator.getAnimatedValue() == -getWidth()) {
                         if (onPageChangeCallback != null && !mItems[2].isNull()) {
                             onPageChangeCallback.accept(false);
                         }
-                    } else if (mScrollTarget == SCROLL_LAST && (float) mAnimator.getAnimatedValue() == 0) {
+                    } else if (mScrollTarget == SCROLL_TARGET_LAST && (float) mAnimator.getAnimatedValue() == 0) {
                         if (onPageChangeCallback != null && !mItems[0].isNull()) {
                             onPageChangeCallback.accept(true);
                         }
                     }
                 }
-                mScrollTarget = SCROLL_NONE;
+                mScrollTarget = SCROLL_TARGET_NONE;
             }
         });
     }
 
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
-        L.e("onLayout");
-        mItems[2].setTranslationX(0);
-        mItems[2].layout(l, t, r, b);
-
-        mItems[1].setTranslationX(0);
-        mItems[1].layout(l, t, r, b);
-
-        mItems[0].setTranslationX(-r);
-        mItems[0].layout(l, t, r, b);
+        for (int i = 0; i < Config.pageCount; i++) {
+            mItems[Config.pageCount - i - 1].layout(l, t, r, b);
+        }
     }
-
-    private final static int SCROLL_NONE = 0;
-    private final static int SCROLL_CURR = 1;
-    private final static int SCROLL_LAST = 2;
-    private int mScrollTarget;
-
-    private float mXFlag;
-    private VelocityTracker mVelocityTracker;
-    private ObjectAnimator mAnimator;
-
-    private boolean mTouchFlag;
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                L.e("onTouchEvent - " + mScrollTarget);
-                mTouchFlag = true;
-
+                mTouching = true;
                 mVelocityTracker = VelocityTracker.obtain();
                 mVelocityTracker.addMovement(event);
 
-                if (mAnimator != null) {
+                if (mAnimator != null && mAnimator.isRunning()) {
                     int target = mScrollTarget;
                     mAnimator.cancel();
                     mScrollTarget = target;
                 }
-                if (mScrollTarget == SCROLL_NONE) {
+                if (mScrollTarget == SCROLL_TARGET_NONE) {
                     mXFlag = event.getX();
-                } else if (mScrollTarget == SCROLL_CURR) {
+                } else if (mScrollTarget == SCROLL_TARGET_CURR) {
                     mXFlag = mItems[1].getTranslationX() - event.getX();
-                } else if (mScrollTarget == SCROLL_LAST) {
+                } else if (mScrollTarget == SCROLL_TARGET_LAST) {
                     mXFlag = mItems[0].getTranslationX() - event.getX();
                 }
                 break;
             case MotionEvent.ACTION_MOVE:
                 mVelocityTracker.addMovement(event);
 
-                if (mScrollTarget == SCROLL_NONE) {
+                if (mScrollTarget == SCROLL_TARGET_NONE) {
                     if (event.getX() - mXFlag <= -Config.touchSlop) {
-                        mScrollTarget = SCROLL_CURR;
+                        mScrollTarget = SCROLL_TARGET_CURR;
                         mXFlag = mItems[1].getTranslationX() - event.getX();
                     } else if (event.getX() - mXFlag >= Config.touchSlop) {
-                        mScrollTarget = SCROLL_LAST;
+                        mScrollTarget = SCROLL_TARGET_LAST;
                         mXFlag = mItems[0].getTranslationX() - event.getX();
                     }
-                } else if (mScrollTarget == SCROLL_CURR) {
+                } else if (mScrollTarget == SCROLL_TARGET_CURR) {
                     mItems[1].setTranslationX(mXFlag + event.getX());
-                } else if (mScrollTarget == SCROLL_LAST) {
+                } else if (mScrollTarget == SCROLL_TARGET_LAST) {
                     mItems[0].setTranslationX(mXFlag + event.getX());
                 }
                 break;
             case MotionEvent.ACTION_UP:
-                mTouchFlag = false;
-
+                mTouching = false;
                 mVelocityTracker.addMovement(event);
-                mVelocityTracker.computeCurrentVelocity(1000);
-                float xv = mVelocityTracker.getXVelocity();
-
-                if (mScrollTarget == SCROLL_CURR) {
-                    mAnimator.setTarget(mItems[1]);
-                    if (Math.abs(xv) < Config.flingVelocity) {
-                        if (mItems[1].getTranslationX() > -getWidth() / 2) {
-                            mAnimator.setFloatValues(0);
-                            mAnimator.setDuration(Utils.getDuration(Math.abs(mItems[1].getTranslationX())));
-                        } else {
-                            mAnimator.setFloatValues(-getWidth());
-                            mAnimator.setDuration(Utils.getDuration(Math.abs(mItems[1].getTranslationX() + getWidth())));
-                        }
-                    } else {
-                        if (xv > 0) {
-                            mAnimator.setFloatValues(0);
-                            mAnimator.setDuration(Utils.getDuration(Math.abs(mItems[1].getTranslationX())));
-                        } else {
-                            mAnimator.setFloatValues(-getWidth());
-                            mAnimator.setDuration(Utils.getDuration(Math.abs(mItems[1].getTranslationX() + getWidth())));
-                        }
-                    }
-                    mAnimator.start();
-                } else if (mScrollTarget == SCROLL_LAST) {
-                    mAnimator.setTarget(mItems[0]);
-                    if (Math.abs(xv) < Config.flingVelocity) {
-                        if (mItems[0].getTranslationX() > -getWidth() / 2) {
-                            mAnimator.setFloatValues(0);
-                            mAnimator.setDuration(Utils.getDuration(Math.abs(mItems[0].getTranslationX())));
-                        } else {
-                            mAnimator.setFloatValues(-getWidth());
-                            mAnimator.setDuration(Utils.getDuration(Math.abs(mItems[0].getTranslationX() + getWidth())));
-                        }
-                    } else {
-                        if (xv > 0) {
-                            mAnimator.setFloatValues(0);
-                            mAnimator.setDuration(Utils.getDuration(Math.abs(mItems[0].getTranslationX())));
-                        } else {
-                            mAnimator.setFloatValues(-getWidth());
-                            mAnimator.setDuration(Utils.getDuration(Math.abs(mItems[0].getTranslationX() + getWidth())));
-                        }
-                    }
-                    mAnimator.start();
-                }
-
+                startFlipAnim(mScrollTarget == SCROLL_TARGET_LAST ? mItems[0] : mItems[1]);
                 mVelocityTracker.recycle();
                 break;
             default:
                 break;
         }
         return true;
+    }
+
+    /**
+     * 启动翻页动画
+     *
+     * @param target 动画对象
+     */
+    private void startFlipAnim(View target) {
+        mAnimator.setTarget(target);
+        mVelocityTracker.computeCurrentVelocity(1000);
+        float xv = mVelocityTracker.getXVelocity();
+        boolean isIn = Math.abs(xv) >= Config.flingVelocity && xv > 0
+                || Math.abs(xv) < Config.flingVelocity && target.getTranslationX() > -getWidth() / 2;
+        mAnimator.setFloatValues(isIn ? 0 : -getWidth());
+        float distance = Math.abs(target.getTranslationX() - (isIn ? 0 : -getWidth()));
+        mAnimator.setDuration(Math.round(distance * Config.flipAnimDuration));
+        mAnimator.start();
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        if (mAnimator != null) {
+            mAnimator.cancel();
+        }
     }
 }
