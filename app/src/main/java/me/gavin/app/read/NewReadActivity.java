@@ -53,9 +53,12 @@ public class NewReadActivity extends BindingActivity<ActivityReadNewBinding> {
 
         mBinding.drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
 
-        mBinding.pager.post(() -> {
-            Config.onSizeChange(mBinding.pager.getWidth(), mBinding.pager.getHeight());
-            init();
+        init();
+        mBinding.pager.addOnLayoutChangeListener((v, l, t, r, b, ol, ot, or, ob) -> {
+            if (r - l != or - ol || b - t != ob - ot) {
+                Config.applySizeChange(r - l, b - t);
+                offset(mBook.getOffset());
+            }
         });
     }
 
@@ -125,8 +128,6 @@ public class NewReadActivity extends BindingActivity<ActivityReadNewBinding> {
                         mBinding.drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
                     }
                 }, Throwable::printStackTrace);
-
-        offset(mBook.getOffset());
     }
 
     @Override

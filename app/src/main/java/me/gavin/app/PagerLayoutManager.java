@@ -57,14 +57,14 @@ public class PagerLayoutManager extends RecyclerView.LayoutManager {
         addView(curr);
         measureChildWithMargins(curr, 0, 0);
         layoutDecoratedWithMargins(curr, 0, 0, getWidth(), getHeight());
-        curr.setElevation(Config.elevation);
+        curr.setElevation(Config.pageElevation);
 
         if (mCurrentPosition > 0) {
             View last = recycler.getViewForPosition(mCurrentPosition - 1);
             addView(last);
             measureChildWithMargins(last, 0, 0);
             layoutDecoratedWithMargins(last, -getWidth(), 0, 0, getHeight());
-            last.setElevation(Config.elevation * 2);
+            last.setElevation(Config.pageElevation * 2);
         }
     }
 

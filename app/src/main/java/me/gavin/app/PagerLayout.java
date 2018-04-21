@@ -8,7 +8,6 @@ import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
-import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
 
@@ -24,8 +23,7 @@ import me.gavin.util.L;
  */
 public class PagerLayout extends ViewGroup {
 
-    private static final int PAGE_COUNT = 3;
-    private final PageView[] mItems = new PageView[PAGE_COUNT]; // last -> curr -> next
+    private final PageView[] mItems = new PageView[Config.pageCount]; // last -> curr -> next
 
     private Consumer<Boolean> onPageChangeCallback;
 
@@ -36,10 +34,6 @@ public class PagerLayout extends ViewGroup {
 
     public void setOnPageChangeCallback(Consumer<Boolean> callback) {
         this.onPageChangeCallback = callback;
-    }
-
-    public void notify(int position) {
-
     }
 
     public void set(Page last, Page curr, Page next) {
@@ -56,11 +50,11 @@ public class PagerLayout extends ViewGroup {
         TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.PagerLayout);
 
         mItems[0] = new PageView(context, attrs);
-        mItems[0].setElevation(Config.elevation * 2);
+        mItems[0].setElevation(Config.pageElevation * 2);
         addView(mItems[0]);
 
         mItems[1] = new PageView(context, attrs);
-        mItems[1].setElevation(Config.elevation);
+        mItems[1].setElevation(Config.pageElevation);
         addView(mItems[1]);
 
         mItems[2] = new PageView(context, attrs);
@@ -71,7 +65,6 @@ public class PagerLayout extends ViewGroup {
 
         mAnimator = new ObjectAnimator();
         mAnimator.setProperty(TRANSLATION_X);
-        mAnimator.setDuration(360);
         mAnimator.setInterpolator(new DecelerateInterpolator());
         mAnimator.addListener(new AnimatorListenerAdapter() {
             @Override
@@ -143,11 +136,10 @@ public class PagerLayout extends ViewGroup {
                 mVelocityTracker.addMovement(event);
 
                 if (mScrollTarget == SCROLL_NONE) {
-                    int touchSlop = ViewConfiguration.get(getContext()).getScaledTouchSlop();
-                    if (event.getX() - mXFlag <= -touchSlop) {
+                    if (event.getX() - mXFlag <= -Config.touchSlop) {
                         mScrollTarget = SCROLL_CURR;
                         mXFlag = mItems[1].getTranslationX() - event.getX();
-                    } else if (event.getX() - mXFlag >= touchSlop) {
+                    } else if (event.getX() - mXFlag >= Config.touchSlop) {
                         mScrollTarget = SCROLL_LAST;
                         mXFlag = mItems[0].getTranslationX() - event.getX();
                     }
@@ -163,21 +155,45 @@ public class PagerLayout extends ViewGroup {
                 mVelocityTracker.addMovement(event);
                 mVelocityTracker.computeCurrentVelocity(1000);
                 float xv = mVelocityTracker.getXVelocity();
-                int minFlingVelocity = ViewConfiguration.get(getContext()).getScaledMinimumFlingVelocity();
+
                 if (mScrollTarget == SCROLL_CURR) {
                     mAnimator.setTarget(mItems[1]);
-                    if (Math.abs(xv) < minFlingVelocity) {
-                        mAnimator.setFloatValues(mItems[1].getTranslationX() > -getWidth() / 2 ? 0 : -getWidth());
+                    if (Math.abs(xv) < Config.flingVelocity) {
+                        if (mItems[1].getTranslationX() > -getWidth() / 2) {
+                            mAnimator.setFloatValues(0);
+                            mAnimator.setDuration(Utils.getDuration(Math.abs(mItems[1].getTranslationX())));
+                        } else {
+                            mAnimator.setFloatValues(-getWidth());
+                            mAnimator.setDuration(Utils.getDuration(Math.abs(mItems[1].getTranslationX() + getWidth())));
+                        }
                     } else {
-                        mAnimator.setFloatValues(xv > 0 ? 0 : -getWidth());
+                        if (xv > 0) {
+                            mAnimator.setFloatValues(0);
+                            mAnimator.setDuration(Utils.getDuration(Math.abs(mItems[1].getTranslationX())));
+                        } else {
+                            mAnimator.setFloatValues(-getWidth());
+                            mAnimator.setDuration(Utils.getDuration(Math.abs(mItems[1].getTranslationX() + getWidth())));
+                        }
                     }
                     mAnimator.start();
                 } else if (mScrollTarget == SCROLL_LAST) {
                     mAnimator.setTarget(mItems[0]);
-                    if (Math.abs(xv) < minFlingVelocity) {
-                        mAnimator.setFloatValues(mItems[0].getTranslationX() > -getWidth() / 2 ? 0 : -getWidth());
+                    if (Math.abs(xv) < Config.flingVelocity) {
+                        if (mItems[0].getTranslationX() > -getWidth() / 2) {
+                            mAnimator.setFloatValues(0);
+                            mAnimator.setDuration(Utils.getDuration(Math.abs(mItems[0].getTranslationX())));
+                        } else {
+                            mAnimator.setFloatValues(-getWidth());
+                            mAnimator.setDuration(Utils.getDuration(Math.abs(mItems[0].getTranslationX() + getWidth())));
+                        }
                     } else {
-                        mAnimator.setFloatValues(xv > 0 ? 0 : -getWidth());
+                        if (xv > 0) {
+                            mAnimator.setFloatValues(0);
+                            mAnimator.setDuration(Utils.getDuration(Math.abs(mItems[0].getTranslationX())));
+                        } else {
+                            mAnimator.setFloatValues(-getWidth());
+                            mAnimator.setDuration(Utils.getDuration(Math.abs(mItems[0].getTranslationX() + getWidth())));
+                        }
                     }
                     mAnimator.start();
                 }

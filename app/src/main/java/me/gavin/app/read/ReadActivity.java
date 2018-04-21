@@ -5,9 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.PagerSnapHelper;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SnapHelper;
 import android.view.Gravity;
 import android.view.View;
 
@@ -29,7 +27,6 @@ import me.gavin.base.BundleKey;
 import me.gavin.base.recycler.BindingAdapter;
 import me.gavin.text.R;
 import me.gavin.text.databinding.ActivityReadBinding;
-import me.gavin.util.L;
 
 public class ReadActivity extends BindingActivity<ActivityReadBinding> {
 
@@ -61,7 +58,7 @@ public class ReadActivity extends BindingActivity<ActivityReadBinding> {
         mBook = getDataLayer().getShelfService().loadBook(bookId);
 
         mBinding.recycler.post(() -> {
-            Config.onSizeChange(mBinding.recycler.getWidth(), mBinding.recycler.getHeight());
+            Config.applySizeChange(mBinding.recycler.getWidth(), mBinding.recycler.getHeight());
             init();
         });
     }

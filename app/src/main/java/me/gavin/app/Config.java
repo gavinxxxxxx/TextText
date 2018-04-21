@@ -2,7 +2,9 @@ package me.gavin.app;
 
 import android.graphics.Paint;
 import android.text.TextPaint;
+import android.view.ViewConfiguration;
 
+import me.gavin.base.App;
 import me.gavin.util.DisplayUtil;
 import me.gavin.util.SPUtil;
 
@@ -50,9 +52,13 @@ public final class Config {
     public static float indent; // 首行缩进
     public static float wordSpacingMax; // 单词最大间距
 
-    public static final int elevation; // 页高度
-
     public static final Paint textPaint, debugPaint;
+
+    public static final int pageCount; // 页面数量
+    public static final int pageElevation; // 页高度
+    public static final int touchSlop; // 滑动临界值
+    public static final int flingVelocity; // 抛投临界值
+    public static final float flipAnimDuration; // 翻页动画时长比例
 
     static {
         textSize = SPUtil.getInt("textSize", 40);
@@ -68,8 +74,6 @@ public final class Config {
         indent = SPUtil.getFloat("indent", textSize * 2f);
         wordSpacingMax = textSize * 0.5f;
 
-        elevation = DisplayUtil.dp2px(8);
-
         textPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
         textPaint.setTextSize(textSize);
         textPaint.setColor(textColor);
@@ -84,17 +88,27 @@ public final class Config {
         textTop = (int) Math.ceil(fontMetrics.top); // -1.5 -> -1
         textBottom = (int) Math.floor(fontMetrics.bottom); // 1.5 -> 1
         textHeight = textBottom - textTop; // textHeight = textSize * 1.3271484f;
+
+        pageCount = 3;
+        pageElevation = DisplayUtil.dp2px(8);
+        touchSlop = ViewConfiguration.get(App.get()).getScaledTouchSlop();
+        flingVelocity = ViewConfiguration.get(App.get()).getScaledMinimumFlingVelocity() * 2;
+        flipAnimDuration = 0.4f;
     }
 
-    public static void onSizeChange(int w, int h) {
+    /**
+     * 尺寸变化时重新计算预加载数量
+     */
+    public static void applySizeChange(int w, int h) {
         width = w;
         height = h;
-
-        int lineCount = (int) ((width - leftPadding - rightPadding) / getLetterMinWidth());
-        pagePreCount = lineCount * (int) Math.ceil((height - topPadding - bottomPadding) / textHeight);
-        segmentPreCount = lineCount;
+        segmentPreCount = (int) Math.ceil((width - leftPadding - rightPadding) / getLetterMinWidth());
+        pagePreCount = segmentPreCount * (int) Math.ceil((height - topPadding - bottomPadding) / textHeight);
     }
 
+    /**
+     * 获取字母最小宽度
+     */
     private static float getLetterMinWidth() {
         String[] ss = {"f", "i", "j", "l", "r", "1"};
         float min = Float.MAX_VALUE;
@@ -102,5 +116,4 @@ public final class Config {
             min = Math.min(min, textPaint.measureText(s));
         return min;
     }
-
 }

@@ -69,4 +69,11 @@ public final class Utils {
         return count == 8221 || count == 12299 || count == 65289 || count == 12305
                 || count == 41 || count == 62 || count == 93 || count == 125;
     }
+
+    /**
+     * 获取翻页动画时长
+     */
+    public static long getDuration(float diff) {
+        return Math.round(Math.abs(diff) * Config.flipAnimDuration);
+    }
 }
