@@ -40,7 +40,9 @@ public class TestActivity extends BindingActivity<ActivityTestBinding> {
                     Page curr = Page.fromBook(book, book.getOffset(), false);
                     Page last = Page.fromBook(book, curr.pageStart, true);
                     Page next = Page.fromBook(book, curr.pageEnd, false);
-                    mBinding.text.set(last, curr, next);
+                    Flipper flipper = new CoverFlipper();
+                    flipper.set(last, curr, next);
+                    flipper.attach(mBinding.text);
                 }, L::e);
     }
 }
