@@ -18,6 +18,7 @@ import me.gavin.base.BundleKey;
 import me.gavin.base.recycler.BindingAdapter;
 import me.gavin.text.R;
 import me.gavin.text.databinding.ActivityShelfBinding;
+import me.gavin.util.L;
 
 /**
  * 书架
@@ -56,6 +57,7 @@ public class ShelfActivity extends BindingActivity<ActivityShelfBinding> {
                     mList.clear();
                 })
                 .subscribe(books -> {
+                    L.e(books);
                     mList.addAll(books);
                     mAdapter = new BindingAdapter<>(this, mList, R.layout.item_shelf_book);
                     mAdapter.setOnItemClickListener(i ->

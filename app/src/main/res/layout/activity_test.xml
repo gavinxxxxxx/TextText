@@ -6,9 +6,23 @@
         android:layout_height="match_parent"
         android:fitsSystemWindows="true">
 
-        <me.gavin.app.test.PageView
+        <!--<me.gavin.app.test.PageView-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:fitsSystemWindows="true" />-->
+
+        <!--<Switch-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_gravity="center"-->
+        <!--android:elevation="0dp"-->
+        <!--android:translationZ="0dp"-->
+        <!--android:layout_height="wrap_content" />-->
+
+        <me.gavin.app.test.TextView
+            android:id="@+id/text"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:background="#252525"
             android:fitsSystemWindows="true" />
 
     </android.support.design.widget.CoordinatorLayout>

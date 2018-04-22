@@ -153,4 +153,15 @@ public class Book {
         }
         return null;
     }
+
+    @Override
+    public String toString() {
+        return "Book{" +
+                "name='" + name + '\'' +
+                ", author='" + author + '\'' +
+                ", charset='" + charset + '\'' +
+                ", length=" + length +
+                ", uri='" + uri + '\'' +
+                '}';
+    }
 }

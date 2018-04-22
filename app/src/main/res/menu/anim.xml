@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/action_0"
+        android:orderInCategory="100"
+        android:title="上下"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_1"
+        android:orderInCategory="100"
+        android:title="覆盖"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_2"
+        android:orderInCategory="100"
+        android:title="平推"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_3"
+        android:orderInCategory="100"
+        android:title="仿真"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_4"
+        android:orderInCategory="100"
+        android:title="揭露"
+        app:showAsAction="never" />
+</menu>
