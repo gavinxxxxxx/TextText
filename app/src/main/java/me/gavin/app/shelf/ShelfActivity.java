@@ -12,6 +12,7 @@ import me.gavin.app.RxTransformer;
 import me.gavin.app.explorer.ExplorerActivity;
 import me.gavin.app.model.Book;
 import me.gavin.app.read.NewReadActivity;
+import me.gavin.app.test.TestActivity;
 import me.gavin.base.BindingActivity;
 import me.gavin.base.BundleKey;
 import me.gavin.base.recycler.BindingAdapter;
@@ -38,7 +39,11 @@ public class ShelfActivity extends BindingActivity<ActivityShelfBinding> {
         mBinding.fab.setOnClickListener(v ->
                 startActivityForResult(new Intent(this, ExplorerActivity.class), 0));
 
-
+        mBinding.includeToolbar.toolbar.inflateMenu(R.menu.main);
+        mBinding.includeToolbar.toolbar.setOnMenuItemClickListener(item -> {
+            startActivity(new Intent(this, TestActivity.class));
+            return true;
+        });
     }
 
     @Override
