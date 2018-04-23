@@ -5,6 +5,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.graphics.Canvas;
 import android.graphics.PointF;
+import android.graphics.drawable.Drawable;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.View;
@@ -12,6 +13,7 @@ import android.view.animation.DecelerateInterpolator;
 
 import me.gavin.app.Config;
 import me.gavin.app.model.Word;
+import me.gavin.text.R;
 
 /**
  * 这里是萌萌哒注释菌
@@ -127,7 +129,7 @@ public class CoverFlipper extends Flipper {
         float distance = Math.abs(mOffsetX - (isIn ? 0 : -Config.width));
         mAnimator.setDuration(Math.round(distance * Config.flipAnimDuration));
         mAnimator.addUpdateListener(animation -> {
-            mOffsetX = ((float)animation.getAnimatedValue());
+            mOffsetX = ((float) animation.getAnimatedValue());
             mView.invalidate();
         });
         mAnimator.start();
@@ -143,6 +145,10 @@ public class CoverFlipper extends Flipper {
             }
         }
 
+        Drawable drawable = mView.getResources().getDrawable(R.drawable.bg_gd, null);
+        drawable.setBounds(Config.width + (int) mOffsetX, 0,
+                Config.width + 40 + (int) mOffsetX, Config.height);
+        drawable.draw(canvas);
         canvas.drawRect(mScrollTarget == SCROLL_TARGET_CURR ? mOffsetX : 0, 0,
                 Config.width + (mScrollTarget == SCROLL_TARGET_CURR ? mOffsetX : 0), Config.height, Config.bgPaint);
         if (mPages[1] != null) {
@@ -152,7 +158,10 @@ public class CoverFlipper extends Flipper {
         }
 
         if (mScrollTarget == SCROLL_TARGET_LAST) {
-            canvas.drawRect(-Config.width + mOffsetX, 0,  mOffsetX, Config.height, Config.bgPaint);
+            drawable.setBounds((int) mOffsetX, 0,
+                    Config.pageElevation + (int) mOffsetX, Config.height);
+            drawable.draw(canvas);
+            canvas.drawRect(-Config.width + mOffsetX, 0, mOffsetX, Config.height, Config.bgPaint);
             if (mPages[0] != null) {
                 for (Word word : mPages[0].wordList) {
                     word.draw(canvas, -Config.width + mOffsetX, 0);

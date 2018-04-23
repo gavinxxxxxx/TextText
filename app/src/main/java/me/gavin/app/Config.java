@@ -1,5 +1,6 @@
 package me.gavin.app;
 
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.text.TextPaint;
 import android.view.ViewConfiguration;
@@ -80,6 +81,9 @@ public final class Config {
 
         bgPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         bgPaint.setColor(0xFF252525);
+        bgPaint.setStyle(Paint.Style.FILL_AND_STROKE);
+        bgPaint.setStrokeWidth(20);
+        bgPaint.setShadowLayer(5, 15, 20, Color.GREEN);
 
         debugPaint = new Paint();
         debugPaint.setColor(0x22222222);
@@ -93,7 +97,7 @@ public final class Config {
         textHeight = textBottom - textTop; // textHeight = textSize * 1.3271484f;
 
         pageCount = 3;
-        pageElevation = DisplayUtil.dp2px(8);
+        pageElevation = DisplayUtil.dp2px(10);
         touchSlop = ViewConfiguration.get(App.get()).getScaledTouchSlop();
         flingVelocity = ViewConfiguration.get(App.get()).getScaledMinimumFlingVelocity() * 2;
         flipAnimDuration = 0.4f;
