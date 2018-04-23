@@ -2,6 +2,7 @@ package me.gavin.app.model;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -35,9 +36,11 @@ public class Page {
     public String[] mTextSp; // 页面段落数组
 
     public final List<Line> lineList; // 页面文字分行
+    public final List<Word> wordList; // 页面按字词拆分
 
     private Page() {
         lineList = new ArrayList<>();
+        wordList = new LinkedList<>();
     }
 
     public static Page fromBook(Book book, long offset, boolean isReverse) throws IOException {
@@ -66,12 +69,14 @@ public class Page {
             String fix = StreamHelper.getText(book.open(), book.getCharset(), page.pageEnd, Config.segmentPreCount);
             page.lastLineAlign = !page.mText.matches(Config.REGEX_SEGMENT_PREFIX) && !fix.matches(Config.REGEX_SEGMENT_SUFFIX);
         }
-        page.layoutText();
+        page.text2Line();
+        for (Line line : page.lineList) {
+            page.line2Words(line);
+        }
         return page;
     }
 
-    private void layoutText() {
-        lineList.clear();
+    private void text2Line() {
         int y = Config.topPadding; // 行文字顶部
         String subText = Utils.trim(mText);
         for (int i = 0; i < mTextSp.length; i++) {
@@ -174,5 +179,56 @@ public class Page {
             return end;
         }
         return count;
+    }
+
+    /**
+     * 显示文字
+     *
+     * @param line 单行文字 & 当前行y坐标 & 缩进 & 分散对齐
+     */
+    private void line2Words(Line line) {
+        float indent = line.lineIndent ? Config.indent : 0;
+        if (line.lineAlign || line.text.length() <= 1) { // 不需要分散对齐 | 只有一个字符
+            wordList.add(new Word(line.text, Config.leftPadding + indent, line.y));
+            return;
+        }
+
+        float textWidth = Config.textPaint.measureText(line.text);
+        float lineWidth = Config.width - Config.leftPadding - Config.rightPadding - indent;
+        float extraSpace = lineWidth - textWidth; // 剩余空间
+        if (extraSpace <= 0) { // 没有多余空间 - 不需要分散对齐
+            wordList.add(new Word(line.text, Config.leftPadding + indent, line.y));
+            return;
+        }
+
+        Matcher matcher = Pattern.compile(Config.REGEX_CHARACTER).matcher(line.text);
+        int wordCount = 0;
+        while (matcher.find()) {
+            wordCount++;
+        }
+        if (wordCount > 1) { // 多个单词 - 词间距
+            float workSpacing = extraSpace / (wordCount - 1);
+            float startX = Config.leftPadding + indent;
+            float x;
+            StringBuilder sb = new StringBuilder();
+            int spacingCount = 0;
+            matcher.reset();
+            while (matcher.find()) {
+                String word = matcher.group();
+                x = startX + Config.textPaint.measureText(sb.toString()) + workSpacing * spacingCount;
+                wordList.add(new Word(word, x, line.y));
+                sb.append(word);
+                spacingCount++;
+            }
+        } else { // 单个单词 - 字间距
+            float workSpacing = extraSpace / (line.text.length() - 1);
+            float startX = Config.leftPadding + indent;
+            float x;
+            for (int i = 0; i < line.text.length(); i++) {
+                String word = String.valueOf(line.text.charAt(i));
+                x = startX + Config.textPaint.measureText(line.text.substring(0, i)) + workSpacing * i;
+                wordList.add(new Word(word, x, line.y));
+            }
+        }
     }
 }

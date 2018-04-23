@@ -52,7 +52,7 @@ public final class Config {
     public static float indent; // 首行缩进
     public static float wordSpacingMax; // 单词最大间距
 
-    public static final Paint textPaint, debugPaint;
+    public static final Paint textPaint, bgPaint, debugPaint;
 
     public static final int pageCount; // 页面数量
     public static final int pageElevation; // 页高度
@@ -77,6 +77,9 @@ public final class Config {
         textPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
         textPaint.setTextSize(textSize);
         textPaint.setColor(textColor);
+
+        bgPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        bgPaint.setColor(0xFF252525);
 
         debugPaint = new Paint();
         debugPaint.setColor(0x22222222);

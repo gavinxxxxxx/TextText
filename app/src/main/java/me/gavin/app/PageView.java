@@ -11,6 +11,7 @@ import java.util.regex.Pattern;
 
 import me.gavin.app.model.Line;
 import me.gavin.app.model.Page;
+import me.gavin.app.model.Word;
 
 /**
  * TextTextView
@@ -43,9 +44,12 @@ public class PageView extends View {
 //        canvas.drawRect(Config.leftPadding, Config.topPadding, getWidth() - Config.rightPadding,
 //                getHeight() - Config.bottomPadding, Config.debugPaint);
 
-        for (Line line : mPage.lineList) {
-            Utils.drawLine(canvas, line);
+        for (Word word : mPage.wordList) {
+            canvas.drawText(word.text, word.x, word.y, Config.textPaint);
         }
+//        for (Line line : mPage.lineList) {
+//            Utils.drawLine(canvas, line);
+//        }
 
         canvas.drawText(mPage.pageStart + "~" + mPage.pageEnd, 10, 40, Config.textPaint);
     }
