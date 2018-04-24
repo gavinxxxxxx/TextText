@@ -4,6 +4,7 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import me.gavin.service.SearchManager;
 import me.gavin.service.SettingManager;
 import me.gavin.service.ShelfManager;
 import me.gavin.service.base.DataLayer;
@@ -24,13 +25,22 @@ public class DataLayerModule {
 
     @Singleton
     @Provides
+    public SearchManager provideSearchManager() {
+        return new SearchManager();
+    }
+
+    @Singleton
+    @Provides
     public SettingManager provideSettingManager() {
         return new SettingManager();
     }
 
     @Singleton
     @Provides
-    public DataLayer provideDataLayer(ShelfManager shelfManager, SettingManager settingManager) {
-        return new DataLayer(shelfManager, settingManager);
+    public DataLayer provideDataLayer(
+            ShelfManager shelfManager,
+            SearchManager searchManager,
+            SettingManager settingManager) {
+        return new DataLayer(shelfManager, searchManager, settingManager);
     }
 }

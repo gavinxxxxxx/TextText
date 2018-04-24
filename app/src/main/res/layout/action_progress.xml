@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/actionRoot"
+    android:layout_width="48dp"
+    android:layout_height="48dp">
+
+    <ProgressBar
+        android:id="@+id/ivActionLove"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_gravity="center" />
+
+</FrameLayout>

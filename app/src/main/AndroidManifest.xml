@@ -4,6 +4,8 @@
     package="me.gavin.text">
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:name="me.gavin.base.App"
@@ -39,6 +41,8 @@
                 <category android:name="android.intent.category.TEST" />
             </intent-filter>
         </activity>
+
+        <activity android:name="me.gavin.app.search.SearchActivity" />
 
         <activity android:name="me.gavin.app.test.TestActivity">
             <intent-filter>
