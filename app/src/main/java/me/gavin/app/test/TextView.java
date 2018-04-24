@@ -26,6 +26,10 @@ public class TextView extends View {
         invalidate();
     }
 
+    public Flipper getFlipper() {
+        return mFlipper;
+    }
+
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         return mFlipper != null && mFlipper.onTouchEvent(event);

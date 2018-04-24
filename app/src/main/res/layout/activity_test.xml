@@ -22,8 +22,53 @@
             android:id="@+id/text"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="#252525"
-            android:fitsSystemWindows="true" />
+            android:fitsSystemWindows="true"
+            android:visibility="visible" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="2dp"
+                android:background="@color/colorAccent"
+                android:text="测试"
+                android:textSize="14sp" />
+
+            <me.gavin.app.test.ITextView
+                android:id="@+id/iText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/colorAccent" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="200dp"
+            android:orientation="horizontal"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="2dp"
+                android:background="@color/colorAccent"
+                android:text="测试fefewfewffewffewfewffffffffffffffffffffffff"
+                android:textSize="14sp" />
+
+            <me.gavin.app.test.ITextView2
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/colorAccent"
+                android:singleLine="true" />
+
+        </LinearLayout>
 
     </android.support.design.widget.CoordinatorLayout>
 

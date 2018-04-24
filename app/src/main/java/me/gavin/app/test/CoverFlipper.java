@@ -3,56 +3,60 @@ package me.gavin.app.test;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.PointF;
 import android.graphics.drawable.Drawable;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
-import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 
 import me.gavin.app.Config;
+import me.gavin.app.model.Page;
 import me.gavin.app.model.Word;
+import me.gavin.base.App;
 import me.gavin.text.R;
 
 /**
- * 这里是萌萌哒注释菌
+ * 覆盖 - 翻页
  *
  * @author gavin.xiong 2018/4/22.
  */
 public class CoverFlipper extends Flipper {
 
-    private final static int SCROLL_TARGET_NONE = 0;
-    private final static int SCROLL_TARGET_CURR = 1;
-    private final static int SCROLL_TARGET_LAST = 2;
-    private int mScrollTarget; // 当前滑动页面
+    private boolean mTouching; // 触摸中
+    private boolean mDragging; // 拖动中
+    private float mOffsetX; // 当前偏移量
+    private float mTargetX; // 目标偏移量
 
-    private float mXFlag;
     private VelocityTracker mVelocityTracker; // 滑动速度跟踪器
     private ValueAnimator mAnimator; // 翻页动画
-    private boolean mTouching; // 触摸中 - 手指是否在屏幕上
 
     private final PointF mPoint = new PointF();
-    private float mOffsetX;
+
+    private Bitmap[] bs = new Bitmap[3];
+
+    private Drawable drawable;
 
     public CoverFlipper() {
+        drawable = App.get().getResources().getDrawable(R.drawable.bg_gradient, null);
+
         mAnimator = new ValueAnimator();
         mAnimator.setInterpolator(new DecelerateInterpolator());
+        mAnimator.addUpdateListener(animation -> {
+            mOffsetX = (float) animation.getAnimatedValue();
+            mView.invalidate();
+        });
         mAnimator.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
-                if (!mTouching) {
-                    if (mScrollTarget == SCROLL_TARGET_CURR && (float) mAnimator.getAnimatedValue() == -Config.width) {
-                        if (onPageChangeCallback != null && mPages[2] != null) {
-                            onPageChangeCallback.accept(false);
-                        }
-                    } else if (mScrollTarget == SCROLL_TARGET_LAST && (float) mAnimator.getAnimatedValue() == 0) {
-                        if (onPageChangeCallback != null && mPages[0] != null) {
-                            onPageChangeCallback.accept(true);
-                        }
+                if (!mTouching && mOffsetX == mTargetX) {
+                    if (mOffsetX == -Config.width && onPageChangeCallback != null && mPages[2] != null) {
+                        onPageChangeCallback.accept(false);
+                    } else if (mOffsetX == Config.width && onPageChangeCallback != null && mPages[0] != null) {
+                        onPageChangeCallback.accept(true);
                     }
                 }
-                mScrollTarget = SCROLL_TARGET_NONE;
             }
         });
     }
@@ -61,51 +65,51 @@ public class CoverFlipper extends Flipper {
     public boolean onTouchEvent(MotionEvent event) {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                mPoint.set(event.getX(), event.getY());
                 mTouching = true;
+                mPoint.set(event.getX(), event.getY());
                 mVelocityTracker = VelocityTracker.obtain();
                 mVelocityTracker.addMovement(event);
 
                 if (mAnimator != null && mAnimator.isRunning()) {
-                    int target = mScrollTarget;
+                    mPoint.offset(-mOffsetX, 0);
                     mAnimator.cancel();
-                    mScrollTarget = target;
-                }
-                if (mScrollTarget == SCROLL_TARGET_NONE) {
-                    mXFlag = event.getX();
-                } else if (mScrollTarget == SCROLL_TARGET_CURR) {
-                    mXFlag = mOffsetX - event.getX();
-                } else if (mScrollTarget == SCROLL_TARGET_LAST) {
-                    mXFlag = mOffsetX - event.getX();
+                    mDragging = true;
                 }
                 break;
             case MotionEvent.ACTION_MOVE:
-//                mOffsetX = event.getX() - mPoint.x;
-//                mView.invalidate();
-
                 mVelocityTracker.addMovement(event);
 
-                if (mScrollTarget == SCROLL_TARGET_NONE) {
-                    if (event.getX() - mXFlag <= -Config.touchSlop) {
-                        mScrollTarget = SCROLL_TARGET_CURR;
-                        mXFlag = mOffsetX - event.getX();
-                    } else if (event.getX() - mXFlag >= Config.touchSlop) {
-                        mScrollTarget = SCROLL_TARGET_LAST;
-                        mXFlag = mOffsetX - event.getX();
-                    }
-                } else if (mScrollTarget == SCROLL_TARGET_CURR) {
-                    mOffsetX = mXFlag + event.getX();
-                    mView.invalidate();
-                } else if (mScrollTarget == SCROLL_TARGET_LAST) {
-                    mOffsetX = mXFlag + event.getX();
+                if (!mDragging && Math.abs(event.getX() - mPoint.x) > Config.touchSlop) {
+                    mDragging = true;
+                    mPoint.set(event.getX(), event.getY());
+                }
+                if (mDragging) {
+                    mOffsetX = event.getX() - mPoint.x;
                     mView.invalidate();
                 }
                 break;
             case MotionEvent.ACTION_UP:
                 mTouching = false;
+                mDragging = false;
                 mVelocityTracker.addMovement(event);
-//                startFlipAnim(mScrollTarget == SCROLL_TARGET_LAST ? mItems[0] : mItems[1]);
-                startFlipAnim(null);
+                mVelocityTracker.computeCurrentVelocity(1000);
+                float xv = mVelocityTracker.getXVelocity();
+                if (Math.abs(xv) > Config.flingVelocity) { // 抛动
+                    if (mOffsetX > 0) {
+                        mTargetX = xv > 0 ? Config.width : 0;
+                    } else {
+                        mTargetX = xv > 0 ? 0 : -Config.width;
+                    }
+                } else { // 静置松手
+                    if (-Config.width / 2 < mOffsetX && mOffsetX < Config.width / 2) {
+                        mTargetX = 0;
+                    } else {
+                        mTargetX = mOffsetX > 0 ? Config.width : -Config.width;
+                    }
+                }
+                mAnimator.setFloatValues(mOffsetX, mTargetX);
+                mAnimator.setDuration(Math.round(Math.abs(mTargetX - mOffsetX) * Config.flipAnimDuration));
+                mAnimator.start();
                 mVelocityTracker.recycle();
                 break;
             default:
@@ -114,59 +118,44 @@ public class CoverFlipper extends Flipper {
         return true;
     }
 
-    /**
-     * 启动翻页动画
-     *
-     * @param target 动画对象
-     */
-    private void startFlipAnim(View target) {
-//        mAnimator.setTarget(target);
-        mVelocityTracker.computeCurrentVelocity(1000);
-        float xv = mVelocityTracker.getXVelocity();
-        boolean isIn = Math.abs(xv) >= Config.flingVelocity && xv > 0
-                || Math.abs(xv) < Config.flingVelocity && mOffsetX > -Config.width / 2;
-        mAnimator.setFloatValues(isIn ? 0 : -Config.width);
-        float distance = Math.abs(mOffsetX - (isIn ? 0 : -Config.width));
-        mAnimator.setDuration(Math.round(distance * Config.flipAnimDuration));
-        mAnimator.addUpdateListener(animation -> {
-            mOffsetX = ((float) animation.getAnimatedValue());
+    @Override
+    public void set(Page last, Page curr, Page next) {
+        super.set(last, curr, next);
+        for (int i = 0; i < mPages.length; i++) {
+            bs[i] = Bitmap.createBitmap(Config.width, Config.height, Bitmap.Config.RGB_565);
+            Canvas canvas = new Canvas(bs[i]);
+            canvas.drawRect(0, 0, Config.width, Config.height, Config.bgPaint);
+            if (mPages[i] != null) {
+                for (Word word : mPages[i].wordList) {
+                    word.draw(canvas, 0, 0);
+                }
+            }
+        }
+        mOffsetX = 0;
+        if (mView != null) {
             mView.invalidate();
-        });
-        mAnimator.start();
+        }
     }
 
     @Override
     public void onDraw(Canvas canvas) {
-        if (mScrollTarget == SCROLL_TARGET_CURR
-                && Math.abs(mOffsetX) > Config.leftPadding
-                && mPages[2] != null) {
-            for (Word word : mPages[2].wordList) {
-                word.draw(canvas, 0, 0);
-            }
+        if (mOffsetX < 0) { // 左滑
+            // next
+            canvas.drawBitmap(bs[2], 0, 0, Config.bgPaint);
         }
 
-        Drawable drawable = mView.getResources().getDrawable(R.drawable.bg_gd, null);
-        drawable.setBounds(Config.width + (int) mOffsetX, 0,
-                Config.width + 40 + (int) mOffsetX, Config.height);
-        drawable.draw(canvas);
-        canvas.drawRect(mScrollTarget == SCROLL_TARGET_CURR ? mOffsetX : 0, 0,
-                Config.width + (mScrollTarget == SCROLL_TARGET_CURR ? mOffsetX : 0), Config.height, Config.bgPaint);
-        if (mPages[1] != null) {
-            for (Word word : mPages[1].wordList) {
-                word.draw(canvas, mScrollTarget == SCROLL_TARGET_CURR ? mOffsetX : 0, 0);
-            }
+        // curr
+        canvas.drawBitmap(bs[1], Math.min(0, mOffsetX), 0, Config.bgPaint);
+
+        if (mOffsetX > 0) { // 右滑
+            // last
+            canvas.drawBitmap(bs[0], Math.min(0, mOffsetX - Config.width), 0, Config.bgPaint);
         }
 
-        if (mScrollTarget == SCROLL_TARGET_LAST) {
-            drawable.setBounds((int) mOffsetX, 0,
-                    Config.pageElevation + (int) mOffsetX, Config.height);
+        if (mOffsetX != 0) {
+            float left = mOffsetX > 0 ? mOffsetX : (mOffsetX + Config.width);
+            drawable.setBounds((int) left, 0, (int) left + 40, Config.height);
             drawable.draw(canvas);
-            canvas.drawRect(-Config.width + mOffsetX, 0, mOffsetX, Config.height, Config.bgPaint);
-            if (mPages[0] != null) {
-                for (Word word : mPages[0].wordList) {
-                    word.draw(canvas, -Config.width + mOffsetX, 0);
-                }
-            }
         }
 
         canvas.drawText(mPages[1].pageStart + "~" + mPages[1].pageEnd, 10, 40, Config.textPaint);

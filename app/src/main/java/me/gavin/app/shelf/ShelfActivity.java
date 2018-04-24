@@ -11,6 +11,7 @@ import io.reactivex.Observable;
 import me.gavin.app.RxTransformer;
 import me.gavin.app.explorer.ExplorerActivity;
 import me.gavin.app.model.Book;
+import me.gavin.app.read.NewNewReadActivity;
 import me.gavin.app.read.NewReadActivity;
 import me.gavin.app.test.TestActivity;
 import me.gavin.base.BindingActivity;
@@ -57,11 +58,10 @@ public class ShelfActivity extends BindingActivity<ActivityShelfBinding> {
                     mList.clear();
                 })
                 .subscribe(books -> {
-                    L.e(books);
                     mList.addAll(books);
                     mAdapter = new BindingAdapter<>(this, mList, R.layout.item_shelf_book);
                     mAdapter.setOnItemClickListener(i ->
-                            startActivity(new Intent(this, NewReadActivity.class)
+                            startActivity(new Intent(this, NewNewReadActivity.class)
                                     .putExtra(BundleKey.BOOK_ID, mList.get(i).get_id())));
                     mBinding.recycler.setAdapter(mAdapter);
                 });
@@ -75,7 +75,7 @@ public class ShelfActivity extends BindingActivity<ActivityShelfBinding> {
                     .map(Book::fromUri)
                     .flatMap(book -> getDataLayer().getShelfService().insertBook(book))
                     .subscribe(id -> {
-                        startActivity(new Intent(this, NewReadActivity.class)
+                        startActivity(new Intent(this, NewNewReadActivity.class)
                                 .putExtra(BundleKey.BOOK_ID, id));
                     }, Throwable::printStackTrace);
         }
