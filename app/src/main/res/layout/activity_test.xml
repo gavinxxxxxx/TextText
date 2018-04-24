@@ -6,18 +6,6 @@
         android:layout_height="match_parent"
         android:fitsSystemWindows="true">
 
-        <!--<me.gavin.app.test.PageView-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="match_parent"-->
-        <!--android:fitsSystemWindows="true" />-->
-
-        <!--<Switch-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_gravity="center"-->
-        <!--android:elevation="0dp"-->
-        <!--android:translationZ="0dp"-->
-        <!--android:layout_height="wrap_content" />-->
-
         <me.gavin.app.test.TextView
             android:id="@+id/text"
             android:layout_width="match_parent"
@@ -29,7 +17,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:visibility="gone">
+            android:visibility="visible">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -43,30 +31,8 @@
                 android:id="@+id/iText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@color/colorAccent" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="200dp"
-            android:orientation="horizontal"
-            android:visibility="gone">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="2dp"
                 android:background="@color/colorAccent"
-                android:text="测试fefewfewffewffewfewffffffffffffffffffffffff"
-                android:textSize="14sp" />
-
-            <me.gavin.app.test.ITextView2
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@color/colorAccent"
-                android:singleLine="true" />
+                android:singleLine="false" />
 
         </LinearLayout>
 

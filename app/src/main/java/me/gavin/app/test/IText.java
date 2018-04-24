@@ -13,6 +13,8 @@ public class IText {
 
     public int type;
     public String text;
+    public float x;
+    public float y;
 
     public IText(int type, String text) {
         this.type = type;

@@ -44,7 +44,7 @@ public class TestActivity extends BindingActivity<ActivityTestBinding> {
             }
             list.add(new IText(0, s));
         }
-        mBinding.iText.append(list);
+//        mBinding.iText.append(list);
     }
 
     private final Page[] mPages = new Page[3];
