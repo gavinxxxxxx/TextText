@@ -2,6 +2,8 @@ package me.gavin.service;
 
 import org.jsoup.Jsoup;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -10,6 +12,7 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 import io.reactivex.Observable;
 import me.gavin.app.RxTransformer;
@@ -28,7 +31,7 @@ public class SourceManager extends BaseManager implements DataLayer.SourceServic
     @Override
     public Observable<Book> search(String query) {
         return getApi().yanmoxuanQuery(query)
-                .map(responseBody -> unGzip(responseBody.byteStream()))
+                .map(responseBody -> unGZIP(responseBody.byteStream()))
                 .compose(RxTransformer.log())
                 .map(Jsoup::parse)
                 .map(document -> document.select("section[class=container] section[class=lastest] li"))
@@ -61,16 +64,40 @@ public class SourceManager extends BaseManager implements DataLayer.SourceServic
         return null;
     }
 
-    private String unGzip(InputStream in) throws IOException {
+    private String unGZIP(InputStream in) throws IOException {
         try (GZIPInputStream gzip = new GZIPInputStream(in);
              Reader reader = new InputStreamReader(gzip);
              Writer writer = new StringWriter()) {
-            char[] buffer = new char[10240];
-            int len;
-            while ((len = reader.read(buffer)) > 0) {
-                writer.write(buffer, 0, len);
-            }
+            char[] buffer = new char[4096];
+            int temp;
+            while ((temp = reader.read(buffer)) > 0)
+                writer.write(buffer, 0, temp);
             return writer.toString();
+        }
+    }
+
+    private static byte[] gzip(byte[] bytes) {
+        try (ByteArrayOutputStream bos = new ByteArrayOutputStream();
+             GZIPOutputStream zos = new GZIPOutputStream(bos)) {
+            zos.write(bytes);
+            zos.finish();
+            return bos.toByteArray();
+        } catch (IOException e) {
+            return null;
+        }
+    }
+
+    private static byte[] unGzip(byte[] bytes) {
+        try (ByteArrayOutputStream bos = new ByteArrayOutputStream();
+             ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
+             GZIPInputStream zis = new GZIPInputStream(bis)) {
+            byte[] buffer = new byte[4096];
+            int temp;
+            while ((temp = zis.read(buffer)) > 0)
+                bos.write(buffer, 0, temp);
+            return bos.toByteArray();
+        } catch (IOException e) {
+            return null;
         }
     }
 }
