@@ -28,9 +28,14 @@ public class Book {
     private Long _id;
     private String name;
     private String author;
+    private String cover;
+    private String uri;
+
+    private String id;
+    private String src;
+
     private String charset;
     private long length;
-    private String uri;
     private String MD5; // TODO: 2018/1/1 文件一致性校验
 
     @Transient
@@ -40,15 +45,18 @@ public class Book {
     private long time; // 阅读时间
 
 
-    @Generated(hash = 694976937)
-    public Book(Long _id, String name, String author, String charset, long length, String uri,
-                String MD5, long offset, long time) {
+    @Generated(hash = 1923558113)
+    public Book(Long _id, String name, String author, String cover, String uri, String id,
+            String src, String charset, long length, String MD5, long offset, long time) {
         this._id = _id;
         this.name = name;
         this.author = author;
+        this.cover = cover;
+        this.uri = uri;
+        this.id = id;
+        this.src = src;
         this.charset = charset;
         this.length = length;
-        this.uri = uri;
         this.MD5 = MD5;
         this.offset = offset;
         this.time = time;
@@ -114,6 +122,14 @@ public class Book {
         this.MD5 = MD5;
     }
 
+    public String getSrc() {
+        return src;
+    }
+
+    public void setSrc(String src) {
+        this.src = src;
+    }
+
     public long getOffset() {
         return this.offset;
     }
@@ -163,5 +179,21 @@ public class Book {
                 ", length=" + length +
                 ", uri='" + uri + '\'' +
                 '}';
+    }
+
+    public String getCover() {
+        return this.cover;
+    }
+
+    public void setCover(String cover) {
+        this.cover = cover;
+    }
+
+    public String getId() {
+        return this.id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 }

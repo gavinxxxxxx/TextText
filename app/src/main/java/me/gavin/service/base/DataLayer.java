@@ -4,7 +4,7 @@ import java.util.List;
 
 import io.reactivex.Observable;
 import me.gavin.app.model.Book;
-import okhttp3.RequestBody;
+import me.gavin.app.model.Chapter;
 import okhttp3.ResponseBody;
 
 /**
@@ -15,12 +15,12 @@ import okhttp3.ResponseBody;
 public class DataLayer {
 
     private ShelfService mShelfService;
-    private SearchService mSearchService;
+    private SourceService mSourceService;
     private SettingService mSettingService;
 
-    public DataLayer(ShelfService shelfService, SearchService searchService, SettingService settingService) {
+    public DataLayer(ShelfService shelfService, SourceService sourceService, SettingService settingService) {
         mShelfService = shelfService;
-        mSearchService = searchService;
+        mSourceService = sourceService;
         mSettingService = settingService;
     }
 
@@ -28,8 +28,8 @@ public class DataLayer {
         return mShelfService;
     }
 
-    public SearchService getSearchService() {
-        return mSearchService;
+    public SourceService getSourceService() {
+        return mSourceService;
     }
 
     public SettingService getSettingService() {
@@ -50,8 +50,14 @@ public class DataLayer {
         Observable<List<Book>> loadAllBooks();
     }
 
-    public interface SearchService {
-        Observable<RequestBody> search(String query);
+    public interface SourceService {
+        Observable<Book> search(String query);
+
+        Observable<Book> detail(String id);
+
+        Observable<List<Chapter>> directory(String id);
+
+        Observable<String> chapter(String id, String chapter);
     }
 
 }

@@ -7,8 +7,9 @@ package me.gavin.app.model;
  */
 public class Chapter {
 
-    public long offset;
+    public String id;
     public String title;
+    public long offset;
     public boolean selected;
 
     public Chapter(long offset, String title) {

@@ -20,10 +20,8 @@
             android:clipToPadding="false"
             android:paddingBottom="8dp"
             android:paddingTop="8dp"
-            app:fastScrollExtensionEnabled="@{true}"
-            app:fastScrollExtensionWidth="@{0}"
             app:layoutManager="LinearLayoutManager"
-            tools:listitem="@layout/item_explorer" />
+            tools:listitem="@layout/item_search" />
 
     </LinearLayout>
 

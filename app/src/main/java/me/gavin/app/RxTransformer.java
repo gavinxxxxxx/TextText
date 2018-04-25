@@ -5,6 +5,7 @@ import java.io.File;
 import io.reactivex.ObservableTransformer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
+import me.gavin.util.L;
 
 /**
  * RxTransformer
@@ -13,13 +14,18 @@ import io.reactivex.schedulers.Schedulers;
  */
 public class RxTransformer {
 
-    /**
-     * 线程调度
-     */
     public static <T> ObservableTransformer<T, T> applySchedulers() {
         return upstream -> upstream
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    public static <T> ObservableTransformer<T, T> log() {
+        return upstream -> upstream
+                .map(t -> {
+                    L.d(t);
+                    return t;
+                });
     }
 
     /**
