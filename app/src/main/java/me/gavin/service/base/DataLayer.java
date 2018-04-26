@@ -57,7 +57,7 @@ public class DataLayer {
 
         Observable<List<Chapter>> directory(String id);
 
-        Observable<String> chapter(String id, String chapter);
+        Observable<String> chapter(String id, String cid);
     }
 
 }

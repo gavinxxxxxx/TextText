@@ -10,6 +10,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
@@ -20,6 +21,7 @@ import me.gavin.app.model.Book;
 import me.gavin.app.model.Chapter;
 import me.gavin.service.base.BaseManager;
 import me.gavin.service.base.DataLayer;
+import okhttp3.ResponseBody;
 
 /**
  * SourceManager
@@ -44,24 +46,31 @@ public class SourceManager extends BaseManager implements DataLayer.SourceServic
                     book.setName(element.selectFirst("span[class=n2]").text());
                     book.setAuthor(element.selectFirst("span[class=a2]").text());
                     book.setSrc("衍墨轩");
-                    book.setUri("https:" + element.selectFirst("span[class=n2] a").attr("href"));
+                    String uri = "https:" + element.selectFirst("span[class=n2] a").attr("href");
+                    book.setUri(uri);
+                    book.setId(uri.substring(uri.lastIndexOf("/text_") + 6, uri.length() - 5));
                     return book;
                 });
     }
 
     @Override
     public Observable<Book> detail(String id) {
-        return null;
+        return getApi().yanmoxuanDetail(id)
+                .map(ResponseBody::string)
+                .map(s -> new Book());
     }
 
     @Override
     public Observable<List<Chapter>> directory(String id) {
-        return null;
+        return getApi().yanmoxuanDirectory(id)
+                .map(ResponseBody::string)
+                .map(s -> new ArrayList<>());
     }
 
     @Override
-    public Observable<String> chapter(String id, String chapter) {
-        return null;
+    public Observable<String> chapter(String id, String cid) {
+        return getApi().yanmoxuanChapter(id, cid)
+                .map(ResponseBody::string);
     }
 
     private String unGZIP(InputStream in) throws IOException {
