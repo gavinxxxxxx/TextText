@@ -9,6 +9,12 @@
         app:showAsAction="ifRoom" />
 
     <item
+        android:id="@+id/action_loading"
+        android:title="加载中"
+        app:actionLayout="@layout/action_progress"
+        app:showAsAction="always" />
+
+    <item
         android:id="@+id/actionSearch"
         android:icon="@drawable/vt_search"
         android:title="搜索"

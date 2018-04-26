@@ -43,6 +43,7 @@
         </activity>
 
         <activity android:name="me.gavin.app.search.SearchActivity" />
+        <activity android:name="me.gavin.app.search.DetailActivity" />
 
         <activity android:name="me.gavin.app.test.TestActivity">
             <intent-filter>

@@ -12,6 +12,9 @@ public class Chapter {
     public long offset;
     public boolean selected;
 
+    public Chapter() {
+    }
+
     public Chapter(long offset, String title) {
         this.offset = offset;
         this.title = title;

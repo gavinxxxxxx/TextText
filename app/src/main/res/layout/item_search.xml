@@ -36,28 +36,41 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="5dp"
-            android:orientation="vertical"
-            android:paddingBottom="3dp"
-            android:paddingTop="3dp">
+            android:orientation="vertical">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:singleLine="true"
                 android:text="@{item.name}"
-                android:textColor="?attr/editTextColor"
-                android:textSize="15sp"
-                tools:text="Android开发艺术探讨" />
+                android:textColor="@color/textColorPrimary"
+                android:textSize="14sp"
+                tools:text="从零开始" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:singleLine="true"
                 android:text="@{item.author}"
-                tools:text="任玉刚" />
+                android:textColor="@color/textColorSecondary"
+                android:textSize="12sp"
+                tools:text="雷云风暴" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:lines="2"
+                android:text="@{item.introduction}"
+                android:textColor="@color/textColorTertiary"
+                android:textSize="12sp"
+                tools:text="想要让游戏兑换现实货币，那就一定要有一个强大的经济实体来担保" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@{item.src}"
+                android:textColor="@color/textColorTertiary"
+                android:textSize="12sp"
                 tools:text="bilibili" />
 
         </LinearLayout>

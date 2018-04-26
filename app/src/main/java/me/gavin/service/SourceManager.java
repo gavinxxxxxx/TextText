@@ -1,16 +1,18 @@
 package me.gavin.service;
 
 import org.jsoup.Jsoup;
+import org.jsoup.nodes.Element;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
@@ -19,8 +21,10 @@ import io.reactivex.Observable;
 import me.gavin.app.RxTransformer;
 import me.gavin.app.model.Book;
 import me.gavin.app.model.Chapter;
+import me.gavin.base.App;
 import me.gavin.service.base.BaseManager;
 import me.gavin.service.base.DataLayer;
+import me.gavin.util.CacheHelper;
 import okhttp3.ResponseBody;
 
 /**
@@ -33,8 +37,8 @@ public class SourceManager extends BaseManager implements DataLayer.SourceServic
     @Override
     public Observable<Book> search(String query) {
         return getApi().yanmoxuanQuery(query)
-                .map(responseBody -> unGZIP(responseBody.byteStream()))
-                .compose(RxTransformer.log())
+                .map(ResponseBody::byteStream)
+                .map(this::unGZIP)
                 .map(Jsoup::parse)
                 .map(document -> document.select("section[class=container] section[class=lastest] li"))
                 .flatMap(Observable::fromIterable)
@@ -63,14 +67,65 @@ public class SourceManager extends BaseManager implements DataLayer.SourceServic
     @Override
     public Observable<List<Chapter>> directory(String id) {
         return getApi().yanmoxuanDirectory(id)
-                .map(ResponseBody::string)
-                .map(s -> new ArrayList<>());
+                .map(ResponseBody::byteStream)
+                .map(this::unGZIP)
+                .map(Jsoup::parse)
+                .map(document -> document.select("section[class=container] article[class=info] ul[class=mulu] li[class=col3] a"))
+                .flatMap(Observable::fromIterable)
+                .map(element -> {
+                    Chapter chapter = new Chapter();
+                    String uri = element.attr("href");
+                    chapter.id = uri.substring(uri.lastIndexOf("/") + 1, uri.lastIndexOf("."));
+                    chapter.title = element.text();
+                    return chapter;
+                })
+                .toList()
+                .toObservable();
     }
 
     @Override
     public Observable<String> chapter(String id, String cid) {
+//        return getApi().yanmoxuanChapter(id, cid)
+//                .map(ResponseBody::byteStream)
+//                .map(this::saveStream);
         return getApi().yanmoxuanChapter(id, cid)
-                .map(ResponseBody::string);
+                .map(ResponseBody::byteStream)
+                .map(this::unGZIP)
+                .compose(RxTransformer.log())
+                .map(s -> s.replaceAll("<br/?>", "~~~\n\\n\n\\\n\\\\n\\\\\n~~~"))
+                .map(Jsoup::parse)
+                .compose(RxTransformer.log())
+                .map(document -> document.selectFirst("article[class=chaptercontent] div[class=content]"))
+                .compose(RxTransformer.log())
+                .map(Element::text)
+                .compose(RxTransformer.log())
+                .map(this::saveString);
+//        return getApi().yanmoxuanChapter(id, cid)
+//                .map(ResponseBody::byteStream)
+//                .map(this::unGZIP)
+//                .map(Jsoup::parse)
+//                .map(document -> document.selectFirst("article[class=chaptercontent] div[class=content]"))
+//                .map(Element::text);
+    }
+
+    private String saveStream(InputStream in) throws IOException {
+        String path = CacheHelper.getFilesDir(App.get(), "book") + "/test.t";
+        try (FileOutputStream fos = new FileOutputStream(path)) {
+            byte[] buffer = new byte[8 * 1024];
+            int bytesRead;
+            while ((bytesRead = in.read(buffer)) != -1) {
+                fos.write(buffer, 0, bytesRead);
+            }
+            return path;
+        }
+    }
+
+    private String saveString(String string) throws IOException {
+        String path = CacheHelper.getFilesDir(App.get(), "book") + "/test.s";
+        try (FileWriter writer = new FileWriter(path)) {
+            writer.write(string);
+            return path;
+        }
     }
 
     private String unGZIP(InputStream in) throws IOException {

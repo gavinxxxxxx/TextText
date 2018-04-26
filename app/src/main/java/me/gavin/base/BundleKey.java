@@ -9,6 +9,8 @@ public class BundleKey {
     
     public static final String BOOK_ID = "bookId"; // 书籍id
 
+    public static final String BOOK = "book"; // 书籍
+
     public static final String QUERY = "query"; // 搜索条件
 
 }

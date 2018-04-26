@@ -1,5 +1,6 @@
 package me.gavin.app.search;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 
@@ -38,10 +39,9 @@ public class SearchActivity extends BindingActivity<ActivitySearchBinding> {
         mBinding.includeToolbar.toolbar.setNavigationOnClickListener(v -> finish());
 
         mAdapter = new BindingAdapter<>(this, mList, R.layout.item_search);
-        mAdapter.setOnItemClickListener(i -> {
-            doDetail(mList.get(i).getId());
-            doDirectory(mList.get(i).getId());
-        });
+        mAdapter.setOnItemClickListener(i ->
+                startActivity(new Intent(this, DetailActivity.class)
+                        .putExtra(BundleKey.BOOK, mList.get(i))));
         mBinding.recycler.setAdapter(mAdapter);
 
         doSearch(query);
@@ -56,21 +56,5 @@ public class SearchActivity extends BindingActivity<ActivitySearchBinding> {
                     mList.add(book);
                     mAdapter.notifyDataSetChanged();
                 }, L::e);
-    }
-
-    private void doDetail(String id) {
-        getDataLayer().getSourceService()
-                .detail(id)
-                .compose(RxTransformer.applySchedulers())
-                .doOnSubscribe(mCompositeDisposable::add)
-                .subscribe(L::e, L::e);
-    }
-
-    private void doDirectory(String id) {
-        getDataLayer().getSourceService()
-                .directory(id)
-                .compose(RxTransformer.applySchedulers())
-                .doOnSubscribe(mCompositeDisposable::add)
-                .subscribe(L::e, L::e);
     }
 }

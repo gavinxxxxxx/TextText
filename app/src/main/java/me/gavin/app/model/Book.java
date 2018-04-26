@@ -12,6 +12,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.util.List;
 
 import me.gavin.app.StreamHelper;
@@ -22,13 +23,16 @@ import me.gavin.app.StreamHelper;
  * @author gavin.xiong 2017/12/19
  */
 @Entity
-public class Book {
+public class Book implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     @Id(autoincrement = true)
     private Long _id;
     private String name;
     private String author;
     private String cover;
+    private String introduction;
     private String uri;
 
     private String id;
@@ -45,13 +49,15 @@ public class Book {
     private long time; // 阅读时间
 
 
-    @Generated(hash = 1923558113)
-    public Book(Long _id, String name, String author, String cover, String uri, String id,
-            String src, String charset, long length, String MD5, long offset, long time) {
+    @Generated(hash = 1977289157)
+    public Book(Long _id, String name, String author, String cover, String introduction,
+                String uri, String id, String src, String charset, long length, String MD5,
+                long offset, long time) {
         this._id = _id;
         this.name = name;
         this.author = author;
         this.cover = cover;
+        this.introduction = introduction;
         this.uri = uri;
         this.id = id;
         this.src = src;
@@ -195,5 +201,13 @@ public class Book {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getIntroduction() {
+        return this.introduction;
+    }
+
+    public void setIntroduction(String introduction) {
+        this.introduction = introduction;
     }
 }
