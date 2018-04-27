@@ -11,14 +11,17 @@ public class Chapter {
     public String title;
     public long offset;
     public boolean selected;
-
-    public Chapter() {
-    }
+    public String text;
 
     public Chapter(long offset, String title) {
         this.offset = offset;
         this.title = title;
         this.selected = false;
+    }
+
+    public Chapter(String id, String title) {
+        this.id = id;
+        this.title = title;
     }
 
     @Override

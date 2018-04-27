@@ -73,11 +73,9 @@ public class SourceManager extends BaseManager implements DataLayer.SourceServic
                 .map(document -> document.select("section[class=container] article[class=info] ul[class=mulu] li[class=col3] a"))
                 .flatMap(Observable::fromIterable)
                 .map(element -> {
-                    Chapter chapter = new Chapter();
                     String uri = element.attr("href");
-                    chapter.id = uri.substring(uri.lastIndexOf("/") + 1, uri.lastIndexOf("."));
-                    chapter.title = element.text();
-                    return chapter;
+                    String cid = uri.substring(uri.lastIndexOf("/") + 1, uri.lastIndexOf("."));
+                    return new Chapter(cid, element.text());
                 })
                 .toList()
                 .toObservable();
@@ -88,6 +86,20 @@ public class SourceManager extends BaseManager implements DataLayer.SourceServic
 //        return getApi().yanmoxuanChapter(id, cid)
 //                .map(ResponseBody::byteStream)
 //                .map(this::saveStream);
+
+//        return getApi().yanmoxuanChapter(id, cid)
+//                .map(ResponseBody::byteStream)
+//                .map(this::unGZIP)
+//                .compose(RxTransformer.log())
+//                .map(s -> s.replaceAll("<br/?>", "~~~\n\\n\n\\\n\\\\n\\\\\n~~~"))
+//                .map(Jsoup::parse)
+//                .compose(RxTransformer.log())
+//                .map(document -> document.selectFirst("article[class=chaptercontent] div[class=content]"))
+//                .compose(RxTransformer.log())
+//                .map(Element::text)
+//                .compose(RxTransformer.log())
+//                .map(this::saveString);
+
         return getApi().yanmoxuanChapter(id, cid)
                 .map(ResponseBody::byteStream)
                 .map(this::unGZIP)
@@ -99,7 +111,10 @@ public class SourceManager extends BaseManager implements DataLayer.SourceServic
                 .compose(RxTransformer.log())
                 .map(Element::text)
                 .compose(RxTransformer.log())
-                .map(this::saveString);
+                .map(s -> {
+                    return s;
+                });
+
 //        return getApi().yanmoxuanChapter(id, cid)
 //                .map(ResponseBody::byteStream)
 //                .map(this::unGZIP)

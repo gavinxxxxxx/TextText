@@ -58,8 +58,8 @@ public class TestActivity extends BindingActivity<ActivityTestBinding> {
                 .subscribe(book -> {
                     Config.applySizeChange(mBinding.text.getWidth(), mBinding.text.getHeight());
                     mPages[1] = Page.fromBook(book, book.getOffset(), false);
-                    mPages[0] = Page.fromBook(book, mPages[1].pageStart, true);
-                    mPages[2] = Page.fromBook(book, mPages[1].pageEnd, false);
+                    mPages[0] = mPages[1].last();
+                    mPages[2] = mPages[1].next();
                     Flipper flipper = new CoverFlipper();
                     flipper.set(mPages[0], mPages[1], mPages[2]);
                     flipper.attach(mBinding.text);
@@ -69,11 +69,11 @@ public class TestActivity extends BindingActivity<ActivityTestBinding> {
                             if (!isReverse) {
                                 mPages[0] = mPages[1];
                                 mPages[1] = mPages[2];
-                                mPages[2] = mPages[1].isLast ? null : Page.fromBook(book, mPages[1].pageEnd, false);
+                                mPages[2] = mPages[1].next();
                             } else {
                                 mPages[2] = mPages[1];
                                 mPages[1] = mPages[0];
-                                mPages[0] = mPages[1].isFirst ? null : Page.fromBook(book, mPages[1].pageStart, true);
+                                mPages[0] = mPages[1].last();
                             }
                             flipper.set(mPages[0], mPages[1], mPages[2]);
                         } catch (IOException e) {

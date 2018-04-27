@@ -12,7 +12,7 @@ import me.gavin.app.StreamHelper;
 import me.gavin.app.Utils;
 
 /**
- * ViewModel
+ * Page
  *
  * @author gavin.xiong 2017/12/14
  */
@@ -51,7 +51,7 @@ public class Page {
             page.pageStart = offset;
             page.isFirst = page.pageStart <= 0;
             page.mText = StreamHelper.getText(book.open(), book.getCharset(), page.pageStart, (int) Math.min(Config.pagePreCount, book.getLength() - page.pageStart));
-            page.mTextSp = page.mText == null ? null : Utils.trim(page.mText).split(Config.REGEX_SEGMENT);
+            page.mTextSp = Utils.trim(page.mText).split(Config.REGEX_SEGMENT);
             page.lastLineAlign = true;
             if (page.isFirst || page.mText.matches(Config.REGEX_SEGMENT_SUFFIX)) {
                 page.firstLineIndent = true;
@@ -64,7 +64,7 @@ public class Page {
             page.pageEnd = offset;
             page.isLast = page.pageEnd >= book.getLength();
             page.mText = StreamHelper.getText(book.open(), book.getCharset(), Math.max(page.pageEnd - Config.pagePreCount, 0), (int) Math.min(Config.pagePreCount, page.pageEnd));
-            page.mTextSp = page.mText == null ? null : Utils.trim(page.mText).split(Config.REGEX_SEGMENT);
+            page.mTextSp = Utils.trim(page.mText).split(Config.REGEX_SEGMENT);
             page.firstLineIndent = true;
             String fix = StreamHelper.getText(book.open(), book.getCharset(), page.pageEnd, Config.segmentPreCount);
             page.lastLineAlign = !page.mText.matches(Config.REGEX_SEGMENT_PREFIX) && !fix.matches(Config.REGEX_SEGMENT_SUFFIX);
@@ -74,6 +74,14 @@ public class Page {
             page.line2Words(line);
         }
         return page;
+    }
+
+    public Page last() throws IOException {
+        return isFirst ? null : Page.fromBook(book, pageStart, true);
+    }
+
+    public Page next() throws IOException {
+        return isLast ? null : Page.fromBook(book, pageEnd, false);
     }
 
     private void text2Line() {

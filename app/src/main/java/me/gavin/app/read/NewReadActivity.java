@@ -19,6 +19,7 @@ import me.gavin.app.StreamHelper;
 import me.gavin.app.model.Book;
 import me.gavin.app.model.Chapter;
 import me.gavin.app.model.Page;
+import me.gavin.app.test.CoverFlipper;
 import me.gavin.base.BindingActivity;
 import me.gavin.base.BundleKey;
 import me.gavin.base.recycler.BindingAdapter;
@@ -53,28 +54,19 @@ public class NewReadActivity extends BindingActivity<ActivityReadNewBinding> {
 
         mBinding.drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
 
-        init();
-        mBinding.pager.addOnLayoutChangeListener((v, l, t, r, b, ol, ot, or, ob) -> {
-            if (r - l != or - ol || b - t != ob - ot) {
-                Config.applySizeChange(r - l, b - t);
-                offset(mBook.getOffset());
-            }
-        });
-    }
-
-    private void init() {
-        mBinding.pager.setOnPageChangeCallback(isReverse -> {
+        new CoverFlipper().attach(mBinding.text);
+        mBinding.text.getFlipper().setOnPageChangeCallback(isReverse -> {
             try {
                 if (!isReverse) {
                     mPages[0] = mPages[1];
                     mPages[1] = mPages[2];
-                    mPages[2] = mPages[1].isLast ? null : Page.fromBook(mBook, mPages[1].pageEnd, false);
+                    mPages[2] = mPages[1].next();
                 } else {
                     mPages[2] = mPages[1];
                     mPages[1] = mPages[0];
-                    mPages[0] = mPages[1].isFirst ? null : Page.fromBook(mBook, mPages[1].pageStart, true);
+                    mPages[0] = mPages[1].last();
                 }
-                mBinding.pager.set(mPages[0], mPages[1], mPages[2]);
+                mBinding.text.getFlipper().set(mPages[0], mPages[1], mPages[2]);
 
                 // 更新进度
                 mBook.setOffset(mPages[1].pageStart);
@@ -95,7 +87,17 @@ public class NewReadActivity extends BindingActivity<ActivityReadNewBinding> {
                 e.printStackTrace();
             }
         });
+        init();
+        mBinding.text.addOnLayoutChangeListener((v, l, t, r, b, ol, ot, or, ob) -> {
+            if (r - l != or - ol || b - t != ob - ot) {
+                Config.applySizeChange(r - l, b - t);
 
+                offset(mBook.getOffset());
+            }
+        });
+    }
+
+    private void init() {
         Observable.just(mBook)
                 .map(Book::open)
                 .map(is -> StreamHelper.getChapters(is, mBook.getCharset()))
@@ -156,9 +158,9 @@ public class NewReadActivity extends BindingActivity<ActivityReadNewBinding> {
         try {
             mBinding.drawer.closeDrawers();
             mPages[1] = Page.fromBook(mBook, offset, false);
-            mPages[0] = mPages[1].isFirst ? null : Page.fromBook(mBook, mPages[1].pageStart, true);
-            mPages[2] = mPages[1].isLast ? null : Page.fromBook(mBook, mPages[1].pageEnd, false);
-            mBinding.pager.set(mPages[0], mPages[1], mPages[2]);
+            mPages[0] = mPages[1].last();
+            mPages[2] = mPages[1].next();
+            mBinding.text.getFlipper().set(mPages[0], mPages[1], mPages[2]);
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -24,26 +24,12 @@
             </intent-filter>
         </activity>
 
-        <activity android:name="me.gavin.app.read.ReadActivity" />
-        <activity android:name="me.gavin.app.read.NewReadActivity" />
-        <activity android:name="me.gavin.app.read.NewNewReadActivity" />
-
-        <activity android:name="me.gavin.app.explorer.ExplorerActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.TEST" />
-                <category android:name="android.intent.category.TEST" />
-            </intent-filter>
-        </activity>
-
-        <activity android:name="me.gavin.app.shelf.ShelfActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.TEST" />
-                <category android:name="android.intent.category.TEST" />
-            </intent-filter>
-        </activity>
-
+        <activity android:name="me.gavin.app.shelf.ShelfActivity" />
+        <activity android:name="me.gavin.app.explorer.ExplorerActivity" />
         <activity android:name="me.gavin.app.search.SearchActivity" />
         <activity android:name="me.gavin.app.search.DetailActivity" />
+        <activity android:name="me.gavin.app.read.ReadActivity" />
+        <activity android:name="me.gavin.app.read.NewReadActivity" />
 
         <activity android:name="me.gavin.app.test.TestActivity">
             <intent-filter>

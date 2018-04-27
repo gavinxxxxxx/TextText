@@ -8,7 +8,7 @@ import android.support.annotation.Nullable;
 import me.gavin.app.RxTransformer;
 import me.gavin.app.model.Book;
 import me.gavin.app.model.Chapter;
-import me.gavin.app.read.NewNewReadActivity;
+import me.gavin.app.read.NewReadActivity;
 import me.gavin.base.BindingActivity;
 import me.gavin.base.BundleKey;
 import me.gavin.base.recycler.BindingAdapter;
@@ -70,7 +70,7 @@ public class DetailActivity extends BindingActivity<ActivityDetailBinding> {
                     Book book = Book.fromUri(Uri.parse("file://" + s));
                     getDataLayer().getShelfService()
                             .insertBook(book)
-                            .subscribe(aLong -> startActivity(new Intent(this, NewNewReadActivity.class)
+                            .subscribe(aLong -> startActivity(new Intent(this, NewReadActivity.class)
                                     .putExtra(BundleKey.BOOK_ID, aLong)));
                 }, L::e);
     }

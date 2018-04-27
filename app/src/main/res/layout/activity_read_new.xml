@@ -9,11 +9,10 @@
         android:layout_height="match_parent"
         tools:openDrawer="start">
 
-        <me.gavin.app.PagerLayout
-            android:id="@+id/pager"
+        <me.gavin.app.test.TextView
+            android:id="@+id/text"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="#2B2B2B" />
+            android:layout_height="match_parent" />
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/rvChapter"

@@ -13,6 +13,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 import me.gavin.app.StreamHelper;
@@ -27,6 +28,9 @@ public class Book implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    public static final int TYPE_LOCAL = 0;
+    public static final int TYPE_ONLINE = 1;
+
     @Id(autoincrement = true)
     private Long _id;
     private String name;
@@ -34,6 +38,7 @@ public class Book implements Serializable {
     private String cover;
     private String introduction;
     private String uri;
+    private int type;
 
     private String id;
     private String src;
@@ -48,17 +53,17 @@ public class Book implements Serializable {
     private long offset; // 阅读进度
     private long time; // 阅读时间
 
-
-    @Generated(hash = 1977289157)
+    @Generated(hash = 447685256)
     public Book(Long _id, String name, String author, String cover, String introduction,
-                String uri, String id, String src, String charset, long length, String MD5,
-                long offset, long time) {
+                String uri, int type, String id, String src, String charset, long length,
+                String MD5, long offset, long time) {
         this._id = _id;
         this.name = name;
         this.author = author;
         this.cover = cover;
         this.introduction = introduction;
         this.uri = uri;
+        this.type = type;
         this.id = id;
         this.src = src;
         this.charset = charset;
@@ -152,13 +157,14 @@ public class Book implements Serializable {
         this.time = time;
     }
 
-    public static Book fromUri(Uri uri) throws IOException {
+    public static Book fromUri(Uri uri) throws IOException, NoSuchAlgorithmException {
         if ("file".equals(uri.getScheme())) {
             File file = new File(uri.getPath());
             if (!file.exists()) throw new FileNotFoundException();
             Book book = new Book();
             book.uri = uri.toString();
             book.name = file.getName().substring(0, file.getName().lastIndexOf("."));
+            book.type = TYPE_LOCAL;
             book.charset = StreamHelper.getCharsetByJUniversalCharDet(file);
             book.MD5 = StreamHelper.getFileMD5(file);
             book.length = StreamHelper.getLength(book.open(), book.charset);
@@ -209,5 +215,13 @@ public class Book implements Serializable {
 
     public void setIntroduction(String introduction) {
         this.introduction = introduction;
+    }
+
+    public int getType() {
+        return this.type;
+    }
+
+    public void setType(int type) {
+        this.type = type;
     }
 }

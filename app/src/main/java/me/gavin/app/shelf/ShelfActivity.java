@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.SearchView;
-import android.text.InputType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +12,7 @@ import io.reactivex.Observable;
 import me.gavin.app.RxTransformer;
 import me.gavin.app.explorer.ExplorerActivity;
 import me.gavin.app.model.Book;
-import me.gavin.app.read.NewNewReadActivity;
+import me.gavin.app.read.NewReadActivity;
 import me.gavin.app.search.SearchActivity;
 import me.gavin.app.test.TestActivity;
 import me.gavin.base.BindingActivity;
@@ -50,7 +49,12 @@ public class ShelfActivity extends BindingActivity<ActivityShelfBinding> {
             return true;
         });
 
-        SearchView searchView = (SearchView) mBinding.includeToolbar.toolbar.getMenu().findItem(R.id.actionSearch).getActionView();
+        SearchView searchView = (SearchView) mBinding
+                .includeToolbar
+                .toolbar
+                .getMenu()
+                .findItem(R.id.actionSearch)
+                .getActionView();
         searchView.setQueryHint("输入点什么");
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -65,7 +69,6 @@ public class ShelfActivity extends BindingActivity<ActivityShelfBinding> {
                 return false;
             }
         });
-
     }
 
     @Override
@@ -81,7 +84,7 @@ public class ShelfActivity extends BindingActivity<ActivityShelfBinding> {
                     mList.addAll(books);
                     mAdapter = new BindingAdapter<>(this, mList, R.layout.item_shelf_book);
                     mAdapter.setOnItemClickListener(i ->
-                            startActivity(new Intent(this, NewNewReadActivity.class)
+                            startActivity(new Intent(this, NewReadActivity.class)
                                     .putExtra(BundleKey.BOOK_ID, mList.get(i).get_id())));
                     mBinding.recycler.setAdapter(mAdapter);
                 });
@@ -95,7 +98,7 @@ public class ShelfActivity extends BindingActivity<ActivityShelfBinding> {
                     .map(Book::fromUri)
                     .flatMap(book -> getDataLayer().getShelfService().insertBook(book))
                     .subscribe(id -> {
-                        startActivity(new Intent(this, NewNewReadActivity.class)
+                        startActivity(new Intent(this, NewReadActivity.class)
                                 .putExtra(BundleKey.BOOK_ID, id));
                     }, Throwable::printStackTrace);
         }

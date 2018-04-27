@@ -30,7 +30,7 @@ public class StreamHelper {
      *
      * @link {https://code.google.com/archive/p/juniversalchardet/}
      */
-    public static String getCharsetByJUniversalCharDet(@NonNull File textFile) {
+    public static String getCharsetByJUniversalCharDet(@NonNull File textFile) throws IOException {
         try (FileInputStream fis = new FileInputStream(textFile)) {
             byte[] buffer = new byte[4096];
             UniversalDetector detector = new UniversalDetector(null);
@@ -42,10 +42,7 @@ public class StreamHelper {
             String encoding = detector.getDetectedCharset();
             detector.reset();
             return encoding;
-        } catch (IOException e) {
-            e.printStackTrace();
         }
-        return null;
     }
 
 //    /**
@@ -89,19 +86,16 @@ public class StreamHelper {
         return null;
     }
 
-    public static long getLength(InputStream is, String charset) {
+    public static long getLength(InputStream is, String charset) throws IOException {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(is, charset))) {
             return reader.skip(Long.MAX_VALUE);
-        } catch (IOException e) {
-            e.printStackTrace();
         }
-        return -1;
     }
 
     /**
      * 生成章节信息
      */
-    public static List<Chapter> getChapters(InputStream is, String charset) {
+    public static List<Chapter> getChapters(InputStream is, String charset) throws IOException {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(is, charset))) {
             List<Chapter> result = new ArrayList<>();
             char[] buffer = new char[1024 * 4];
@@ -117,23 +111,16 @@ public class StreamHelper {
                 offset += buffer.length;
             }
             return result;
-        } catch (IOException e) {
-            e.printStackTrace();
         }
-        return null;
     }
 
-    public static String getText(InputStream is, String charset, long offset, int limit) {
+    public static String getText(InputStream is, String charset, long offset, int limit) throws IOException {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(is, charset))) {
             char[] buffer = new char[limit];
             reader.skip(offset);
             reader.read(buffer);
             return String.valueOf(buffer);
-        } catch (IOException e) {
-            e.printStackTrace();
-            L.e(e);
         }
-        return null;
     }
 
     /**
@@ -142,7 +129,7 @@ public class StreamHelper {
      * @param file 文件路径
      * @return md5
      */
-    public static String getFileMD5(@NonNull File file) {
+    public static String getFileMD5(@NonNull File file) throws IOException, NoSuchAlgorithmException {
         try (RandomAccessFile randomAccessFile = new RandomAccessFile(file, "r")) {
             MessageDigest messageDigest = MessageDigest.getInstance("MD5");
             byte[] buffer = new byte[1024 * 10];
@@ -156,9 +143,6 @@ public class StreamHelper {
                 md5 = "0" + md5;
             }
             return md5;
-        } catch (NoSuchAlgorithmException | IOException e) {
-            e.printStackTrace();
         }
-        return "";
     }
 }
