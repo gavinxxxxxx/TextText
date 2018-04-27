@@ -28,36 +28,6 @@ public class TestActivity extends BindingActivity<ActivityTestBinding> {
     private final Page[] mPages = new Page[3];
 
     private void set() {
-//        getDataLayer().getShelfService().loadAllBooks()
-//                .flatMap(Observable::fromIterable)
-//                .take(1)
-//                .compose(RxTransformer.applySchedulers())
-//                .doOnSubscribe(mCompositeDisposable::add)
-//                .subscribe(book -> {
-//                    Config.applySizeChange(mBinding.text.getWidth(), mBinding.text.getHeight());
-//                    mPages[1] = Page.fromBook(book, book.getOffset(), false);
-//                    mPages[0] = mPages[1].last();
-//                    mPages[2] = mPages[1].next();
-//                    Flipper flipper = new CoverFlipper();
-//                    flipper.set(mPages[0], mPages[1], mPages[2]);
-//                    flipper.attach(mBinding.text);
-//                    flipper.setOnPageChangeCallback(isReverse -> {
-//                        L.e("OnPageChange - " + isReverse);
-//                        try {
-//                            if (!isReverse) {
-//                                mPages[0] = mPages[1];
-//                                mPages[1] = mPages[2];
-//                                mPages[2] = mPages[1].next();
-//                            } else {
-//                                mPages[2] = mPages[1];
-//                                mPages[1] = mPages[0];
-//                                mPages[0] = mPages[1].last();
-//                            }
-//                            flipper.set(mPages[0], mPages[1], mPages[2]);
-//                        } catch (IOException e) {
-//                            e.printStackTrace();
-//                        }
-//                    });
-//                }, L::e);
+
     }
 }

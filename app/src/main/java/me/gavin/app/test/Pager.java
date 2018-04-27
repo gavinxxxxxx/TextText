@@ -1,7 +1,7 @@
 package me.gavin.app.test;
 
-import me.gavin.app.Config;
-import me.gavin.app.model.Book;
+import java.io.IOException;
+
 import me.gavin.app.model.Page;
 
 /**
@@ -11,19 +11,11 @@ import me.gavin.app.model.Page;
  */
 public abstract class Pager {
 
-    Flipper mFlipper;
-
-    Book mBook;
-
-    final Page[] mPages = new Page[Config.pageCount];
-
-    public Pager(Book book) {
-        this.mBook = book;
-    }
+    TextView mView;
 
     public abstract void offset(Long offset);
 
-    public abstract void lastPage();
+    public abstract void offset(boolean reserve);
 
-    public abstract void nextPage();
+    protected abstract Page offset(long offset, boolean reserve) throws IOException;
 }

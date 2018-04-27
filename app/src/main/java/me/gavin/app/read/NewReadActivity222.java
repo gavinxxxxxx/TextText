@@ -5,11 +5,9 @@ import android.support.annotation.Nullable;
 import android.support.v4.widget.DrawerLayout;
 import android.view.Gravity;
 
-import java.io.IOException;
-
-import me.gavin.app.Config;
 import me.gavin.app.model.Page;
 import me.gavin.app.test.CoverFlipper;
+import me.gavin.app.test.LocalPager;
 import me.gavin.base.BindingActivity;
 import me.gavin.text.R;
 import me.gavin.text.databinding.ActivityReadNewBinding;
@@ -32,6 +30,9 @@ public class NewReadActivity222 extends BindingActivity<ActivityReadNewBinding> 
         mBinding.drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
 
 //        new CoverFlipper().attach(mBinding.text);
+//        new LocalPager().attach(mBinding.text);
+//        mBinding.text.setBook();
+
 //        mBinding.text.getFlipper().setOnPageChangeCallback(isReverse -> {
 //            try {
 //                if (!isReverse) {

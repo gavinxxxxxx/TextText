@@ -10,6 +10,7 @@ import java.util.regex.Pattern;
 import me.gavin.app.Config;
 import me.gavin.app.StreamHelper;
 import me.gavin.app.Utils;
+import me.gavin.util.L;
 
 /**
  * Page
@@ -134,8 +135,7 @@ public class Page {
                 if (!isReverse && y + Config.textHeight > Config.height - Config.bottomPadding) { // 正向 & 已排满页面
                     limit = mText.indexOf(subText);
                     end = start + limit;
-                    // TODO: 2018/4/27  isLast = end >= book.getLength();
-                    isLast = false;
+                    isLast = end >= book.getLength();
                     return;
                 }
                 String remaining = segment.substring(segmentStart);
@@ -156,7 +156,7 @@ public class Page {
             }
             y += Config.segmentSpacing;
         }
-        if (!isReverse && y + Config.textHeight <= Config.height - Config.bottomPadding) { // 正向 & 还能显示却没有了
+        if (!isReverse && start + mText.length() >= book.getLength()) { // 正向 & 还能显示却没有了
             end = book.getLength();
             limit = (int) (end - start);
             isLast = true;

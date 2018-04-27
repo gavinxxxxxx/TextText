@@ -7,6 +7,11 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
+import me.gavin.app.Config;
+import me.gavin.app.model.Book;
+import me.gavin.app.model.Page;
+import me.gavin.base.function.Consumer;
+
 /**
  * TextView
  *
@@ -14,16 +19,32 @@ import android.view.View;
  */
 public class TextView extends View {
 
+    Book book;
+    final Page[] pages = new Page[Config.pageCount];
+
     private Pager mPager;
     private Flipper mFlipper;
+
+    Consumer<Page> onFlipCallback;
+
+    public void setOnFlipCallback(Consumer<Page> callback) {
+        this.onFlipCallback = callback;
+    }
 
     public TextView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         setKeepScreenOn(true);
     }
 
+    public void setBook(Book book) {
+        this.book = book;
+        mFlipper.offset(book.getOffset());
+    }
+
     public void setPager(Pager pager) {
         this.mPager = pager;
+        pager.mView = this;
+        invalidate();
     }
 
     public Pager getPager() {
@@ -32,6 +53,7 @@ public class TextView extends View {
 
     public void setFlipper(Flipper flipper) {
         this.mFlipper = flipper;
+        flipper.mView = this;
         invalidate();
     }
 
@@ -48,6 +70,12 @@ public class TextView extends View {
     protected void onDraw(Canvas canvas) {
         if (mFlipper != null) {
             mFlipper.onDraw(canvas);
+        }
+    }
+
+    public void onFlip() {
+        if (onFlipCallback != null) {
+            onFlipCallback.accept(pages[1]);
         }
     }
 }

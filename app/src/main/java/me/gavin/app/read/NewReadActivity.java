@@ -17,8 +17,8 @@ import me.gavin.app.RxTransformer;
 import me.gavin.app.StreamHelper;
 import me.gavin.app.model.Book;
 import me.gavin.app.model.Chapter;
-import me.gavin.app.model.Page;
 import me.gavin.app.test.CoverFlipper;
+import me.gavin.app.test.LocalPager;
 import me.gavin.base.BindingActivity;
 import me.gavin.base.BundleKey;
 import me.gavin.base.recycler.BindingAdapter;
@@ -29,7 +29,6 @@ public class NewReadActivity extends BindingActivity<ActivityReadNewBinding> {
 
     private Book mBook;
 
-    private final Page[] mPages = new Page[3];
     private final List<Chapter> mChapterList = new ArrayList<>();
 
     @Override
@@ -53,34 +52,36 @@ public class NewReadActivity extends BindingActivity<ActivityReadNewBinding> {
 
         mBinding.drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
 
-        new CoverFlipper(mBook).attach(mBinding.text);
-//        mBinding.text.getFlipper().setOnPageChangeCallback(page -> {
-//            // 更新进度
-//            mBook.setOffset(mPages[1].start);
-//            // 章节定位
-//            if (!mChapterList.isEmpty()) {
-//                Chapter curr = mChapterList.get(0);
-//                for (Chapter t : mChapterList) {
-//                    t.selected = false;
-//                    if (t.offset <= mBook.getOffset()) {
-//                        curr = t;
-//                    }
-//                }
-//                curr.selected = true;
-//                mBinding.rvChapter.getAdapter().notifyDataSetChanged();
-//                mBinding.rvChapter.scrollToPosition(mChapterList.indexOf(curr));
-//            }
-//        });
-        init();
+        mBinding.text.setPager(new LocalPager());
+        mBinding.text.setFlipper(new CoverFlipper());
+        mBinding.text.setOnFlipCallback(page -> {
+            mBook.setOffset(page.start);
+            getDataLayer().getShelfService().updateBook(mBook);
+            // 章节定位
+            if (!mChapterList.isEmpty()) {
+                Chapter curr = mChapterList.get(0);
+                for (Chapter t : mChapterList) {
+                    t.selected = false;
+                    if (t.offset <= mBook.getOffset()) {
+                        curr = t;
+                    }
+                }
+                curr.selected = true;
+                mBinding.rvChapter.getAdapter().notifyDataSetChanged();
+                mBinding.rvChapter.scrollToPosition(mChapterList.indexOf(curr));
+            }
+        });
         mBinding.text.addOnLayoutChangeListener((v, l, t, r, b, ol, ot, or, ob) -> {
             if (r - l != or - ol || b - t != ob - ot) {
                 Config.applySizeChange(r - l, b - t);
-                mBinding.text.getFlipper().offset(null);
+                mBinding.text.setBook(mBook);
             }
         });
+
+        initChapter();
     }
 
-    private void init() {
+    private void initChapter() {
         Observable.just(mBook)
                 .map(Book::open)
                 .map(is -> StreamHelper.getChapters(is, mBook.getCharset()))
@@ -100,12 +101,13 @@ public class NewReadActivity extends BindingActivity<ActivityReadNewBinding> {
 
                         BindingAdapter adapter = new BindingAdapter<>(this, mChapterList, R.layout.item_chapter);
                         adapter.setOnItemClickListener(i -> {
+                            mBinding.drawer.closeDrawer(Gravity.START);
                             for (Chapter t : mChapterList) {
                                 t.selected = false;
                             }
                             mChapterList.get(i).selected = true;
                             adapter.notifyDataSetChanged();
-                            // TODO: 2018/4/27  offset(mChapterList.get(i).offset);
+                            mBinding.text.getFlipper().offset(mChapterList.get(i).offset);
                         });
                         mBinding.rvChapter.setAdapter(adapter);
 
