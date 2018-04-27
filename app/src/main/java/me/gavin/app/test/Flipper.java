@@ -3,12 +3,11 @@ package me.gavin.app.test;
 import android.graphics.Canvas;
 import android.view.MotionEvent;
 
-import me.gavin.app.Config;
 import me.gavin.app.model.Page;
 import me.gavin.base.function.Consumer;
 
 /**
- * 这里是萌萌哒注释菌
+ * 翻页器
  *
  * @author gavin.xiong 2018/4/22.
  */
@@ -16,27 +15,29 @@ public abstract class Flipper {
 
     TextView mView;
 
-    final Page[] mPages = new Page[Config.pageCount];
+    Pager mPager;
 
-    Consumer<Boolean> onPageChangeCallback;
+    Consumer<Page> onPageChangeCallback;
 
     public void attach(TextView view) {
         this.mView = view;
         view.setFlipper(this);
     }
 
-    public void set(Page last, Page curr, Page next) {
-        mPages[0] = last;
-        mPages[1] = curr;
-        mPages[2] = next;
+    public void set() {
+        mPager.offset(mPager.mBook.getOffset());
         if (mView != null) {
             mView.invalidate();
         }
     }
 
-    public void setOnPageChangeCallback(Consumer<Boolean> callback) {
+    public void setOnPageChangeCallback(Consumer<Page> callback) {
         this.onPageChangeCallback = callback;
     }
+
+    public abstract void offset(Long offset);
+
+    public abstract void onPageReady();
 
     public abstract boolean onTouchEvent(MotionEvent event);
 

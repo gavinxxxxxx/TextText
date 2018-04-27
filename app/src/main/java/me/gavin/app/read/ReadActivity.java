@@ -105,7 +105,7 @@ public class ReadActivity extends BindingActivity<ActivityReadBinding> {
                 if (newState == RecyclerView.SCROLL_STATE_IDLE && mBinding.rvChapter.getAdapter() != null) {
                     LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
                     int position = layoutManager.findFirstVisibleItemPosition();
-                    long offset = mPageList.get(position).pageStart;
+                    long offset = mPageList.get(position).start;
 
                     mBook.setOffset(offset);
 
@@ -214,7 +214,7 @@ public class ReadActivity extends BindingActivity<ActivityReadBinding> {
         Observable.just(isReverse ? 0 : mPageList.size() - 1)
                 .map(mPageList::get)
                 .map(page -> {
-                    long offset = page.pageStart + (isReverse ? 0 : page.pageLimit);
+                    long offset = page.start + (isReverse ? 0 : page.limit);
                     return Page.fromBook(page.book, offset, isReverse);
                 })
                 .subscribeOn(Schedulers.io())

@@ -12,7 +12,7 @@ import android.view.VelocityTracker;
 import android.view.animation.DecelerateInterpolator;
 
 import me.gavin.app.Config;
-import me.gavin.app.model.Page;
+import me.gavin.app.model.Book;
 import me.gavin.app.model.Word;
 import me.gavin.base.App;
 import me.gavin.text.R;
@@ -38,7 +38,9 @@ public class CoverFlipper extends Flipper {
 
     private Drawable drawable;
 
-    public CoverFlipper() {
+    public CoverFlipper(Book book) {
+        mPager = new LocalPager(book);
+
         drawable = App.get().getResources().getDrawable(R.drawable.bg_gradient, null);
 
         mAnimator = new ValueAnimator();
@@ -51,14 +53,35 @@ public class CoverFlipper extends Flipper {
             @Override
             public void onAnimationEnd(Animator animation) {
                 if (!mTouching && mOffsetX == mTargetX) {
-                    if (mOffsetX == -Config.width && onPageChangeCallback != null && mPages[2] != null) {
-                        onPageChangeCallback.accept(false);
-                    } else if (mOffsetX == Config.width && onPageChangeCallback != null && mPages[0] != null) {
-                        onPageChangeCallback.accept(true);
+                    if (mOffsetX == -Config.width && mPager.mPages[2] != null) {
+                        mPager.nextPage();
+                        toBitmap();
+                        if (onPageChangeCallback != null) {
+                            onPageChangeCallback.accept(mPager.mPages[1]);
+                        }
+                    } else if (mOffsetX == Config.width && mPager.mPages[0] != null) {
+                        mPager.lastPage();
+                        toBitmap();
+                        if (onPageChangeCallback != null) {
+                            onPageChangeCallback.accept(mPager.mPages[1]);
+                        }
                     }
                 }
             }
         });
+    }
+
+    @Override
+    public void offset(Long offset) {
+        mPager.offset(offset);
+    }
+
+    @Override
+    public void onPageReady() {
+        toBitmap();
+        if (mView != null) {
+            mView.invalidate();
+        }
     }
 
     @Override
@@ -96,15 +119,15 @@ public class CoverFlipper extends Flipper {
                 float xv = mVelocityTracker.getXVelocity();
                 if (Math.abs(xv) > Config.flingVelocity) { // 抛动
                     if (mOffsetX > 0) {
-                        mTargetX = xv > 0 ? Config.width : 0;
+                        mTargetX = xv < 0 || mPager.mPages[0] == null ? 0 : Config.width;
                     } else {
-                        mTargetX = xv > 0 ? 0 : -Config.width;
+                        mTargetX = xv > 0 || mPager.mPages[2] == null ? 0 : -Config.width;
                     }
                 } else { // 静置松手
-                    if (-Config.width / 2 < mOffsetX && mOffsetX < Config.width / 2) {
-                        mTargetX = 0;
+                    if (mOffsetX > 0) {
+                        mTargetX = mOffsetX < Config.width / 2 || mPager.mPages[0] == null ? 0 : Config.width;
                     } else {
-                        mTargetX = mOffsetX > 0 ? Config.width : -Config.width;
+                        mTargetX = mOffsetX > -Config.width / 2 || mPager.mPages[2] == null ? 0 : -Config.width;
                     }
                 }
                 mAnimator.setFloatValues(mOffsetX, mTargetX);
@@ -119,36 +142,12 @@ public class CoverFlipper extends Flipper {
     }
 
     @Override
-    public void set(Page last, Page curr, Page next) {
-        super.set(last, curr, next);
-        for (int i = 0; i < mPages.length; i++) {
-            bs[i] = Bitmap.createBitmap(Config.width, Config.height, Bitmap.Config.RGB_565);
-            Canvas canvas = new Canvas(bs[i]);
-            canvas.drawRect(0, 0, Config.width, Config.height, Config.bgPaint);
-            if (mPages[i] != null) {
-                for (Word word : mPages[i].wordList) {
-                    word.draw(canvas, 0, 0);
-                }
-            }
-        }
-        mOffsetX = 0;
-        if (mView != null) {
-            mView.invalidate();
-        }
-    }
-
-    @Override
     public void onDraw(Canvas canvas) {
-        if (mOffsetX < 0) { // 左滑
-            // next
+        if (mOffsetX < 0) { // 左滑 - next
             canvas.drawBitmap(bs[2], 0, 0, Config.bgPaint);
         }
-
-        // curr
         canvas.drawBitmap(bs[1], Math.min(0, mOffsetX), 0, Config.bgPaint);
-
-        if (mOffsetX > 0) { // 右滑
-            // last
+        if (mOffsetX > 0) { // 右滑 - last
             canvas.drawBitmap(bs[0], Math.min(0, mOffsetX - Config.width), 0, Config.bgPaint);
         }
 
@@ -157,7 +156,23 @@ public class CoverFlipper extends Flipper {
             drawable.setBounds((int) left, 0, (int) left + 40, Config.height);
             drawable.draw(canvas);
         }
+        canvas.drawText(mPager.mPages[1].start + "~" + mPager.mPages[1].end, 10, 40, Config.textPaint);
+    }
 
-        canvas.drawText(mPages[1].pageStart + "~" + mPages[1].pageEnd, 10, 40, Config.textPaint);
+    private void toBitmap() {
+        for (int i = 0; i < mPager.mPages.length; i++) {
+            bs[i] = Bitmap.createBitmap(Config.width, Config.height, Bitmap.Config.RGB_565);
+            Canvas canvas = new Canvas(bs[i]);
+            canvas.drawRect(0, 0, Config.width, Config.height, Config.bgPaint);
+            if (mPager.mPages[i] != null) {
+                for (Word word : mPager.mPages[i].wordList) {
+                    word.draw(canvas, 0, 0);
+                }
+            }
+        }
+        mOffsetX = 0;
+        if (mView != null) {
+            mView.invalidate();
+        }
     }
 }

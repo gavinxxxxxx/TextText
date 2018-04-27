@@ -103,24 +103,11 @@ public class SourceManager extends BaseManager implements DataLayer.SourceServic
         return getApi().yanmoxuanChapter(id, cid)
                 .map(ResponseBody::byteStream)
                 .map(this::unGZIP)
-                .compose(RxTransformer.log())
-                .map(s -> s.replaceAll("<br/?>", "~~~\n\\n\n\\\n\\\\n\\\\\n~~~"))
+                .map(s -> s.replaceAll("<br/?>", "\\\\n"))
                 .map(Jsoup::parse)
-                .compose(RxTransformer.log())
                 .map(document -> document.selectFirst("article[class=chaptercontent] div[class=content]"))
-                .compose(RxTransformer.log())
                 .map(Element::text)
-                .compose(RxTransformer.log())
-                .map(s -> {
-                    return s;
-                });
-
-//        return getApi().yanmoxuanChapter(id, cid)
-//                .map(ResponseBody::byteStream)
-//                .map(this::unGZIP)
-//                .map(Jsoup::parse)
-//                .map(document -> document.selectFirst("article[class=chaptercontent] div[class=content]"))
-//                .map(Element::text);
+                .map(s -> s.replaceAll("\\\\n", "\n"));
     }
 
     private String saveStream(InputStream in) throws IOException {

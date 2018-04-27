@@ -6,10 +6,6 @@ import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.View;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import me.gavin.app.model.Line;
 import me.gavin.app.model.Page;
 import me.gavin.app.model.Word;
 
@@ -51,6 +47,6 @@ public class PageView extends View {
 //            Utils.drawLine(canvas, line);
 //        }
 
-        canvas.drawText(mPage.pageStart + "~" + mPage.pageEnd, 10, 40, Config.textPaint);
+        canvas.drawText(mPage.start + "~" + mPage.end, 10, 40, Config.textPaint);
     }
 }

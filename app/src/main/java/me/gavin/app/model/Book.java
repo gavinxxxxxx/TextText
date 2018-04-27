@@ -165,7 +165,8 @@ public class Book implements Serializable {
             book.uri = uri.toString();
             book.name = file.getName().substring(0, file.getName().lastIndexOf("."));
             book.type = TYPE_LOCAL;
-            book.charset = StreamHelper.getCharsetByJUniversalCharDet(file);
+            String encoding = StreamHelper.getCharsetByJUniversalCharDet(file);
+            book.charset = encoding != null ? encoding : "utf-8";
             book.MD5 = StreamHelper.getFileMD5(file);
             book.length = StreamHelper.getLength(book.open(), book.charset);
             book.time = System.currentTimeMillis();

@@ -1,14 +1,15 @@
 package me.gavin.app.search;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 
 import me.gavin.app.RxTransformer;
 import me.gavin.app.model.Book;
 import me.gavin.app.model.Chapter;
-import me.gavin.app.read.NewReadActivity;
+import me.gavin.app.model.Page;
+import me.gavin.app.model.Word;
+import me.gavin.app.read.NewReadActivity222;
 import me.gavin.base.BindingActivity;
 import me.gavin.base.BundleKey;
 import me.gavin.base.recycler.BindingAdapter;
@@ -67,11 +68,14 @@ public class DetailActivity extends BindingActivity<ActivityDetailBinding> {
                 .doOnSubscribe(mCompositeDisposable::add)
                 .subscribe(s -> {
                     L.e(s);
-                    Book book = Book.fromUri(Uri.parse("file://" + s));
-                    getDataLayer().getShelfService()
-                            .insertBook(book)
-                            .subscribe(aLong -> startActivity(new Intent(this, NewReadActivity.class)
-                                    .putExtra(BundleKey.BOOK_ID, aLong)));
+//                    Page page = Page.fromChapter(s, 0, false);
+//                    L.e(page);
+//                    L.e(page.mText);
+//                    for (Word word : page.wordList) {
+//                        L.e(word);
+//                    }
+                    startActivity(new Intent(this, NewReadActivity222.class)
+                            .putExtra(BundleKey.BOOK_ID, s));
                 }, L::e);
     }
 }

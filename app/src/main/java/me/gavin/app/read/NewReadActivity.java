@@ -8,7 +8,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.view.Gravity;
 import android.view.View;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,45 +53,29 @@ public class NewReadActivity extends BindingActivity<ActivityReadNewBinding> {
 
         mBinding.drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
 
-        new CoverFlipper().attach(mBinding.text);
-        mBinding.text.getFlipper().setOnPageChangeCallback(isReverse -> {
-            try {
-                if (!isReverse) {
-                    mPages[0] = mPages[1];
-                    mPages[1] = mPages[2];
-                    mPages[2] = mPages[1].next();
-                } else {
-                    mPages[2] = mPages[1];
-                    mPages[1] = mPages[0];
-                    mPages[0] = mPages[1].last();
-                }
-                mBinding.text.getFlipper().set(mPages[0], mPages[1], mPages[2]);
-
-                // 更新进度
-                mBook.setOffset(mPages[1].pageStart);
-                // 章节定位
-                if (!mChapterList.isEmpty()) {
-                    Chapter curr = mChapterList.get(0);
-                    for (Chapter t : mChapterList) {
-                        t.selected = false;
-                        if (t.offset <= mBook.getOffset()) {
-                            curr = t;
-                        }
-                    }
-                    curr.selected = true;
-                    mBinding.rvChapter.getAdapter().notifyDataSetChanged();
-                    mBinding.rvChapter.scrollToPosition(mChapterList.indexOf(curr));
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
+        new CoverFlipper(mBook).attach(mBinding.text);
+//        mBinding.text.getFlipper().setOnPageChangeCallback(page -> {
+//            // 更新进度
+//            mBook.setOffset(mPages[1].start);
+//            // 章节定位
+//            if (!mChapterList.isEmpty()) {
+//                Chapter curr = mChapterList.get(0);
+//                for (Chapter t : mChapterList) {
+//                    t.selected = false;
+//                    if (t.offset <= mBook.getOffset()) {
+//                        curr = t;
+//                    }
+//                }
+//                curr.selected = true;
+//                mBinding.rvChapter.getAdapter().notifyDataSetChanged();
+//                mBinding.rvChapter.scrollToPosition(mChapterList.indexOf(curr));
+//            }
+//        });
         init();
         mBinding.text.addOnLayoutChangeListener((v, l, t, r, b, ol, ot, or, ob) -> {
             if (r - l != or - ol || b - t != ob - ot) {
                 Config.applySizeChange(r - l, b - t);
-
-                offset(mBook.getOffset());
+                mBinding.text.getFlipper().offset(null);
             }
         });
     }
@@ -122,7 +105,7 @@ public class NewReadActivity extends BindingActivity<ActivityReadNewBinding> {
                             }
                             mChapterList.get(i).selected = true;
                             adapter.notifyDataSetChanged();
-                            offset(mChapterList.get(i).offset);
+                            // TODO: 2018/4/27  offset(mChapterList.get(i).offset);
                         });
                         mBinding.rvChapter.setAdapter(adapter);
 
@@ -148,21 +131,6 @@ public class NewReadActivity extends BindingActivity<ActivityReadNewBinding> {
             mBinding.drawer.closeDrawers();
         } else {
             super.onBackPressedSupport();
-        }
-    }
-
-    /**
-     * 直接定位
-     */
-    private void offset(long offset) {
-        try {
-            mBinding.drawer.closeDrawers();
-            mPages[1] = Page.fromBook(mBook, offset, false);
-            mPages[0] = mPages[1].last();
-            mPages[2] = mPages[1].next();
-            mBinding.text.getFlipper().set(mPages[0], mPages[1], mPages[2]);
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 }

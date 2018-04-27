@@ -20,17 +20,17 @@ public class Page {
 
     public Book book;
 
-    public long pageStart;
-    public int pageLimit;
-    public long pageEnd;
+    public long start;
+    public int limit;
+    public long end;
 
     public boolean isFirst;
     public boolean isLast;
 
-    public boolean firstLineIndent; // 第一行缩进
-    public boolean lastLineAlign; // 最后一行对齐 - 只反向有用
+    public boolean isReverse; // 反向
 
-    public boolean isReverse;
+    public boolean indent; // 页面第一行是否缩进 - 第一行可能不是自然段起始位置
+    public boolean align; // 页面最后一行是否分散对齐 - 只反向有用
 
     public String mText; // 页面预加载文字 - 直接读取
     public String[] mTextSp; // 页面段落数组
@@ -38,7 +38,7 @@ public class Page {
     public final List<Line> lineList; // 页面文字分行
     public final List<Word> wordList; // 页面按字词拆分
 
-    private Page() {
+    public Page() {
         lineList = new ArrayList<>();
         wordList = new LinkedList<>();
     }
@@ -48,26 +48,59 @@ public class Page {
         page.book = book;
         page.isReverse = isReverse;
         if (!isReverse) { // 正向
-            page.pageStart = offset;
-            page.isFirst = page.pageStart <= 0;
-            page.mText = StreamHelper.getText(book.open(), book.getCharset(), page.pageStart, (int) Math.min(Config.pagePreCount, book.getLength() - page.pageStart));
+            page.start = offset;
+            page.isFirst = page.start <= 0;
+            page.mText = StreamHelper.getText(book.open(), book.getCharset(), page.start, (int) Math.min(Config.pagePreCount, book.getLength() - page.start));
             page.mTextSp = Utils.trim(page.mText).split(Config.REGEX_SEGMENT);
-            page.lastLineAlign = true;
+            page.align = true;
             if (page.isFirst || page.mText.matches(Config.REGEX_SEGMENT_SUFFIX)) {
-                page.firstLineIndent = true;
+                page.indent = true;
             } else {
-                int preCount = (int) (page.pageStart >= Config.segmentPreCount ? Config.segmentPreCount : page.pageStart);
-                String fix = StreamHelper.getText(book.open(), book.getCharset(), page.pageStart - preCount, preCount);
-                page.firstLineIndent = fix.matches(Config.REGEX_SEGMENT_PREFIX);
+                int preCount = (int) (page.start >= Config.segmentPreCount ? Config.segmentPreCount : page.start);
+                String fix = StreamHelper.getText(book.open(), book.getCharset(), page.start - preCount, preCount);
+                page.indent = fix.matches(Config.REGEX_SEGMENT_PREFIX);
             }
         } else { // 反向
-            page.pageEnd = offset;
-            page.isLast = page.pageEnd >= book.getLength();
-            page.mText = StreamHelper.getText(book.open(), book.getCharset(), Math.max(page.pageEnd - Config.pagePreCount, 0), (int) Math.min(Config.pagePreCount, page.pageEnd));
+            page.end = offset;
+            page.isLast = page.end >= book.getLength();
+            page.mText = StreamHelper.getText(book.open(), book.getCharset(), Math.max(page.end - Config.pagePreCount, 0), (int) Math.min(Config.pagePreCount, page.end));
             page.mTextSp = Utils.trim(page.mText).split(Config.REGEX_SEGMENT);
-            page.firstLineIndent = true;
-            String fix = StreamHelper.getText(book.open(), book.getCharset(), page.pageEnd, Config.segmentPreCount);
-            page.lastLineAlign = !page.mText.matches(Config.REGEX_SEGMENT_PREFIX) && !fix.matches(Config.REGEX_SEGMENT_SUFFIX);
+            page.indent = true;
+            String fix = StreamHelper.getText(book.open(), book.getCharset(), page.end, Config.segmentPreCount);
+            page.align = !page.mText.matches(Config.REGEX_SEGMENT_PREFIX) && !fix.matches(Config.REGEX_SEGMENT_SUFFIX);
+        }
+        page.text2Line();
+        for (Line line : page.lineList) {
+            page.line2Words(line);
+        }
+        return page;
+    }
+
+    public static Page fromChapter(String chapter, long offset, boolean isReverse) throws IOException {
+        Page page = new Page();
+        page.isReverse = isReverse;
+        if (!isReverse) { // 正向
+            page.start = offset;
+            page.isFirst = page.start <= 0;
+            page.mText = chapter.substring((int) page.start, Math.min((int) page.start + Config.pagePreCount, chapter.length()));
+            page.mTextSp = Utils.trim(page.mText).split(Config.REGEX_SEGMENT);
+            page.align = true;
+            if (page.isFirst || page.mText.matches(Config.REGEX_SEGMENT_SUFFIX)) {
+                page.indent = true;
+            } else {
+                int preCount = (int) (page.start >= Config.segmentPreCount ? Config.segmentPreCount : page.start);
+                String fix = chapter.substring((int) page.start - preCount, (int) page.start);
+                page.indent = fix.matches(Config.REGEX_SEGMENT_PREFIX);
+            }
+        } else { // 反向
+            page.end = offset;
+            page.isLast = page.end >= chapter.length();
+            int si = Math.max((int) page.end - Config.pagePreCount, 0);
+            page.mText = chapter.substring(si, si + Math.min(Config.pagePreCount, (int) page.end));
+            page.mTextSp = Utils.trim(page.mText).split(Config.REGEX_SEGMENT);
+            page.indent = true;
+            String fix = chapter.substring((int) page.end, Config.segmentPreCount);
+            page.align = !page.mText.matches(Config.REGEX_SEGMENT_PREFIX) && !fix.matches(Config.REGEX_SEGMENT_SUFFIX);
         }
         page.text2Line();
         for (Line line : page.lineList) {
@@ -77,11 +110,18 @@ public class Page {
     }
 
     public Page last() throws IOException {
-        return isFirst ? null : Page.fromBook(book, pageStart, true);
+        return isFirst ? null : Page.fromBook(book, start, true);
     }
 
     public Page next() throws IOException {
-        return isLast ? null : Page.fromBook(book, pageEnd, false);
+        return isLast ? null : Page.fromBook(book, end, false);
+    }
+
+    public void prepare() {
+        text2Line();
+        for (Line line : lineList) {
+            line2Words(line);
+        }
     }
 
     private void text2Line() {
@@ -92,20 +132,21 @@ public class Page {
             int segmentStart = 0;
             while (segmentStart < segment.length()) {
                 if (!isReverse && y + Config.textHeight > Config.height - Config.bottomPadding) { // 正向 & 已排满页面
-                    pageLimit = mText.indexOf(subText);
-                    pageEnd = pageStart + pageLimit;
-                    isLast = pageEnd >= book.getLength();
+                    limit = mText.indexOf(subText);
+                    end = start + limit;
+                    // TODO: 2018/4/27  isLast = end >= book.getLength();
+                    isLast = false;
                     return;
                 }
                 String remaining = segment.substring(segmentStart);
-                boolean lineIndent = i == 0 && segmentStart == 0 && firstLineIndent
+                boolean lineIndent = i == 0 && segmentStart == 0 && indent
                         || i != 0 && segmentStart == 0;
                 int count = breakText(remaining, lineIndent);
                 String suffix = count < 0 ? "-" : "";
                 count = Math.abs(count);
                 String text = segment.substring(segmentStart, segmentStart + count);
                 boolean lineAlignNo = segmentStart + count >= segment.length() // 不对齐 - 段落尾行 && 非反向最后一行
-                        && !(isReverse && lastLineAlign && i == mTextSp.length - 1);
+                        && !(isReverse && align && i == mTextSp.length - 1);
                 Line line = new Line(Utils.trim(text), suffix, y - Config.textTop, lineIndent, lineAlignNo);
                 lineList.add(line);
 
@@ -116,8 +157,8 @@ public class Page {
             y += Config.segmentSpacing;
         }
         if (!isReverse && y + Config.textHeight <= Config.height - Config.bottomPadding) { // 正向 & 还能显示却没有了
-            pageEnd = book.getLength();
-            pageLimit = (int) (pageEnd - pageStart);
+            end = book.getLength();
+            limit = (int) (end - start);
             isLast = true;
         } else if (isReverse) { // 反向
             List<Line> lines = new ArrayList<>();
@@ -140,9 +181,9 @@ public class Page {
             lineList.clear();
             lineList.addAll(lines);
 
-            pageLimit = subText.length();
-            pageStart = pageEnd - pageLimit;
-            isFirst = pageStart <= 0;
+            limit = subText.length();
+            start = end - limit;
+            isFirst = start <= 0;
         }
     }
 

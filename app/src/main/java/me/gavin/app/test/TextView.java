@@ -14,11 +14,20 @@ import android.view.View;
  */
 public class TextView extends View {
 
+    private Pager mPager;
     private Flipper mFlipper;
 
     public TextView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         setKeepScreenOn(true);
+    }
+
+    public void setPager(Pager pager) {
+        this.mPager = pager;
+    }
+
+    public Pager getPager() {
+        return mPager;
     }
 
     public void setFlipper(Flipper flipper) {

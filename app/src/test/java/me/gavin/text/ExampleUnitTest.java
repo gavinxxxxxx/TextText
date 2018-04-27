@@ -1,17 +1,10 @@
 package me.gavin.text;
 
-import android.app.Activity;
-import android.content.Intent;
-import android.support.annotation.NonNull;
-
 import org.junit.Test;
 
-import java.io.InputStream;
-import java.lang.reflect.Array;
 import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.regex.Matcher;
@@ -76,25 +69,32 @@ public class ExampleUnitTest {
         list.add("知乎.fe");
         list.add("lll");
         System.out.println("排序前-->" + list);
-        Collections.sort(list, new Comparator<String>() {
-            @Override
-            public int compare(String s1, String s2) {
-                String o1 = "";
-                String o2 = "";
-                if (s1 != null) {
-                    o1 = s1;
-                }
-                if (s2 != null) {
-                    o2 = s2;
-                }
-                Collator instance = Collator.getInstance(Locale.CHINA);
-                return instance.compare(o1, o2);
+        Collections.sort(list, (s1, s2) -> {
+            String o1 = "";
+            String o2 = "";
+            if (s1 != null) {
+                o1 = s1;
             }
+            if (s2 != null) {
+                o2 = s2;
+            }
+            Collator instance = Collator.getInstance(Locale.CHINA);
+            return instance.compare(o1, o2);
         });
 
         System.out.println("排序后-->" + list);
         Collections.reverse(list);
         System.out.println("排序后逆序-->" + list);
 
+    }
+
+    @Test
+    public void textReplace() {
+        String s = "hello<br/><br>world";
+        System.out.println(s);
+        s = s.replaceAll("<br/?>", "\\\\n");
+        System.out.println(s);
+        s = s.replaceAll("\\\\n", "\n");
+        System.out.println(s);
     }
 }
