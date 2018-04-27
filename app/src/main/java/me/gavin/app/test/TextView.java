@@ -63,12 +63,12 @@ public class TextView extends View {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        return mFlipper != null && mFlipper.onTouchEvent(event);
+        return mPager != null && mFlipper != null && mFlipper.onTouchEvent(event);
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
-        if (mFlipper != null) {
+        if (mPager != null && mFlipper != null) {
             mFlipper.onDraw(canvas);
         }
     }

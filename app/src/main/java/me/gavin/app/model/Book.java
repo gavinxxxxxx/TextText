@@ -177,8 +177,10 @@ public class Book implements Serializable {
 
     public InputStream open() throws IOException {
         Uri uri = Uri.parse(this.uri);
-        if (uri.getScheme().equals("file")) {
+        if ("file".equals(uri.getScheme())) {
             return new FileInputStream(uri.getPath());
+        } else if ("http".equals(uri.getScheme()) || "https".equals(uri.getScheme())) {
+
         }
         return null;
     }

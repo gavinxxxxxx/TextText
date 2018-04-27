@@ -9,6 +9,7 @@ public class Chapter {
 
     public String id;
     public String title;
+    public int index;
     public long offset;
     public boolean selected;
     public String text;
