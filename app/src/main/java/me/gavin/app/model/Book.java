@@ -42,6 +42,7 @@ public class Book implements Serializable {
 
     private String id;
     private String src;
+    private String text;
 
     private String charset;
     private long length;
@@ -53,10 +54,10 @@ public class Book implements Serializable {
     private long offset; // 阅读进度
     private long time; // 阅读时间
 
-    @Generated(hash = 447685256)
+    @Generated(hash = 1561102086)
     public Book(Long _id, String name, String author, String cover, String introduction,
-                String uri, int type, String id, String src, String charset, long length,
-                String MD5, long offset, long time) {
+            String uri, int type, String id, String src, String text, String charset,
+            long length, String MD5, long offset, long time) {
         this._id = _id;
         this.name = name;
         this.author = author;
@@ -66,6 +67,7 @@ public class Book implements Serializable {
         this.type = type;
         this.id = id;
         this.src = src;
+        this.text = text;
         this.charset = charset;
         this.length = length;
         this.MD5 = MD5;
@@ -226,5 +228,13 @@ public class Book implements Serializable {
 
     public void setType(int type) {
         this.type = type;
+    }
+
+    public String getText() {
+        return this.text;
+    }
+
+    public void setText(String text) {
+        this.text = text;
     }
 }

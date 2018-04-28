@@ -75,5 +75,4 @@ public class LocalPager extends Pager {
         page.prepare();
         return page;
     }
-
 }

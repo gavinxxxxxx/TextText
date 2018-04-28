@@ -19,6 +19,7 @@ import me.gavin.app.model.Book;
 import me.gavin.app.model.Chapter;
 import me.gavin.app.test.CoverFlipper;
 import me.gavin.app.test.LocalPager;
+import me.gavin.app.test.OnlinePager;
 import me.gavin.base.BindingActivity;
 import me.gavin.base.BundleKey;
 import me.gavin.base.recycler.BindingAdapter;
@@ -47,12 +48,12 @@ public class NewReadActivity extends BindingActivity<ActivityReadNewBinding> {
             getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
         }
 
-        long bookId = getIntent().getLongExtra("bookId", 0);
+        long bookId = getIntent().getLongExtra(BundleKey.BOOK_ID, 0);
         mBook = getDataLayer().getShelfService().loadBook(bookId);
 
         mBinding.drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
 
-        mBinding.text.setPager(new LocalPager());
+        mBinding.text.setPager(mBook.getType() == Book.TYPE_LOCAL ? new LocalPager() : new OnlinePager());
         mBinding.text.setFlipper(new CoverFlipper());
         mBinding.text.setOnFlipCallback(page -> {
             mBook.setOffset(page.start);

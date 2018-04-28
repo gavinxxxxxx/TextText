@@ -5,6 +5,8 @@ import org.jsoup.nodes.Element;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -22,6 +24,7 @@ import me.gavin.app.RxTransformer;
 import me.gavin.app.model.Book;
 import me.gavin.app.model.Chapter;
 import me.gavin.base.App;
+import me.gavin.db.dao.ChapterDao;
 import me.gavin.service.base.BaseManager;
 import me.gavin.service.base.DataLayer;
 import me.gavin.util.CacheHelper;
@@ -49,10 +52,12 @@ public class SourceManager extends BaseManager implements DataLayer.SourceServic
                     Book book = new Book();
                     book.setName(element.selectFirst("span[class=n2]").text());
                     book.setAuthor(element.selectFirst("span[class=a2]").text());
-                    book.setSrc("衍墨轩");
                     String uri = "https:" + element.selectFirst("span[class=n2] a").attr("href");
                     book.setUri(uri);
                     book.setId(uri.substring(uri.lastIndexOf("/text_") + 6, uri.length() - 5));
+                    book.setType(Book.TYPE_ONLINE);
+                    book.setSrc("衍墨轩");
+                    book.setCharset("utf-8");
                     return book;
                 });
     }
@@ -78,11 +83,19 @@ public class SourceManager extends BaseManager implements DataLayer.SourceServic
                     return new Chapter(cid, element.text());
                 })
                 .toList()
-                .toObservable();
+                .toObservable()
+                .map(chapters -> {
+                    getDaoSession().getChapterDao()
+                            .queryBuilder()
+                            .where(ChapterDao.Properties.BookId.eq(id))
+                            .buildDelete();
+                    getDaoSession().getChapterDao().saveInTx(chapters);
+                    return chapters;
+                });
     }
 
     @Override
-    public Observable<String> chapter(String id, String cid) {
+    public Observable<String> chapter(Book book, String cid) {
 //        return getApi().yanmoxuanChapter(id, cid)
 //                .map(ResponseBody::byteStream)
 //                .map(this::saveStream);
@@ -100,14 +113,34 @@ public class SourceManager extends BaseManager implements DataLayer.SourceServic
 //                .compose(RxTransformer.log())
 //                .map(this::saveString);
 
-        return getApi().yanmoxuanChapter(id, cid)
-                .map(ResponseBody::byteStream)
-                .map(this::unGZIP)
-                .map(s -> s.replaceAll("<br/?>", "\\\\n"))
-                .map(Jsoup::parse)
-                .map(document -> document.selectFirst("article[class=chaptercontent] div[class=content]"))
-                .map(Element::text)
-                .map(s -> s.replaceAll("\\\\n", "\n"));
+
+        return Observable.just(".Books/%s(%s)/%s/%s")
+                .map(format -> String.format(format, book.getName(), book.getAuthor(), book.getSrc(), cid))
+                .map(File::new)
+                .flatMap(file -> {
+                    if (file.exists()) {
+                        return Observable.just(file)
+                                .map(FileInputStream::new)
+                                .map(this::unGZIP);
+                    }
+                    return getApi().yanmoxuanChapter(book.getId(), cid)
+                            .map(ResponseBody::byteStream)
+                            .map(this::unGZIP)
+                            .map(s -> s.replaceAll("<br/?>", "\\\\n"))
+                            .map(Jsoup::parse)
+                            .map(document -> document.selectFirst("article[class=chaptercontent] div[class=content]"))
+                            .map(Element::text)
+                            .map(s -> s.replaceAll("\\\\n", "\n"));
+                });
+//        return getApi().yanmoxuanChapter(id, cid)
+//                .map(ResponseBody::byteStream)
+//                .map(this::unGZIP)
+////                .map(this::saveStream);
+//                .map(s -> s.replaceAll("<br/?>", "\\\\n"))
+//                .map(Jsoup::parse)
+//                .map(document -> document.selectFirst("article[class=chaptercontent] div[class=content]"))
+//                .map(Element::text)
+//                .map(s -> s.replaceAll("\\\\n", "\n"));
     }
 
     private String saveStream(InputStream in) throws IOException {

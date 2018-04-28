@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.SearchView;
-import android.view.View;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +13,7 @@ import me.gavin.app.RxTransformer;
 import me.gavin.app.explorer.ExplorerActivity;
 import me.gavin.app.model.Book;
 import me.gavin.app.read.NewReadActivity;
+import me.gavin.app.search.DetailActivity;
 import me.gavin.app.search.SearchActivity;
 import me.gavin.app.test.TestActivity;
 import me.gavin.base.BindingActivity;
@@ -84,9 +84,15 @@ public class ShelfActivity extends BindingActivity<ActivityShelfBinding> {
                 .subscribe(books -> {
                     mList.addAll(books);
                     mAdapter = new BindingAdapter<>(this, mList, R.layout.item_shelf_book);
-                    mAdapter.setOnItemClickListener(i ->
+                    mAdapter.setOnItemClickListener(i -> {
+                        if (mList.get(i).getType() == Book.TYPE_LOCAL) {
                             startActivity(new Intent(this, NewReadActivity.class)
-                                    .putExtra(BundleKey.BOOK_ID, mList.get(i).get_id())));
+                                    .putExtra(BundleKey.BOOK_ID, mList.get(i).get_id()));
+                        } else {
+                            startActivity(new Intent(this, DetailActivity.class)
+                                    .putExtra(BundleKey.BOOK_ID, mList.get(i).get_id()));
+                        }
+                    });
                     mBinding.recycler.setAdapter(mAdapter);
                 });
     }

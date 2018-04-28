@@ -9,6 +9,7 @@ import me.gavin.app.model.Page;
 import me.gavin.app.test.CoverFlipper;
 import me.gavin.app.test.LocalPager;
 import me.gavin.base.BindingActivity;
+import me.gavin.base.BundleKey;
 import me.gavin.text.R;
 import me.gavin.text.databinding.ActivityReadNewBinding;
 
@@ -25,7 +26,7 @@ public class NewReadActivity222 extends BindingActivity<ActivityReadNewBinding> 
 
     @Override
     protected void afterCreate(@Nullable Bundle savedInstanceState) {
-        mChapter = getIntent().getStringExtra("bookId");
+        mChapter = getIntent().getStringExtra(BundleKey.BOOK_ID);
 
         mBinding.drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
 

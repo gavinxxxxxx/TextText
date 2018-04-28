@@ -7,9 +7,7 @@ import android.support.annotation.Nullable;
 import me.gavin.app.RxTransformer;
 import me.gavin.app.model.Book;
 import me.gavin.app.model.Chapter;
-import me.gavin.app.model.Page;
-import me.gavin.app.model.Word;
-import me.gavin.app.read.NewReadActivity222;
+import me.gavin.app.read.NewReadActivity;
 import me.gavin.base.BindingActivity;
 import me.gavin.base.BundleKey;
 import me.gavin.base.recycler.BindingAdapter;
@@ -26,7 +24,6 @@ public class DetailActivity extends BindingActivity<ActivityDetailBinding> {
 
     private Book mBook;
 
-
     @Override
     protected int getLayoutId() {
         return R.layout.activity_detail;
@@ -34,7 +31,8 @@ public class DetailActivity extends BindingActivity<ActivityDetailBinding> {
 
     @Override
     protected void afterCreate(@Nullable Bundle savedInstanceState) {
-        mBook = (Book) getIntent().getSerializableExtra(BundleKey.BOOK);
+        long bookId = getIntent().getLongExtra(BundleKey.BOOK_ID, 0);
+        mBook = getDataLayer().getShelfService().loadBook(bookId);
         detail(mBook.getId());
         directory(mBook.getId());
     }
@@ -56,26 +54,23 @@ public class DetailActivity extends BindingActivity<ActivityDetailBinding> {
                     BindingAdapter<Chapter> adapter = new BindingAdapter<>(
                             this, chapters, R.layout.item_chapter);
                     adapter.setOnItemClickListener(i ->
-                            chapter(mBook.getId(), chapters.get(i).id));
+                            chapter(chapters.get(i).id));
                     mBinding.recycler.setAdapter(adapter);
                 }, L::e);
     }
 
-    public void chapter(String id, String cid) {
+    public void chapter(String cid) {
         getDataLayer().getSourceService()
-                .chapter(id, cid)
+                .chapter(mBook, cid)
                 .compose(RxTransformer.applySchedulers())
                 .doOnSubscribe(mCompositeDisposable::add)
                 .subscribe(s -> {
                     L.e(s);
-//                    Page page = Page.fromChapter(s, 0, false);
-//                    L.e(page);
-//                    L.e(page.mText);
-//                    for (Word word : page.wordList) {
-//                        L.e(word);
-//                    }
-                    startActivity(new Intent(this, NewReadActivity222.class)
-                            .putExtra(BundleKey.BOOK_ID, s));
+                    mBook.setText(s);
+                    mBook.setOffset(0);
+                    getDataLayer().getShelfService().updateBook(mBook);
+                    startActivity(new Intent(this, NewReadActivity.class)
+                            .putExtra(BundleKey.BOOK_ID, mBook.get_id()));
                 }, L::e);
     }
 }

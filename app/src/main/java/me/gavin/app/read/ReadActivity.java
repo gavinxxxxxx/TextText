@@ -54,7 +54,7 @@ public class ReadActivity extends BindingActivity<ActivityReadBinding> {
 //        SnapHelper snapHelper = new PagerSnapHelper();
 //        snapHelper.attachToRecyclerView(mBinding.recycler);
 
-        long bookId = getIntent().getLongExtra("bookId", 0);
+        long bookId = getIntent().getLongExtra(BundleKey.BOOK_ID, 0);
         mBook = getDataLayer().getShelfService().loadBook(bookId);
 
         mBinding.recycler.post(() -> {

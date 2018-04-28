@@ -100,7 +100,7 @@ public class Page {
             page.mText = chapter.substring(si, si + Math.min(Config.pagePreCount, (int) page.end));
             page.mTextSp = Utils.trim(page.mText).split(Config.REGEX_SEGMENT);
             page.indent = true;
-            String fix = chapter.substring((int) page.end, Config.segmentPreCount);
+            String fix = chapter.substring((int) page.end, (int)page.end + Config.segmentPreCount);
             page.align = !page.mText.matches(Config.REGEX_SEGMENT_PREFIX) && !fix.matches(Config.REGEX_SEGMENT_SUFFIX);
         }
         page.text2Line();
@@ -119,7 +119,11 @@ public class Page {
     }
 
     public void prepare() {
-        text2Line();
+        if (book.getType() == Book.TYPE_LOCAL) {
+            text2Line();
+        } else {
+            text2LineForOnline();
+        }
         for (Line line : lineList) {
             line2Words(line);
         }
@@ -158,6 +162,68 @@ public class Page {
         }
         if (!isReverse && start + mText.length() >= book.getLength()) { // 正向 & 还能显示却没有了
             end = book.getLength();
+            limit = (int) (end - start);
+            isLast = true;
+        } else if (isReverse) { // 反向
+            List<Line> lines = new ArrayList<>();
+            y = y - Config.segmentSpacing - Config.lineSpacing; // 最后一行文字底部 - 去掉多余的空隙
+            subText = mText; // 子字符串 - 计算字符数量
+
+            int ey = y - Config.height + Config.bottomPadding + Config.topPadding; // 超出的高度
+            for (Line line : lineList) {
+                if (line.y + Config.textTop < ey) { // 底部对齐后去掉顶部超出的行
+                    subText = subText.substring(subText.indexOf(line.src) + line.src.length());
+                } else {
+                    lines.add(line);
+                }
+            }
+
+            ey = lines.isEmpty() ? -1 : lines.get(0).y - Config.topPadding; // 距顶部对齐行偏移量
+            for (Line line : lines) {
+                line.y = line.y - ey + Config.textSize;
+            }
+            lineList.clear();
+            lineList.addAll(lines);
+
+            limit = subText.length();
+            start = end - limit;
+            isFirst = start <= 0;
+        }
+    }
+
+    private void text2LineForOnline() {
+        int y = Config.topPadding; // 行文字顶部
+        String subText = Utils.trim(mText);
+        for (int i = 0; i < mTextSp.length; i++) {
+            String segment = mTextSp[i];
+            int segmentStart = 0;
+            while (segmentStart < segment.length()) {
+                if (!isReverse && y + Config.textHeight > Config.height - Config.bottomPadding) { // 正向 & 已排满页面
+                    limit = mText.indexOf(subText);
+                    end = start + limit;
+                    isLast = end >= book.getText().length();
+                    return;
+                }
+                String remaining = segment.substring(segmentStart);
+                boolean lineIndent = i == 0 && segmentStart == 0 && indent
+                        || i != 0 && segmentStart == 0;
+                int count = breakText(remaining, lineIndent);
+                String suffix = count < 0 ? "-" : "";
+                count = Math.abs(count);
+                String text = segment.substring(segmentStart, segmentStart + count);
+                boolean lineAlignNo = segmentStart + count >= segment.length() // 不对齐 - 段落尾行 && 非反向最后一行
+                        && !(isReverse && align && i == mTextSp.length - 1);
+                Line line = new Line(Utils.trim(text), suffix, y - Config.textTop, lineIndent, lineAlignNo);
+                lineList.add(line);
+
+                y += Config.textHeight + Config.lineSpacing;
+                segmentStart += count;
+                subText = subText.substring(subText.indexOf(text) + text.length());
+            }
+            y += Config.segmentSpacing;
+        }
+        if (!isReverse && start + mText.length() >= book.getLength()) { // 正向 & 还能显示却没有了
+            end = book.getText().length();
             limit = (int) (end - start);
             isLast = true;
         } else if (isReverse) { // 反向

@@ -39,9 +39,16 @@ public class SearchActivity extends BindingActivity<ActivitySearchBinding> {
         mBinding.includeToolbar.toolbar.setNavigationOnClickListener(v -> finish());
 
         mAdapter = new BindingAdapter<>(this, mList, R.layout.item_search);
-        mAdapter.setOnItemClickListener(i ->
-                startActivity(new Intent(this, DetailActivity.class)
-                        .putExtra(BundleKey.BOOK, mList.get(i))));
+        mAdapter.setOnItemClickListener(i -> {
+            Book book = mList.get(i);
+            book.setTime(System.currentTimeMillis());
+            getDataLayer().getShelfService()
+                    .insertBook(book)
+                    .subscribe(aLong -> {
+                        startActivity(new Intent(this, DetailActivity.class)
+                                .putExtra(BundleKey.BOOK_ID, aLong));
+                    });
+        });
         mBinding.recycler.setAdapter(mAdapter);
 
         doSearch(query);
