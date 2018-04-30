@@ -5,6 +5,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.PointF;
 import android.graphics.drawable.Drawable;
 import android.view.MotionEvent;
@@ -50,24 +51,24 @@ public class CoverFlipper extends Flipper {
             @Override
             public void onAnimationEnd(Animator animation) {
                 if (!mTouching && mOffsetX == mTargetX) {
-                    if (mOffsetX == -Config.width && !mView.pages[1].isLast) {
-                        mView.getPager().offset(false);
+                    if (mOffsetX == -Config.width && mView.next() != null) {
+                        mView.onFlip(false);
                         bs[0].recycle();
                         bs[0] = bs[1];
                         bs[1] = bs[2];
                         toBitmap(2);
                         mOffsetX = 0;
                         mView.invalidate();
-                        mView.onFlip();
-                    } else if (mOffsetX == Config.width && !mView.pages[1].isFirst) {
-                        mView.getPager().offset(true);
+                        mView.onFliped();
+                    } else if (mOffsetX == Config.width && mView.last() != null) {
+                        mView.onFlip(true);
                         bs[2].recycle();
                         bs[2] = bs[1];
                         bs[1] = bs[0];
                         toBitmap(0);
                         mOffsetX = 0;
                         mView.invalidate();
-                        mView.onFlip();
+                        mView.onFliped();
                     }
                 }
             }
@@ -80,8 +81,7 @@ public class CoverFlipper extends Flipper {
     }
 
     @Override
-    public void offset(Long offset) {
-        mView.getPager().offset(offset);
+    public void notifyPageChanged() {
         toBitmap(0, 1, 2);
         mView.invalidate();
     }
@@ -121,15 +121,15 @@ public class CoverFlipper extends Flipper {
                 float xv = mVelocityTracker.getXVelocity();
                 if (Math.abs(xv) > Config.flingVelocity) { // 抛动
                     if (mOffsetX > 0) {
-                        mTargetX = xv < 0 || mView.pages[1].isFirst ? 0 : Config.width;
+                        mTargetX = xv < 0 || mView.last() == null ? 0 : Config.width;
                     } else {
-                        mTargetX = xv > 0 || mView.pages[1].isLast ? 0 : -Config.width;
+                        mTargetX = xv > 0 || mView.next() == null ? 0 : -Config.width;
                     }
                 } else { // 静置松手
                     if (mOffsetX > 0) {
-                        mTargetX = mOffsetX < Config.width / 2 || mView.pages[1].isFirst ? 0 : Config.width;
+                        mTargetX = mOffsetX < Config.width / 2 || mView.last() == null ? 0 : Config.width;
                     } else {
-                        mTargetX = mOffsetX > -Config.width / 2 || mView.pages[1].isLast ? 0 : -Config.width;
+                        mTargetX = mOffsetX > -Config.width / 2 || mView.next() == null ? 0 : -Config.width;
                     }
                 }
                 mAnimator.setFloatValues(mOffsetX, mTargetX);
@@ -158,7 +158,7 @@ public class CoverFlipper extends Flipper {
             drawable.setBounds((int) left, 0, (int) left + 40, Config.height);
             drawable.draw(canvas);
         }
-        canvas.drawText(mView.pages[1].start + "~" + mView.pages[1].end, 10, 40, Config.textPaint);
+        canvas.drawText(mView.curr().start + "~" + mView.curr().end, 10, 40, Config.textPaint);
     }
 
     private void toBitmap(int... index) {
@@ -166,9 +166,14 @@ public class CoverFlipper extends Flipper {
             bs[i] = Bitmap.createBitmap(Config.width, Config.height, Bitmap.Config.RGB_565);
             Canvas canvas = new Canvas(bs[i]);
             canvas.drawRect(0, 0, Config.width, Config.height, Config.bgPaint);
-            if (mView.pages[i] != null) {
-                for (Word word : mView.pages[i].wordList) {
-                    word.draw(canvas, 0, 0);
+            int position = mView.index + i - 1;
+            if (position >= 0 && position < mView.pages.size()) {
+                if (mView.pages.get(position).ready) {
+                    for (Word word : mView.pages.get(position).wordList) {
+                        word.draw(canvas, 0, 0);
+                    }
+                } else {
+//                    canvas.drawColor(Color.WHITE);
                 }
             }
         }

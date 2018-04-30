@@ -14,7 +14,7 @@ public abstract class Flipper {
 
     public abstract void flip(boolean reserve);
 
-    public abstract void offset(Long offset);
+    public abstract void notifyPageChanged();
 
     public abstract boolean onTouchEvent(MotionEvent event);
 

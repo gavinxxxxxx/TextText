@@ -10,7 +10,6 @@ import java.util.regex.Pattern;
 import me.gavin.app.Config;
 import me.gavin.app.StreamHelper;
 import me.gavin.app.Utils;
-import me.gavin.util.L;
 
 /**
  * Page
@@ -20,7 +19,9 @@ import me.gavin.util.L;
 public class Page {
 
     public Book book;
+    public String chapter;
 
+    public int index;
     public long start;
     public int limit;
     public long end;
@@ -38,6 +39,9 @@ public class Page {
 
     public final List<Line> lineList; // 页面文字分行
     public final List<Word> wordList; // 页面按字词拆分
+
+    public int type;
+    public boolean ready;
 
     public Page() {
         lineList = new ArrayList<>();
@@ -100,7 +104,7 @@ public class Page {
             page.mText = chapter.substring(si, si + Math.min(Config.pagePreCount, (int) page.end));
             page.mTextSp = Utils.trim(page.mText).split(Config.REGEX_SEGMENT);
             page.indent = true;
-            String fix = chapter.substring((int) page.end, (int)page.end + Config.segmentPreCount);
+            String fix = chapter.substring((int) page.end, (int) page.end + Config.segmentPreCount);
             page.align = !page.mText.matches(Config.REGEX_SEGMENT_PREFIX) && !fix.matches(Config.REGEX_SEGMENT_SUFFIX);
         }
         page.text2Line();

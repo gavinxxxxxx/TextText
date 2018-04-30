@@ -1,13 +1,13 @@
 package me.gavin.app.search;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+
+import java.util.List;
 
 import me.gavin.app.RxTransformer;
 import me.gavin.app.model.Book;
 import me.gavin.app.model.Chapter;
-import me.gavin.app.read.NewReadActivity;
 import me.gavin.base.BindingActivity;
 import me.gavin.base.BundleKey;
 import me.gavin.base.recycler.BindingAdapter;
@@ -45,32 +45,60 @@ public class DetailActivity extends BindingActivity<ActivityDetailBinding> {
                 .subscribe(L::e, L::e);
     }
 
+    private List<Chapter> chapterList;
+
     private void directory(String id) {
         getDataLayer().getSourceService()
                 .directory(id)
                 .compose(RxTransformer.applySchedulers())
                 .doOnSubscribe(mCompositeDisposable::add)
                 .subscribe(chapters -> {
+                    chapterList = chapters;
                     BindingAdapter<Chapter> adapter = new BindingAdapter<>(
                             this, chapters, R.layout.item_chapter);
-                    adapter.setOnItemClickListener(i ->
-                            chapter(chapters.get(i).id));
+                    adapter.setOnItemClickListener(this::chapter);
                     mBinding.recycler.setAdapter(adapter);
+
+                    mBook.setCount(chapters.size());
+                    getDataLayer().getShelfService().updateBook(mBook);
                 }, L::e);
     }
 
-    public void chapter(String cid) {
+    private boolean flag = false;
+
+    public void chapter(int i) {
+//        if (!flag) {
+//            getDataLayer().getSourceService()
+//                    .getFromNet(mBook.getId(), chapterList.get(i).getId())
+//                    .compose(RxTransformer.applySchedulers())
+//                    .doOnSubscribe(mCompositeDisposable::add)
+//                    .subscribe(s -> {
+//                        flag = true;
+//                        L.e(s);
+//                    }, L::e);
+//        } else {
+//            getDataLayer().getSourceService()
+//                    .getFromCache(mBook, i)
+//                    .compose(RxTransformer.applySchedulers())
+//                    .doOnSubscribe(mCompositeDisposable::add)
+//                    .subscribe(s -> {
+//                        flag = false;
+//                        L.e(s);
+//                    }, L::e);
+//        }
+
+        mBook.setIndex(i);
         getDataLayer().getSourceService()
-                .chapter(mBook, cid)
+                .chapter(mBook, mBook.getIndex())
                 .compose(RxTransformer.applySchedulers())
                 .doOnSubscribe(mCompositeDisposable::add)
                 .subscribe(s -> {
                     L.e(s);
-                    mBook.setText(s);
-                    mBook.setOffset(0);
-                    getDataLayer().getShelfService().updateBook(mBook);
-                    startActivity(new Intent(this, NewReadActivity.class)
-                            .putExtra(BundleKey.BOOK_ID, mBook.get_id()));
+//                    mBook.setText(s);
+//                    mBook.setOffset(0);
+//                    getDataLayer().getShelfService().updateBook(mBook);
+//                    startActivity(new Intent(this, NewReadActivity.class)
+//                            .putExtra(BundleKey.BOOK_ID, mBook.get_id()));
                 }, L::e);
     }
 }

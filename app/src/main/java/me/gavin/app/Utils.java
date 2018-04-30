@@ -1,11 +1,15 @@
 package me.gavin.app;
 
-import android.graphics.Canvas;
-
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import me.gavin.app.model.Book;
 import me.gavin.app.model.Line;
+import me.gavin.app.model.Page;
+import me.gavin.app.model.Word;
 
 /**
  * Utils
@@ -77,16 +81,210 @@ public final class Utils {
                 || count == 41 || count == 62 || count == 93 || count == 125;
     }
 
+    public static Page lastLocal(Page page, long offset) throws IOException {
+        page.isReverse = true;
+        page.end = offset;
+        page.isLast = page.end >= page.book.getLength();
+        page.mText = StreamHelper.getText(page.book.open(), page.book.getCharset(), Math.max(page.end - Config.pagePreCount, 0), (int) Math.min(Config.pagePreCount, page.end));
+        page.mTextSp = Utils.trim(page.mText).split(Config.REGEX_SEGMENT);
+        page.indent = true;
+        String fix = StreamHelper.getText(page.book.open(), page.book.getCharset(), page.end, Config.segmentPreCount);
+        page.align = !page.mText.matches(Config.REGEX_SEGMENT_PREFIX) && !fix.matches(Config.REGEX_SEGMENT_SUFFIX);
+        perpare(page);
+        page.ready = true;
+        return page;
+    }
+
+    public static Page nextLocal(Page page, long offset) throws IOException {
+        page.isReverse = false;
+        page.start = offset;
+        page.isFirst = page.start <= 0;
+        page.mText = StreamHelper.getText(page.book.open(), page.book.getCharset(), page.start, (int) Math.min(Config.pagePreCount, page.book.getLength() - page.start));
+        page.mTextSp = Utils.trim(page.mText).split(Config.REGEX_SEGMENT);
+        page.align = true;
+        if (page.isFirst || page.mText.matches(Config.REGEX_SEGMENT_SUFFIX)) {
+            page.indent = true;
+        } else {
+            int preCount = (int) (page.start >= Config.segmentPreCount ? Config.segmentPreCount : page.start);
+            String fix = StreamHelper.getText(page.book.open(), page.book.getCharset(), page.start - preCount, preCount);
+            page.indent = fix.matches(Config.REGEX_SEGMENT_PREFIX);
+        }
+        perpare(page);
+        page.ready = true;
+        return page;
+    }
+
+    public static Page lastOnline(Page page, long offset) {
+        page.type = Book.TYPE_ONLINE;
+        page.isReverse = true;
+        page.end = offset;
+        page.isLast = page.index >= page.book.getCount() - 1 && page.end >= page.chapter.length();
+        int si = Math.max((int) page.end - Config.pagePreCount, 0);
+        page.mText = page.chapter.substring(si, si + Math.min(Config.pagePreCount, (int) page.end));
+        page.mTextSp = Utils.trim(page.mText).split(Config.REGEX_SEGMENT);
+        page.indent = true;
+        String fix = page.chapter.substring((int) page.end, Math.min(page.chapter.length(), (int) page.end + Config.segmentPreCount));
+        page.align = !page.mText.matches(Config.REGEX_SEGMENT_PREFIX) && !fix.matches(Config.REGEX_SEGMENT_SUFFIX);
+        perpare(page);
+        page.ready = true;
+        return page;
+    }
+
+    public static Page nextOnline(Page page, long offset) {
+        page.type = Book.TYPE_ONLINE;
+        page.isReverse = false;
+        page.start = offset;
+        page.isFirst = page.index <= 0 && page.start <= 0;
+        page.mText = page.chapter.substring((int) page.start, Math.min((int) page.start + Config.pagePreCount, page.chapter.length()));
+        page.mTextSp = Utils.trim(page.mText).split(Config.REGEX_SEGMENT);
+        page.align = true;
+        if (page.isFirst || page.mText.matches(Config.REGEX_SEGMENT_SUFFIX)) {
+            page.indent = true;
+        } else {
+            int preCount = (int) (page.start >= Config.segmentPreCount ? Config.segmentPreCount : page.start);
+            String fix = page.chapter.substring((int) page.start - preCount, (int) page.start);
+            page.indent = fix.matches(Config.REGEX_SEGMENT_PREFIX);
+        }
+        perpare(page);
+        page.ready = true;
+        return page;
+    }
+
+
+    private static void perpare(Page page) {
+        text2Line(page);
+        for (Line line : page.lineList) {
+            line2Words(page, line);
+        }
+    }
+
+    private static void text2Line(Page page) {
+        long length = page.type == Book.TYPE_ONLINE ? page.chapter.length() : page.book.getLength();
+        int y = Config.topPadding; // 行文字顶部
+        String subText = Utils.trim(page.mText);
+        for (int i = 0; i < page.mTextSp.length; i++) {
+            String segment = page.mTextSp[i];
+            int segmentStart = 0;
+            while (segmentStart < segment.length()) {
+                if (!page.isReverse && y + Config.textHeight > Config.height - Config.bottomPadding) { // 正向 & 已排满页面
+                    page.limit = page.mText.indexOf(subText);
+                    page.end = page.start + page.limit;
+                    if (page.type == Book.TYPE_ONLINE) {
+                        page.isLast = page.index >= page.book.getCount() - 1 && page.end >= length;
+                    } else {
+                        page.isLast = page.end >= length;
+                    }
+                    return;
+                }
+                String remaining = segment.substring(segmentStart);
+                boolean lineIndent = i == 0 && segmentStart == 0 && page.indent
+                        || i != 0 && segmentStart == 0;
+                int count = breakText(remaining, lineIndent);
+                String suffix = count < 0 ? "-" : "";
+                count = Math.abs(count);
+                String text = segment.substring(segmentStart, segmentStart + count);
+                boolean lineAlignNo = segmentStart + count >= segment.length() // 不对齐 - 段落尾行 && 非反向最后一行
+                        && !(page.isReverse && page.align && i == page.mTextSp.length - 1);
+                Line line = new Line(Utils.trim(text), suffix, y - Config.textTop, lineIndent, lineAlignNo);
+                page.lineList.add(line);
+
+                y += Config.textHeight + Config.lineSpacing;
+                segmentStart += count;
+                subText = subText.substring(subText.indexOf(text) + text.length());
+            }
+            y += Config.segmentSpacing;
+        }
+        if (!page.isReverse && page.start + page.mText.length() >= length) { // 正向 & 还能显示却没有了
+            page.end = length;
+            page.limit = (int) (page.end - page.start);
+            if (page.type == Book.TYPE_ONLINE) {
+                page.isLast = page.index >= page.book.getCount() - 1;
+            } else {
+                page.isLast = true;
+            }
+        } else if (page.isReverse) { // 反向
+            List<Line> lines = new ArrayList<>();
+            y = y - Config.segmentSpacing - Config.lineSpacing; // 最后一行文字底部 - 去掉多余的空隙
+            subText = page.mText; // 子字符串 - 计算字符数量
+
+            int ey = y - Config.height + Config.bottomPadding + Config.topPadding; // 超出的高度
+            for (Line line : page.lineList) {
+                if (line.y + Config.textTop < ey) { // 底部对齐后去掉顶部超出的行
+                    subText = subText.substring(subText.indexOf(line.src) + line.src.length());
+                } else {
+                    lines.add(line);
+                }
+            }
+
+            ey = lines.isEmpty() ? -1 : lines.get(0).y - Config.topPadding; // 距顶部对齐行偏移量
+            for (Line line : lines) {
+                line.y = line.y - ey + Config.textSize;
+            }
+            page.lineList.clear();
+            page.lineList.addAll(lines);
+
+            page.limit = subText.length();
+            page.start = page.end - page.limit;
+            if (page.type == Book.TYPE_ONLINE) {
+                page.isFirst = page.index <= 0 && page.start <= 0;
+            } else {
+                page.isFirst = page.start <= 0;
+            }
+        }
+    }
+
+    private static int breakText(String remaining, boolean lineIndent) {
+        int count = Config.textPaint.breakText(remaining, true, Config.width
+                - Config.leftPadding - Config.rightPadding - (lineIndent ? Config.indent : 0), null);
+        return count >= remaining.length() ? count : countReset(remaining, count, lineIndent);
+    }
+
+    /**
+     * 分行衔接调整 - 标点 & 单词 - 只考虑标准情况
+     *
+     * @return count 数量 负数代表要加 -
+     */
+    private static int countReset(String remaining, int count, boolean lineIndent) {
+        if (remaining.substring(count, count + 1).matches(Config.REGEX_PUNCTUATION_N)) { // 下一行第一个是标点
+            if (!remaining.substring(count - 2, count)
+                    .matches(Config.REGEX_PUNCTUATION_N + "*")) { // 当前行末两不都是标点 - 标准状况下
+                count -= 1;
+                return countReset(remaining, count, lineIndent);
+            }
+        } else if (remaining.substring(count - 1, count + 1).matches(Config.REGEX_WORD)) { // 上一行最后一个字符和下一行第一个字符符合单词形式
+            String line = remaining.substring(0, count);
+            Matcher matcher = Pattern.compile(Config.REGEX_CHARACTER).matcher(line);
+            int groupCount = 0;
+            String group = "";
+            while (matcher.find()) {
+                groupCount++;
+                group = matcher.group();
+            }
+            int end = line.lastIndexOf(group);
+
+            float indent = lineIndent ? Config.indent : 0;
+            float textWidth = Config.textPaint.measureText(line.substring(0, end));
+            float lineWidth = Config.width - Config.leftPadding - Config.rightPadding - indent;
+            float extraSpace = lineWidth - textWidth; // 剩余空间
+
+            float spacing = extraSpace / (groupCount > 1 ? groupCount - 1 : 1);
+            if (spacing > Config.wordSpacingMax) { // 单词间距过大 - 改为 abc- 形式
+                return 1 - count;
+            }
+            return end;
+        }
+        return count;
+    }
+
     /**
      * 显示文字
      *
-     * @param canvas 画布
-     * @param line   单行文字 & 当前行y坐标 & 缩进 & 分散对齐
+     * @param line 单行文字 & 当前行y坐标 & 缩进 & 分散对齐
      */
-    public static void drawLine(Canvas canvas, Line line) {
+    private static void line2Words(Page page, Line line) {
         float indent = line.lineIndent ? Config.indent : 0;
         if (line.lineAlign || line.text.length() <= 1) { // 不需要分散对齐 | 只有一个字符
-            canvas.drawText(line.text, Config.leftPadding + indent, line.y, Config.textPaint);
+            page.wordList.add(new Word(line.text, Config.leftPadding + indent, line.y));
             return;
         }
 
@@ -94,17 +292,17 @@ public final class Utils {
         float lineWidth = Config.width - Config.leftPadding - Config.rightPadding - indent;
         float extraSpace = lineWidth - textWidth; // 剩余空间
         if (extraSpace <= 0) { // 没有多余空间 - 不需要分散对齐
-            canvas.drawText(line.text, Config.leftPadding + indent, line.y, Config.textPaint);
+            page.wordList.add(new Word(line.text, Config.leftPadding + indent, line.y));
             return;
         }
 
         Matcher matcher = Pattern.compile(Config.REGEX_CHARACTER).matcher(line.text);
-        int workCount = 0;
+        int wordCount = 0;
         while (matcher.find()) {
-            workCount++;
+            wordCount++;
         }
-        if (workCount > 1) { // 多个单词 - 词间距
-            float workSpacing = extraSpace / (workCount - 1);
+        if (wordCount > 1) { // 多个单词 - 词间距
+            float workSpacing = extraSpace / (wordCount - 1);
             float startX = Config.leftPadding + indent;
             float x;
             StringBuilder sb = new StringBuilder();
@@ -113,7 +311,7 @@ public final class Utils {
             while (matcher.find()) {
                 String word = matcher.group();
                 x = startX + Config.textPaint.measureText(sb.toString()) + workSpacing * spacingCount;
-                canvas.drawText(word, x, line.y, Config.textPaint);
+                page.wordList.add(new Word(word, x, line.y));
                 sb.append(word);
                 spacingCount++;
             }
@@ -124,7 +322,7 @@ public final class Utils {
             for (int i = 0; i < line.text.length(); i++) {
                 String word = String.valueOf(line.text.charAt(i));
                 x = startX + Config.textPaint.measureText(line.text.substring(0, i)) + workSpacing * i;
-                canvas.drawText(word, x, line.y, Config.textPaint);
+                page.wordList.add(new Word(word, x, line.y));
             }
         }
     }

@@ -51,13 +51,15 @@ public class Book implements Serializable {
     @Transient
     private List<Chapter> chapterList;
 
+    private int count; // 章节数
+    private int index; // 章节进度
     private long offset; // 阅读进度
     private long time; // 阅读时间
 
-    @Generated(hash = 1561102086)
+    @Generated(hash = 64324316)
     public Book(Long _id, String name, String author, String cover, String introduction,
             String uri, int type, String id, String src, String text, String charset,
-            long length, String MD5, long offset, long time) {
+            long length, String MD5, int count, int index, long offset, long time) {
         this._id = _id;
         this.name = name;
         this.author = author;
@@ -71,6 +73,8 @@ public class Book implements Serializable {
         this.charset = charset;
         this.length = length;
         this.MD5 = MD5;
+        this.count = count;
+        this.index = index;
         this.offset = offset;
         this.time = time;
     }
@@ -236,5 +240,21 @@ public class Book implements Serializable {
 
     public void setText(String text) {
         this.text = text;
+    }
+
+    public int getIndex() {
+        return this.index;
+    }
+
+    public void setIndex(int index) {
+        this.index = index;
+    }
+
+    public int getCount() {
+        return this.count;
+    }
+
+    public void setCount(int count) {
+        this.count = count;
     }
 }

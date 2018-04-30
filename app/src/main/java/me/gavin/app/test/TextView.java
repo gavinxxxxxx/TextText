@@ -7,10 +7,11 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import me.gavin.app.Config;
-import me.gavin.app.model.Book;
 import me.gavin.app.model.Page;
-import me.gavin.base.function.Consumer;
 
 /**
  * TextView
@@ -19,36 +20,53 @@ import me.gavin.base.function.Consumer;
  */
 public class TextView extends View {
 
-    Book book;
-    final Page[] pages = new Page[Config.pageCount];
+    final List<Page> pages = new ArrayList<>();
+    int index = -1;
 
-    private Pager mPager;
+    private Pager2 mPager;
     private Flipper mFlipper;
-
-    Consumer<Page> onFlipCallback;
-
-    public void setOnFlipCallback(Consumer<Page> callback) {
-        this.onFlipCallback = callback;
-    }
 
     public TextView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         setKeepScreenOn(true);
     }
 
-    public void setBook(Book book) {
-        this.book = book;
-        mFlipper.offset(book.getOffset());
+    public Page curr() {
+        return pages.isEmpty() ? null : pages.get(index);
     }
 
-    public void setPager(Pager pager) {
+    public Page last() {
+        return pages.isEmpty() || index == 0 ? null : pages.get(index - 1);
+    }
+
+    public Page next() {
+        return pages.isEmpty() || index == pages.size() - 1 ? null : pages.get(index + 1);
+    }
+
+    public Page header() {
+        return pages.isEmpty() ? null : pages.get(0);
+    }
+
+    public Page footer() {
+        return pages.isEmpty() ? null : pages.get(pages.size() - 1);
+    }
+
+    public void add(Page page, boolean header) {
+        pages.add(header ? 0 : pages.size(), page);
+        index = header ? index + 1 : index;
+        mFlipper.notifyPageChanged();
+        onFliped();
+    }
+
+    public void update(Page page) {
+        int i = pages.indexOf(page);
+        mFlipper.notifyPageChanged();
+        // TODO: 2018/4/29 更新视图
+    }
+
+    public void setPager(Pager2 pager) {
         this.mPager = pager;
-        pager.mView = this;
         invalidate();
-    }
-
-    public Pager getPager() {
-        return mPager;
     }
 
     public void setFlipper(Flipper flipper) {
@@ -57,25 +75,41 @@ public class TextView extends View {
         invalidate();
     }
 
-    public Flipper getFlipper() {
-        return mFlipper;
+    public void onFlip(boolean reserve) {
+        if (reserve) {
+            index--;
+        } else {
+            index++;
+        }
+    }
+
+    public void onFliped() {
+        mPager.onFilped(curr());
+        if (index == 0 && !curr().isFirst) {
+            mPager.last();
+        }
+        if (index == pages.size() - 1 && !curr().isLast) {
+            mPager.next();
+        }
+    }
+
+    @Override
+    protected void onSizeChanged(int w, int h, int ow, int oh) {
+        if (w != ow || h != oh) {
+            Config.applySizeChange(w, h);
+            mPager.curr();
+        }
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        return mPager != null && mFlipper != null && mFlipper.onTouchEvent(event);
+        return !pages.isEmpty() && mFlipper != null && mFlipper.onTouchEvent(event);
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
-        if (mPager != null && mFlipper != null) {
+        if (!pages.isEmpty() && mFlipper != null) {
             mFlipper.onDraw(canvas);
-        }
-    }
-
-    public void onFlip() {
-        if (onFlipCallback != null) {
-            onFlipCallback.accept(pages[1]);
         }
     }
 }

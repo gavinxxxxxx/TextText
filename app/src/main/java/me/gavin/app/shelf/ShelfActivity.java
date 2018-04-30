@@ -89,7 +89,7 @@ public class ShelfActivity extends BindingActivity<ActivityShelfBinding> {
                             startActivity(new Intent(this, NewReadActivity.class)
                                     .putExtra(BundleKey.BOOK_ID, mList.get(i).get_id()));
                         } else {
-                            startActivity(new Intent(this, DetailActivity.class)
+                            startActivity(new Intent(this, NewReadActivity.class)
                                     .putExtra(BundleKey.BOOK_ID, mList.get(i).get_id()));
                         }
                     });

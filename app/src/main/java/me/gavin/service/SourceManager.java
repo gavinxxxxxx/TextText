@@ -3,12 +3,9 @@ package me.gavin.service;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -88,79 +85,82 @@ public class SourceManager extends BaseManager implements DataLayer.SourceServic
                     getDaoSession().getChapterDao()
                             .queryBuilder()
                             .where(ChapterDao.Properties.BookId.eq(id))
-                            .buildDelete();
+                            .buildDelete()
+                            .executeDeleteWithoutDetachingEntities();
+                    for (int i = 0; i < chapters.size(); i++) {
+                        chapters.get(i).setBookId(id);
+                        chapters.get(i).setIndex(i);
+                    }
                     getDaoSession().getChapterDao().saveInTx(chapters);
                     return chapters;
                 });
     }
 
+    public Observable<String> getFromNet(String bid, String cid) {
+        return getApi().yanmoxuanChapter(bid, cid)
+                .map(ResponseBody::byteStream)
+                .map(this::unGZIP)
+                .map(s -> s.replaceAll("<br/?>", "\\\\n"))
+                .map(Jsoup::parse)
+                .map(document -> document.selectFirst("article[class=chaptercontent] div[class=content]"))
+                .map(Element::text)
+                .map(s -> s.replaceAll("\\\\n", "\n"))
+                .map(s -> {
+                    GZIP(s, null);
+                    return s;
+                });
+    }
+
+    public Observable<String> getFromCache(Book book, int index) {
+        String path = CacheHelper.getFilesDir(App.get(), "book") + "/test.x";
+        return Observable.just(path)
+//        return Observable.just(".Books/%s(%s)/%s/##%s##")
+//                .map(format -> String.format(format, book.getName(), book.getAuthor(), book.getSrc(), index))
+                .map(FileInputStream::new)
+                .map(this::unGZIP);
+    }
+
     @Override
-    public Observable<String> chapter(Book book, String cid) {
-//        return getApi().yanmoxuanChapter(id, cid)
-//                .map(ResponseBody::byteStream)
-//                .map(this::saveStream);
-
-//        return getApi().yanmoxuanChapter(id, cid)
-//                .map(ResponseBody::byteStream)
-//                .map(this::unGZIP)
-//                .compose(RxTransformer.log())
-//                .map(s -> s.replaceAll("<br/?>", "~~~\n\\n\n\\\n\\\\n\\\\\n~~~"))
-//                .map(Jsoup::parse)
-//                .compose(RxTransformer.log())
-//                .map(document -> document.selectFirst("article[class=chaptercontent] div[class=content]"))
-//                .compose(RxTransformer.log())
-//                .map(Element::text)
-//                .compose(RxTransformer.log())
-//                .map(this::saveString);
-
-
-        return Observable.just(".Books/%s(%s)/%s/%s")
-                .map(format -> String.format(format, book.getName(), book.getAuthor(), book.getSrc(), cid))
+    public Observable<String> chapter(Book book, int index) {
+        return Observable.just("/%s(%s)/%s/%s")
+                .map(format -> String.format(format, book.getName(), book.getAuthor(), book.getSrc(), index))
+                .map(sf -> CacheHelper.getFilesDir(App.get(), ".Books") + sf)
                 .map(File::new)
                 .flatMap(file -> {
-                    if (file.exists()) {
-                        return Observable.just(file)
-                                .map(FileInputStream::new)
-                                .map(this::unGZIP);
+                    if (!file.exists() || file.isDirectory()) {
+                        file.delete();
+                        file.getParentFile().mkdirs();
+                        file.createNewFile();
+                        Chapter chapter = getDaoSession().getChapterDao()
+                                .queryBuilder()
+                                .where(ChapterDao.Properties.BookId.eq(book.getId()), ChapterDao.Properties.Index.eq(index))
+                                .unique();
+                        return getApi().yanmoxuanChapter(book.getId(), chapter.getId())
+                                .map(ResponseBody::byteStream)
+                                .map(this::unGZIP)
+                                .map(s -> s.replaceAll("<br/?>", "\\\\n"))
+                                .map(Jsoup::parse)
+                                .map(document -> document.selectFirst("article[class=chaptercontent] div[class=content]"))
+                                .map(Element::text)
+                                .map(s -> s.replaceAll("\\\\n", "\n"))
+                                .map(s -> GZIP(s, file));
                     }
-                    return getApi().yanmoxuanChapter(book.getId(), cid)
-                            .map(ResponseBody::byteStream)
-                            .map(this::unGZIP)
-                            .map(s -> s.replaceAll("<br/?>", "\\\\n"))
-                            .map(Jsoup::parse)
-                            .map(document -> document.selectFirst("article[class=chaptercontent] div[class=content]"))
-                            .map(Element::text)
-                            .map(s -> s.replaceAll("\\\\n", "\n"));
-                });
-//        return getApi().yanmoxuanChapter(id, cid)
-//                .map(ResponseBody::byteStream)
-//                .map(this::unGZIP)
-////                .map(this::saveStream);
-//                .map(s -> s.replaceAll("<br/?>", "\\\\n"))
-//                .map(Jsoup::parse)
-//                .map(document -> document.selectFirst("article[class=chaptercontent] div[class=content]"))
-//                .map(Element::text)
-//                .map(s -> s.replaceAll("\\\\n", "\n"));
+                    return Observable.just(file)
+                            .map(FileInputStream::new)
+                            .map(this::unGZIP);
+                })
+                .compose(RxTransformer.log());
     }
 
-    private String saveStream(InputStream in) throws IOException {
-        String path = CacheHelper.getFilesDir(App.get(), "book") + "/test.t";
-        try (FileOutputStream fos = new FileOutputStream(path)) {
-            byte[] buffer = new byte[8 * 1024];
-            int bytesRead;
-            while ((bytesRead = in.read(buffer)) != -1) {
-                fos.write(buffer, 0, bytesRead);
-            }
-            return path;
+    private String GZIP(String s, File file) throws IOException {
+        file.mkdirs();
+        String path = CacheHelper.getFilesDir(App.get(), "book") + "/test.x";
+        try (FileOutputStream fos = new FileOutputStream(file);
+             GZIPOutputStream gos = new GZIPOutputStream(fos)) {
+            gos.write(s.getBytes("utf-8"));
+            gos.finish();
         }
-    }
-
-    private String saveString(String string) throws IOException {
-        String path = CacheHelper.getFilesDir(App.get(), "book") + "/test.s";
-        try (FileWriter writer = new FileWriter(path)) {
-            writer.write(string);
-            return path;
-        }
+        return s;
     }
 
     private String unGZIP(InputStream in) throws IOException {
@@ -172,31 +172,6 @@ public class SourceManager extends BaseManager implements DataLayer.SourceServic
             while ((temp = reader.read(buffer)) > 0)
                 writer.write(buffer, 0, temp);
             return writer.toString();
-        }
-    }
-
-    private static byte[] gzip(byte[] bytes) {
-        try (ByteArrayOutputStream bos = new ByteArrayOutputStream();
-             GZIPOutputStream zos = new GZIPOutputStream(bos)) {
-            zos.write(bytes);
-            zos.finish();
-            return bos.toByteArray();
-        } catch (IOException e) {
-            return null;
-        }
-    }
-
-    private static byte[] unGzip(byte[] bytes) {
-        try (ByteArrayOutputStream bos = new ByteArrayOutputStream();
-             ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
-             GZIPInputStream zis = new GZIPInputStream(bis)) {
-            byte[] buffer = new byte[4096];
-            int temp;
-            while ((temp = zis.read(buffer)) > 0)
-                bos.write(buffer, 0, temp);
-            return bos.toByteArray();
-        } catch (IOException e) {
-            return null;
         }
     }
 }

@@ -29,6 +29,8 @@
         <activity android:name="me.gavin.app.search.SearchActivity" />
         <activity android:name="me.gavin.app.search.DetailActivity" />
         <activity android:name="me.gavin.app.read.ReadActivity" />
+        <activity android:name="me.gavin.app.read.LocalReadActivity" />
+        <activity android:name="me.gavin.app.read.OnlineReadActivityActivity" />
         <activity android:name="me.gavin.app.read.NewReadActivity" />
         <activity android:name="me.gavin.app.read.NewReadActivity222" />
 
