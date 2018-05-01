@@ -115,7 +115,6 @@ public final class Utils {
     }
 
     public static Page lastOnline(Page page, long offset) {
-        page.type = Book.TYPE_ONLINE;
         page.isReverse = true;
         page.end = offset;
         page.isLast = page.index >= page.book.getCount() - 1 && page.end >= page.chapter.length();
@@ -131,7 +130,6 @@ public final class Utils {
     }
 
     public static Page nextOnline(Page page, long offset) {
-        page.type = Book.TYPE_ONLINE;
         page.isReverse = false;
         page.start = offset;
         page.isFirst = page.index <= 0 && page.start <= 0;

@@ -51,6 +51,12 @@ public class TextView extends View {
         return pages.isEmpty() ? null : pages.get(pages.size() - 1);
     }
 
+    public void set(Page page) {
+        pages.clear();
+        index = -1;
+        add(page, true);
+    }
+
     public void add(Page page, boolean header) {
         pages.add(header ? 0 : pages.size(), page);
         index = header ? index + 1 : index;

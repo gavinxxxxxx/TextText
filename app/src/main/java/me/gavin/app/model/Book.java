@@ -8,15 +8,14 @@ import org.greenrobot.greendao.annotation.Id;
 import org.greenrobot.greendao.annotation.Transient;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.security.NoSuchAlgorithmException;
-import java.util.List;
 
 import me.gavin.app.StreamHelper;
+import me.gavin.base.App;
 
 /**
  * Book
@@ -32,51 +31,49 @@ public class Book implements Serializable {
     public static final int TYPE_ONLINE = 1;
 
     @Id(autoincrement = true)
-    private Long _id;
-    private String name;
-    private String author;
-    private String cover;
-    private String introduction;
-    private String uri;
-    private int type;
-
-    private String id;
-    private String src;
-    private String text;
-
-    private String charset;
-    private long length;
-    private String MD5; // TODO: 2018/1/1 文件一致性校验
-
+    public Long _id;
+    public String name;
+    public String author;
+    public String cover;
     @Transient
-    private List<Chapter> chapterList;
+    public String intro;
+    public int type;
+    public long offset; // 阅读进度
+    public long time; // 阅读时间
 
-    private int count; // 章节数
-    private int index; // 章节进度
-    private long offset; // 阅读进度
-    private long time; // 阅读时间
+    // 本地
+    public String uri; // file:// | content:/
+    public String charset;
+    public long length;
+    public String MD5; // TODO: 2018/1/1 文件一致性校验
 
-    @Generated(hash = 64324316)
-    public Book(Long _id, String name, String author, String cover, String introduction,
-            String uri, int type, String id, String src, String text, String charset,
-            long length, String MD5, int count, int index, long offset, long time) {
+    // 在线
+    public String id;
+    public String src;
+    public String srcName;
+    public int count; // 章节数
+    public int index; // 章节进度
+    
+    @Generated(hash = 799521487)
+    public Book(Long _id, String name, String author, String cover, int type, long offset,
+                long time, String uri, String charset, long length, String MD5, String id,
+                String src, String srcName, int count, int index) {
         this._id = _id;
         this.name = name;
         this.author = author;
         this.cover = cover;
-        this.introduction = introduction;
-        this.uri = uri;
         this.type = type;
-        this.id = id;
-        this.src = src;
-        this.text = text;
+        this.offset = offset;
+        this.time = time;
+        this.uri = uri;
         this.charset = charset;
         this.length = length;
         this.MD5 = MD5;
+        this.id = id;
+        this.src = src;
+        this.srcName = srcName;
         this.count = count;
         this.index = index;
-        this.offset = offset;
-        this.time = time;
     }
 
     @Generated(hash = 1839243756)
@@ -182,13 +179,7 @@ public class Book implements Serializable {
     }
 
     public InputStream open() throws IOException {
-        Uri uri = Uri.parse(this.uri);
-        if ("file".equals(uri.getScheme())) {
-            return new FileInputStream(uri.getPath());
-        } else if ("http".equals(uri.getScheme()) || "https".equals(uri.getScheme())) {
-
-        }
-        return null;
+        return App.get().getContentResolver().openInputStream(Uri.parse(uri));
     }
 
     @Override
@@ -218,28 +209,12 @@ public class Book implements Serializable {
         this.id = id;
     }
 
-    public String getIntroduction() {
-        return this.introduction;
-    }
-
-    public void setIntroduction(String introduction) {
-        this.introduction = introduction;
-    }
-
     public int getType() {
         return this.type;
     }
 
     public void setType(int type) {
         this.type = type;
-    }
-
-    public String getText() {
-        return this.text;
-    }
-
-    public void setText(String text) {
-        this.text = text;
     }
 
     public int getIndex() {
@@ -257,4 +232,21 @@ public class Book implements Serializable {
     public void setCount(int count) {
         this.count = count;
     }
+
+    public String getIntro() {
+        return this.intro;
+    }
+
+    public void setIntro(String intro) {
+        this.intro = intro;
+    }
+
+    public String getSrcName() {
+        return this.srcName;
+    }
+
+    public void setSrcName(String srcName) {
+        this.srcName = srcName;
+    }
+
 }

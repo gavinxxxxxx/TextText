@@ -60,7 +60,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:lines="2"
-                android:text="@{item.introduction}"
+                android:text="@{item.intro}"
                 android:textColor="@color/textColorTertiary"
                 android:textSize="12sp"
                 tools:text="想要让游戏兑换现实货币，那就一定要有一个强大的经济实体来担保" />

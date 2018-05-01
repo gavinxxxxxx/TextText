@@ -73,7 +73,9 @@ public class SourceManager extends BaseManager implements DataLayer.SourceServic
                 .map(this::unGZIP)
                 .map(Jsoup::parse)
                 .map(document -> document.select("section[class=container] article[class=info] ul[class=mulu] li[class=col3] a"))
-                .flatMap(Observable::fromIterable)
+                .flatMap(elements -> Observable
+                        .fromIterable(elements)
+                        .skip(elements.size() >= 18 ? 9 : elements.size() / 2)) // 跳过最新章节
                 .map(element -> {
                     String uri = element.attr("href");
                     String cid = uri.substring(uri.lastIndexOf("/") + 1, uri.lastIndexOf("."));
