@@ -1,6 +1,5 @@
 package me.gavin.app;
 
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.text.TextPaint;
 import android.view.ViewConfiguration;
@@ -21,8 +20,8 @@ public final class Config {
     public static final String REGEX_SEGMENT = "\\s*\\n\\s*"; // 分段
     public static final String REGEX_SEGMENT_PREFIX = "[\\s\\S]+\\s*\\n\\s*"; // 分段 - 段前
     public static final String REGEX_SEGMENT_SUFFIX = "\\s*\\n\\s*[\\s\\S]+"; // 分段 - 段后
-    public static final String REGEX_WORD = "[A-Za-z0-9\\-]+"; // 单词
-    public static final String REGEX_CHARACTER = "([A-Za-z0-9\\-]+|[^A-Za-z0-9\\-])"; // 文字
+    public static final String REGEX_WORD = "[A-Z_a-z0-9\\-]+"; // 单词
+    public static final String REGEX_CHARACTER = "([A-Z_a-z0-9\\-]+|[^A-Za-z0-9\\-])"; // 文字
     public static final String REGEX_PUNCTUATION = "[`~!@#$^&*()=|{}':;',\\[\\].<>/?~！@#￥……&*（）——|{}【】‘；：”“'。，、？]"; // 标点符号
     public static final String REGEX_PUNCTUATION_LEFT = "[({'\\[<（｛【‘“]"; // 标点符号
     public static final String REGEX_PUNCTUATION_RIGHT = "[)}'\\]>）｝】’”]"; // 标点符号

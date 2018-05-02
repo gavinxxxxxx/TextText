@@ -156,7 +156,7 @@ public final class Utils {
         }
     }
 
-    private static void text2Line(Page page) {
+    private static void text2Line(Page page) { // TODO: 2018/5/2 反向如果只有单行逻辑上有问题
         long length = page.type == Book.TYPE_ONLINE ? page.chapter.length() : page.book.getLength();
         int y = Config.topPadding; // 行文字顶部
         String subText = Utils.trim(page.mText);
@@ -175,10 +175,9 @@ public final class Utils {
                     return;
                 }
                 String remaining = segment.substring(segmentStart);
-                boolean lineIndent = i == 0 && segmentStart == 0 && page.indent
-                        || i != 0 && segmentStart == 0;
+                boolean lineIndent = i == 0 && segmentStart == 0 && page.indent || i != 0 && segmentStart == 0;
                 int count = breakText(remaining, lineIndent);
-                String suffix = count < 0 ? "-" : "";
+                String suffix = count < 0 ? "-" : ""; // TODO: 2018/5/2 反向最后一行断词 现在是始终无 "-"
                 count = Math.abs(count);
                 String text = segment.substring(segmentStart, segmentStart + count);
                 boolean lineAlignNo = segmentStart + count >= segment.length() // 不对齐 - 段落尾行 && 非反向最后一行
