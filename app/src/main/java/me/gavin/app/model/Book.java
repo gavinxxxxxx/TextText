@@ -53,7 +53,7 @@ public class Book implements Serializable {
     public String srcName;
     public int count; // 章节数
     public int index; // 章节进度
-    
+
     @Generated(hash = 799521487)
     public Book(Long _id, String name, String author, String cover, int type, long offset,
                 long time, String uri, String charset, long length, String MD5, String id,
@@ -248,5 +248,4 @@ public class Book implements Serializable {
     public void setSrcName(String srcName) {
         this.srcName = srcName;
     }
-
 }

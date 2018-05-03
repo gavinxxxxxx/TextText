@@ -1,10 +1,10 @@
 package me.gavin.app;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import org.mozilla.universalchardet.UniversalDetector;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.RandomAccessFile;
+import java.io.Reader;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -21,15 +22,15 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import me.gavin.app.model.Chapter;
-import me.gavin.util.L;
 
 public class StreamHelper {
 
     /**
-     * 使用 juniversalchardet 获取文本文件编码
+     * 获取文本文件编码 - juniversalchardet
      *
      * @link {https://code.google.com/archive/p/juniversalchardet/}
      */
+    @Nullable
     public static String getCharsetByJUniversalCharDet(@NonNull File textFile) throws IOException {
         try (FileInputStream fis = new FileInputStream(textFile)) {
             byte[] buffer = new byte[4096];
@@ -59,35 +60,8 @@ public class StreamHelper {
 //        return encode;
 //    }
 
-    /**
-     * 通过文件头判断文件编码
-     */
-    public static String getCharsetByHead(InputStream is) {
-        try (BufferedInputStream bis = new BufferedInputStream(is)) {
-            bis.mark(4);
-            byte[] first3bytes = new byte[3];
-            bis.read(first3bytes);
-            bis.reset();
-            if (first3bytes[0] == (byte) 0xEF && first3bytes[1] == (byte) 0xBB && first3bytes[2] == (byte) 0xBF) {
-                return "utf-8";
-            } else if (first3bytes[0] == (byte) 0xFF && first3bytes[1] == (byte) 0xFE) {
-                return "unicode";
-            } else if (first3bytes[0] == (byte) 0xFE && first3bytes[1] == (byte) 0xFF) {
-                return "utf-16be";
-            } else if (first3bytes[0] == (byte) 0xFF && first3bytes[1] == (byte) 0xFF) {
-                return "utf-16le";
-            } else {
-                return "GBK";
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-            L.e(e);
-        }
-        return null;
-    }
-
     public static long getLength(InputStream is, String charset) throws IOException {
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(is, charset))) {
+        try (Reader reader = new InputStreamReader(is, charset)) {
             return reader.skip(Long.MAX_VALUE);
         }
     }
@@ -98,7 +72,7 @@ public class StreamHelper {
     public static List<Chapter> getChapters(InputStream is, String charset) throws IOException {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(is, charset))) {
             List<Chapter> result = new ArrayList<>();
-            char[] buffer = new char[1024 * 4];
+            char[] buffer = new char[1024 * 8];
             long offset = 0;
             while (reader.read(buffer) > 0) {
                 String str = String.valueOf(buffer);

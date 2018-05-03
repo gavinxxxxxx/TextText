@@ -58,9 +58,5 @@ public class DataLayer {
         Observable<List<Chapter>> directory(String id);
 
         Observable<String> chapter(Book book, int index);
-
-        Observable<String> getFromNet(String bid, String cid);
-
-        Observable<String> getFromCache(Book book, int index);
     }
 }
