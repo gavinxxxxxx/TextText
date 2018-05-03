@@ -17,6 +17,7 @@ import me.gavin.app.model.Book;
 import me.gavin.app.model.Chapter;
 import me.gavin.app.model.Page;
 import me.gavin.app.test.CoverFlipper;
+import me.gavin.app.test.NormalFlipper;
 import me.gavin.app.test.Pager;
 import me.gavin.base.BindingActivity;
 import me.gavin.base.BundleKey;
@@ -49,7 +50,8 @@ public class NewReadActivity extends BindingActivity<ActivityReadNewBinding> imp
         }
 
         mBinding.text.setPager(this);
-        mBinding.text.setFlipper(new CoverFlipper());
+//        mBinding.text.setFlipper(new CoverFlipper());
+        mBinding.text.setFlipper(new NormalFlipper());
 
         initChapter();
     }
