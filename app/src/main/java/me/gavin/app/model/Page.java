@@ -24,8 +24,8 @@ public class Page {
 
     public boolean isReverse; // 反向
 
-    public boolean indent; // 页面第一行是否缩进 - 第一行可能不是自然段起始位置
-    public boolean align; // 页面最后一行是否分散对齐 - 只反向有用
+    public boolean indent; // 正向首行缩进 - 由上往下排 反向是否缩进由内容直接决定
+    public boolean align; // 反向尾行分散对齐 - 由上往下排 正向是否分散对齐由内容决定
 
     public String mText; // 页面预加载文字 - 直接读取
     public String[] mTextSp; // 页面段落数组

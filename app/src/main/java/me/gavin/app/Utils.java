@@ -97,9 +97,9 @@ public final class Utils {
 
     public static Page nextLocal(Page page, long offset) throws IOException {
         page.isReverse = false;
-        page.start = offset;
-        page.isFirst = page.start <= 0;
-        page.mText = StreamHelper.getText(page.book.open(), page.book.getCharset(), page.start, (int) Math.min(Config.pagePreCount, page.book.getLength() - page.start));
+        page.start = Math.max(0, offset);
+        page.isFirst = page.start == 0;
+        page.mText = StreamHelper.getText(page.book.open(), page.book.getCharset(), page.start, Config.pagePreCount);
         page.mTextSp = Utils.trim(page.mText).split(Config.REGEX_SEGMENT);
         page.align = true;
         if (page.isFirst || page.mText.matches(Config.REGEX_SEGMENT_SUFFIX)) {
@@ -180,7 +180,7 @@ public final class Utils {
                 String suffix = count < 0 ? "-" : ""; // TODO: 2018/5/2 反向最后一行断词 现在是始终无 "-"
                 count = Math.abs(count);
                 String text = segment.substring(segmentStart, segmentStart + count);
-                boolean lineAlignNo = segmentStart + count >= segment.length() // 不对齐 - 段落尾行 && 非反向最后一行
+                boolean lineAlignNo = segmentStart + count >= segment.length() // 不对齐 - 段落尾行 && !(反向尾行)
                         && !(page.isReverse && page.align && i == page.mTextSp.length - 1);
                 Line line = new Line(Utils.trim(text), suffix, y - Config.textTop, lineIndent, lineAlignNo);
                 page.lineList.add(line);
