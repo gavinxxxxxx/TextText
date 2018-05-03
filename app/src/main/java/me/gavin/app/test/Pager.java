@@ -1,7 +1,5 @@
 package me.gavin.app.test;
 
-import java.io.IOException;
-
 import me.gavin.app.model.Page;
 
 /**
@@ -9,13 +7,13 @@ import me.gavin.app.model.Page;
  *
  * @author gavin.xiong 2018/4/27
  */
-public abstract class Pager {
+public interface Pager {
 
-    TextView mView;
+    void curr();
 
-    public abstract void offset(Long offset);
+    void last();
 
-    public abstract void offset(boolean reserve);
+    void next();
 
-    protected abstract Page offset(long offset, boolean reserve) throws IOException;
+    void onFlipped(Page page);
 }

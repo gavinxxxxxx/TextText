@@ -5,6 +5,7 @@ import java.util.List;
 import io.reactivex.Observable;
 import me.gavin.app.model.Book;
 import me.gavin.app.model.Chapter;
+import me.gavin.app.model.Page;
 import okhttp3.ResponseBody;
 
 /**
@@ -58,5 +59,11 @@ public class DataLayer {
         Observable<List<Chapter>> directory(String id);
 
         Observable<String> chapter(Book book, int index);
+
+        Observable<Page> curr(Book book);
+
+        Observable<Page> last(Page target, Page page);
+
+        Observable<Page> next(Page target, Page page);
     }
 }

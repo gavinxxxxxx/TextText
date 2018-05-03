@@ -2,9 +2,6 @@ package me.gavin.app.test;
 
 import java.io.IOException;
 
-import me.gavin.app.Config;
-import me.gavin.app.StreamHelper;
-import me.gavin.app.Utils;
 import me.gavin.app.model.Page;
 
 /**
@@ -12,7 +9,7 @@ import me.gavin.app.model.Page;
  *
  * @author gavin.xiong 2018/4/27
  */
-public class LocalPager extends Pager {
+public class LocalPager extends Pager0 {
 
     @Override
     public void offset(Long offset) {

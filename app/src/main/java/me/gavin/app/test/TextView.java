@@ -23,7 +23,7 @@ public class TextView extends View {
     final List<Page> pages = new ArrayList<>();
     int index = -1;
 
-    private Pager2 mPager;
+    private Pager mPager;
     private Flipper mFlipper;
 
     public TextView(Context context, @Nullable AttributeSet attrs) {
@@ -61,7 +61,7 @@ public class TextView extends View {
         pages.add(header ? 0 : pages.size(), page);
         index = header ? index + 1 : index;
         mFlipper.notifyPageChanged();
-        onFliped();
+        onFlipped();
     }
 
     public void update(Page page) {
@@ -70,7 +70,7 @@ public class TextView extends View {
         // TODO: 2018/4/29 更新视图
     }
 
-    public void setPager(Pager2 pager) {
+    public void setPager(Pager pager) {
         this.mPager = pager;
         invalidate();
     }
@@ -89,8 +89,8 @@ public class TextView extends View {
         }
     }
 
-    public void onFliped() {
-        mPager.onFilped(curr());
+    public void onFlipped() {
+        mPager.onFlipped(curr());
         if (index == 0 && !curr().isFirst) {
             mPager.last();
         }

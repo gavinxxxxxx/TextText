@@ -33,14 +33,11 @@ public class Page {
     public final List<Line> lineList; // 页面文字分行
     public final List<Word> wordList; // 页面按字词拆分
 
-    public final int type;
     public boolean ready;
 
     public Page(Book book) {
         this.book = book;
-        this.type = book.getType();
         lineList = new ArrayList<>();
         wordList = new LinkedList<>();
     }
-
 }

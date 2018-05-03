@@ -157,7 +157,7 @@ public final class Utils {
     }
 
     private static void text2Line(Page page) { // TODO: 2018/5/2 反向如果只有单行逻辑上有问题
-        long length = page.type == Book.TYPE_ONLINE ? page.chapter.length() : page.book.getLength();
+        long length = page.book.type == Book.TYPE_ONLINE ? page.chapter.length() : page.book.getLength();
         int y = Config.topPadding; // 行文字顶部
         String subText = Utils.trim(page.mText);
         for (int i = 0; i < page.mTextSp.length; i++) {
@@ -167,7 +167,7 @@ public final class Utils {
                 if (!page.isReverse && y + Config.textHeight > Config.height - Config.bottomPadding) { // 正向 & 已排满页面
                     page.limit = page.mText.indexOf(subText);
                     page.end = page.start + page.limit;
-                    if (page.type == Book.TYPE_ONLINE) {
+                    if (page.book.type == Book.TYPE_ONLINE) {
                         page.isLast = page.index >= page.book.getCount() - 1 && page.end >= length;
                     } else {
                         page.isLast = page.end >= length;
@@ -194,7 +194,7 @@ public final class Utils {
         if (!page.isReverse && page.start + page.mText.length() >= length) { // 正向 & 还能显示却没有了
             page.end = length;
             page.limit = (int) (page.end - page.start);
-            if (page.type == Book.TYPE_ONLINE) {
+            if (page.book.type == Book.TYPE_ONLINE) {
                 page.isLast = page.index >= page.book.getCount() - 1;
             } else {
                 page.isLast = true;
@@ -222,7 +222,7 @@ public final class Utils {
 
             page.limit = subText.length();
             page.start = page.end - page.limit;
-            if (page.type == Book.TYPE_ONLINE) {
+            if (page.book.type == Book.TYPE_ONLINE) {
                 page.isFirst = page.index <= 0 && page.start <= 0;
             } else {
                 page.isFirst = page.start <= 0;

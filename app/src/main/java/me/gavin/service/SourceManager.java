@@ -11,8 +11,10 @@ import java.util.List;
 
 import io.reactivex.Observable;
 import me.gavin.app.RxTransformer;
+import me.gavin.app.Utils;
 import me.gavin.app.model.Book;
 import me.gavin.app.model.Chapter;
+import me.gavin.app.model.Page;
 import me.gavin.base.App;
 import me.gavin.db.dao.ChapterDao;
 import me.gavin.service.base.BaseManager;
@@ -122,6 +124,73 @@ public class SourceManager extends BaseManager implements DataLayer.SourceServic
                             .map(this::read);
                 })
                 .compose(RxTransformer.log());
+    }
+
+    @Override
+    public Observable<Page> curr(Book book) {
+        if (book.type == Book.TYPE_LOCAL) {
+            return Observable.just(book.getOffset())
+                    .map(offset -> Utils.nextLocal(new Page(book), book.getOffset()));
+        }
+        return chapter(book, book.getIndex())
+                .map(s -> {
+                    Page page = new Page(book);
+                    page.index = book.getIndex();
+                    page.chapter = s;
+                    return Utils.nextOnline(page, book.getOffset());
+                });
+    }
+
+    @Override
+    public Observable<Page> last(Page target, Page page) {
+        if (target.book.type == Book.TYPE_LOCAL) {
+            return Observable.just(target.start)
+                    .map(offset -> Utils.lastLocal(page, offset));
+        }
+        return Observable.just(0)
+                .flatMap(arg0 -> {
+                    if (target.start > 0) {
+                        page.chapter = target.chapter;
+                        page.index = target.index;
+                        page.end = target.start;
+                        return Observable.just(page);
+                    } else {
+                        return chapter(target.book, target.index - 1)
+                                .map(s -> {
+                                    page.chapter = s;
+                                    page.index = target.index - 1;
+                                    page.end = s.length();
+                                    return page;
+                                });
+                    }
+                })
+                .map(page1 -> Utils.lastOnline(page, page.end));
+    }
+
+    @Override
+    public Observable<Page> next(Page target, Page page) {
+        if (target.book.type == Book.TYPE_LOCAL) {
+            return Observable.just(target.end)
+                    .map(offset -> Utils.nextLocal(page, offset));
+        }
+        return Observable.just(0)
+                .flatMap(arg0 -> {
+                    if (target.end < target.chapter.length()) {
+                        page.chapter = target.chapter;
+                        page.index = target.index;
+                        page.start = target.end;
+                        return Observable.just(page);
+                    } else {
+                        return chapter(target.book, target.index + 1)
+                                .map(s -> {
+                                    page.chapter = s;
+                                    page.index = target.index + 1;
+                                    page.start = 0;
+                                    return page;
+                                });
+                    }
+                })
+                .map(page1 -> Utils.nextOnline(page, page.start));
     }
 
     private String write(String s, File file) throws IOException {

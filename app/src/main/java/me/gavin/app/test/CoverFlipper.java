@@ -5,7 +5,6 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.PointF;
 import android.graphics.drawable.Drawable;
 import android.view.MotionEvent;
@@ -59,7 +58,7 @@ public class CoverFlipper extends Flipper {
                         toBitmap(2);
                         mOffsetX = 0;
                         mView.invalidate();
-                        mView.onFliped();
+                        mView.onFlipped();
                     } else if (mOffsetX == Config.width && mView.last() != null) {
                         mView.onFlip(true);
                         bs[2].recycle();
@@ -68,7 +67,7 @@ public class CoverFlipper extends Flipper {
                         toBitmap(0);
                         mOffsetX = 0;
                         mView.invalidate();
-                        mView.onFliped();
+                        mView.onFlipped();
                     }
                 }
             }
