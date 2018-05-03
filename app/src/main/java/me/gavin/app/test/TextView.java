@@ -43,31 +43,31 @@ public class TextView extends View {
         return pages.isEmpty() || index == pages.size() - 1 ? null : pages.get(index + 1);
     }
 
-    public Page header() {
-        return pages.isEmpty() ? null : pages.get(0);
-    }
-
-    public Page footer() {
-        return pages.isEmpty() ? null : pages.get(pages.size() - 1);
-    }
-
     public void set(Page page) {
         pages.clear();
-        index = -1;
-        add(page, true);
-    }
-
-    public void add(Page page, boolean header) {
-        pages.add(header ? 0 : pages.size(), page);
-        index = header ? index + 1 : index;
-        mFlipper.notifyPageChanged();
-        onFlipped();
+        pages.add(page);
+        index = 0;
+        invalidate();
+        preload();
     }
 
     public void update(Page page) {
-        int i = pages.indexOf(page);
-        mFlipper.notifyPageChanged();
-        // TODO: 2018/4/29 更新视图
+        invalidate();
+        preload();
+    }
+
+    public void preload() {
+        if (curr().ready && index == 0 && !curr().isFirst) {
+            Page last = new Page(curr().book);
+            pages.add(0, last);
+            index++;
+            mPager.last(curr(), last);
+        }
+        if (curr().ready && index == pages.size() - 1 && !curr().isLast) {
+            Page next = new Page(curr().book);
+            pages.add(next);
+            mPager.next(curr(), next);
+        }
     }
 
     public void setPager(Pager pager) {
@@ -87,16 +87,8 @@ public class TextView extends View {
         } else {
             index++;
         }
-    }
-
-    public void onFlipped() {
-        mPager.onFlipped(curr());
-        if (index == 0 && !curr().isFirst) {
-            mPager.last();
-        }
-        if (index == pages.size() - 1 && !curr().isLast) {
-            mPager.next();
-        }
+        invalidate();
+        preload();
     }
 
     @Override

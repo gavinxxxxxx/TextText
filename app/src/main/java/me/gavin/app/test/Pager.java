@@ -11,9 +11,7 @@ public interface Pager {
 
     void curr();
 
-    void last();
+    void last(Page target, Page page);
 
-    void next();
-
-    void onFlipped(Page page);
+    void next(Page target, Page page);
 }

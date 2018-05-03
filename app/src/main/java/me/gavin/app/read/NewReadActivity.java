@@ -16,15 +16,13 @@ import me.gavin.app.StreamHelper;
 import me.gavin.app.model.Book;
 import me.gavin.app.model.Chapter;
 import me.gavin.app.model.Page;
-import me.gavin.app.test.CoverFlipper;
-import me.gavin.app.test.NormalFlipper;
 import me.gavin.app.test.Pager;
+import me.gavin.app.test.SimpleFlipper;
 import me.gavin.base.BindingActivity;
 import me.gavin.base.BundleKey;
 import me.gavin.base.recycler.BindingAdapter;
 import me.gavin.text.R;
 import me.gavin.text.databinding.ActivityReadNewBinding;
-import me.gavin.util.L;
 
 public class NewReadActivity extends BindingActivity<ActivityReadNewBinding> implements Pager {
 
@@ -51,16 +49,9 @@ public class NewReadActivity extends BindingActivity<ActivityReadNewBinding> imp
 
         mBinding.text.setPager(this);
 //        mBinding.text.setFlipper(new CoverFlipper());
-        mBinding.text.setFlipper(new NormalFlipper());
+        mBinding.text.setFlipper(new SimpleFlipper());
 
         initChapter();
-    }
-
-    @Override
-    public void onFlipped(Page page) {
-        mBook.setIndex(page.index);
-        mBook.setOffset(page.start);
-        getDataLayer().getShelfService().updateBook(mBook);
     }
 
     @Override
@@ -71,38 +62,25 @@ public class NewReadActivity extends BindingActivity<ActivityReadNewBinding> imp
                 .doOnSubscribe(mCompositeDisposable::add)
                 .subscribe(page -> {
                     mBinding.text.set(page);
-                }, L::e);
+                }, Throwable::printStackTrace);
     }
 
     @Override
-    public void last() {
-        Page page = new Page(mBook);
+    public void last(Page target, Page page) {
         getDataLayer().getSourceService()
-                .last(mBinding.text.header(), page)
+                .last(target, page)
                 .compose(RxTransformer.applySchedulers())
-                .doOnSubscribe(disposable -> {
-                    lasting = true;
-                    mCompositeDisposable.add(disposable);
-                    mBinding.text.add(page, true);
-                })
-                .doOnComplete(() -> lasting = false)
-                .doOnError(throwable -> lasting = false)
-                .subscribe(mBinding.text::update, L::e);
+                .doOnSubscribe(mCompositeDisposable::add)
+                .subscribe(mBinding.text::update, Throwable::printStackTrace);
     }
 
     @Override
-    public void next() {
-        Page page = new Page(mBook);
+    public void next(Page target, Page page) {
         getDataLayer().getSourceService()
-                .next(mBinding.text.footer(), page)
+                .next(target, page)
                 .compose(RxTransformer.applySchedulers())
-                .doOnSubscribe(disposable -> {
-                    mCompositeDisposable.add(disposable);
-                    mBinding.text.add(page, false);
-                })
-                .doOnComplete(() -> nexting = false)
-                .doOnError(throwable -> nexting = false)
-                .subscribe(mBinding.text::update, L::e);
+                .doOnSubscribe(mCompositeDisposable::add)
+                .subscribe(mBinding.text::update, Throwable::printStackTrace);
     }
 
     private boolean lasting, nexting;
@@ -110,7 +88,10 @@ public class NewReadActivity extends BindingActivity<ActivityReadNewBinding> imp
     @Override
     protected void onPause() {
         super.onPause();
-        if (mBook != null) {
+        if (mBook != null && mBinding.text != null) {
+            mBook.setIndex(mBinding.text.curr().index);
+            mBook.setOffset(mBinding.text.curr().start);
+            getDataLayer().getShelfService().updateBook(mBook);
             mBook.setTime(System.currentTimeMillis());
             getDataLayer().getShelfService().updateBook(mBook);
         }
