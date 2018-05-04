@@ -3,7 +3,7 @@ package me.gavin.service;
 import java.util.List;
 
 import io.reactivex.Observable;
-import me.gavin.app.model.Book;
+import me.gavin.app.core.model.Book;
 import me.gavin.db.dao.BookDao;
 import me.gavin.service.base.BaseManager;
 import me.gavin.service.base.DataLayer;

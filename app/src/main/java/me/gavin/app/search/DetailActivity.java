@@ -6,8 +6,8 @@ import android.support.annotation.Nullable;
 import java.util.List;
 
 import me.gavin.app.RxTransformer;
-import me.gavin.app.model.Book;
-import me.gavin.app.model.Chapter;
+import me.gavin.app.core.model.Book;
+import me.gavin.app.core.model.Chapter;
 import me.gavin.base.BindingActivity;
 import me.gavin.base.BundleKey;
 import me.gavin.base.recycler.BindingAdapter;

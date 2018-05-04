@@ -4,7 +4,7 @@ import android.content.Context;
 
 import java.util.List;
 
-import me.gavin.app.model.Page;
+import me.gavin.app.core.model.Page;
 import me.gavin.base.recycler.RecyclerAdapter;
 import me.gavin.base.recycler.RecyclerHolder;
 import me.gavin.text.R;

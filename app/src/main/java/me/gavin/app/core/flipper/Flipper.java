@@ -1,7 +1,9 @@
-package me.gavin.app.test;
+package me.gavin.app.core.flipper;
 
 import android.graphics.Canvas;
 import android.view.MotionEvent;
+
+import me.gavin.app.core.TextView;
 
 /**
  * 翻页器
@@ -10,7 +12,7 @@ import android.view.MotionEvent;
  */
 public abstract class Flipper {
 
-    TextView mView;
+    public TextView mView;
 
     public abstract void flip(boolean reserve);
 

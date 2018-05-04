@@ -1,4 +1,4 @@
-package me.gavin.app.test;
+package me.gavin.app.core;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -11,7 +11,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import me.gavin.app.Config;
-import me.gavin.app.model.Page;
+import me.gavin.app.core.flipper.Flipper;
+import me.gavin.app.core.model.Page;
+import me.gavin.app.core.pager.Pager;
 
 /**
  * TextView

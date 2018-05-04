@@ -6,7 +6,7 @@ import android.support.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-import me.gavin.app.model.Chapter;
+import me.gavin.app.core.model.Chapter;
 import me.gavin.base.BindingFragment;
 import me.gavin.base.recycler.BindingAdapter;
 import me.gavin.text.R;

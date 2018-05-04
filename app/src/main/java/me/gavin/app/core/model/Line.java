@@ -1,4 +1,4 @@
-package me.gavin.app.model;
+package me.gavin.app.core.model;
 
 /**
  * 这里是萌萌哒注释君

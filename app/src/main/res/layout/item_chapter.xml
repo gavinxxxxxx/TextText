@@ -7,7 +7,7 @@
 
         <variable
             name="item"
-            type="me.gavin.app.model.Chapter" />
+            type="me.gavin.app.core.model.Chapter" />
     </data>
 
     <FrameLayout

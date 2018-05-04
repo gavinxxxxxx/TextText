@@ -3,7 +3,7 @@ package me.gavin.app.test;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 
-import me.gavin.app.model.Page;
+import me.gavin.app.core.model.Page;
 import me.gavin.base.BindingActivity;
 import me.gavin.text.R;
 import me.gavin.text.databinding.ActivityTestBinding;

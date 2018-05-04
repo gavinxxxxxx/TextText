@@ -1,8 +1,9 @@
-package me.gavin.app.test;
+package me.gavin.app.core.pager;
 
 import java.io.IOException;
 
-import me.gavin.app.model.Page;
+import me.gavin.app.core.model.Page;
+import me.gavin.app.core.TextView;
 
 /**
  * 分页器

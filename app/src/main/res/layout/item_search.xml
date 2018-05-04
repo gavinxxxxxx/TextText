@@ -8,7 +8,7 @@
 
         <variable
             name="item"
-            type="me.gavin.app.model.Book" />
+            type="me.gavin.app.core.model.Book" />
     </data>
 
     <LinearLayout

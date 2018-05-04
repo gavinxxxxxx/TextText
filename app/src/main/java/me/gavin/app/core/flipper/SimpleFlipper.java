@@ -1,10 +1,10 @@
-package me.gavin.app.test;
+package me.gavin.app.core.flipper;
 
 import android.graphics.Canvas;
 import android.view.MotionEvent;
 
 import me.gavin.app.Config;
-import me.gavin.app.model.Word;
+import me.gavin.app.core.model.Word;
 
 /**
  * 无 - 翻页

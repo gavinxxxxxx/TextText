@@ -1,4 +1,4 @@
-package me.gavin.app.test;
+package me.gavin.app.core;
 
 import android.content.Context;
 import android.graphics.Canvas;

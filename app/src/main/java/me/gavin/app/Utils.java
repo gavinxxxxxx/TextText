@@ -6,10 +6,10 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import me.gavin.app.model.Book;
-import me.gavin.app.model.Line;
-import me.gavin.app.model.Page;
-import me.gavin.app.model.Word;
+import me.gavin.app.core.model.Book;
+import me.gavin.app.core.model.Line;
+import me.gavin.app.core.model.Page;
+import me.gavin.app.core.model.Word;
 
 /**
  * Utils

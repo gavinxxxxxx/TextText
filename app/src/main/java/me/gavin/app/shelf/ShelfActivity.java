@@ -11,7 +11,7 @@ import java.util.List;
 import io.reactivex.Observable;
 import me.gavin.app.RxTransformer;
 import me.gavin.app.explorer.ExplorerActivity;
-import me.gavin.app.model.Book;
+import me.gavin.app.core.model.Book;
 import me.gavin.app.read.NewReadActivity;
 import me.gavin.app.search.SearchActivity;
 import me.gavin.app.test.TestActivity;

@@ -1,15 +1,15 @@
-package me.gavin.app.test;
+package me.gavin.app.core.pager;
 
 import java.io.IOException;
 
-import me.gavin.app.model.Page;
+import me.gavin.app.core.model.Page;
 
 /**
- * 本地 - 分页
+ * 在线 - 分页
  *
- * @author gavin.xiong 2018/4/27
+ * @author gavin.xiong 2018/4/27.
  */
-public class LocalPager extends Pager0 {
+public class OnlinePager extends Pager0 {
 
     @Override
     public void offset(Long offset) {
@@ -47,26 +47,24 @@ public class LocalPager extends Pager0 {
 //        if (!reserve) { // 正向
 //            page.start = offset;
 //            page.isFirst = page.start <= 0;
-//            page.mText = StreamHelper.getText(mView.book.open(), mView.book.getCharset(), page.start,
-//                    (int) Math.min(Config.pagePreCount, mView.book.getLength() - page.start));
+//            page.mText = page.book.getText().substring((int) page.start, Math.min((int) page.start + Config.pagePreCount, page.book.getText().length()));
 //            page.mTextSp = Utils.trim(page.mText).split(Config.REGEX_SEGMENT);
 //            page.align = true;
 //            if (page.isFirst || page.mText.matches(Config.REGEX_SEGMENT_SUFFIX)) {
 //                page.indent = true;
 //            } else {
 //                int preCount = (int) (page.start >= Config.segmentPreCount ? Config.segmentPreCount : page.start);
-//                String fix = StreamHelper.getText(mView.book.open(), mView.book.getCharset(),
-//                        page.start - preCount, preCount);
+//                String fix = page.book.getText().substring((int) page.start - preCount, (int)page.start);
 //                page.indent = fix.matches(Config.REGEX_SEGMENT_PREFIX);
 //            }
 //        } else { // 反向
 //            page.end = offset;
-//            page.isLast = page.end >= mView.book.getLength();
-//            page.mText = StreamHelper.getText(mView.book.open(), mView.book.getCharset(),
-//                    Math.max(page.end - Config.pagePreCount, 0), (int) Math.min(Config.pagePreCount, page.end));
+//            page.isLast = page.end >= page.book.getText().length();
+//            int si = Math.max((int) page.end - Config.pagePreCount, 0);
+//            page.mText = page.book.getText().substring(si, si + Math.min(Config.pagePreCount, (int) page.end));
 //            page.mTextSp = Utils.trim(page.mText).split(Config.REGEX_SEGMENT);
 //            page.indent = true;
-//            String fix = StreamHelper.getText(mView.book.open(), mView.book.getCharset(), page.end, Config.segmentPreCount);
+//            String fix = page.book.getText().substring((int) page.end, (int)page.end + Config.segmentPreCount);
 //            page.align = !page.mText.matches(Config.REGEX_SEGMENT_PREFIX) && !fix.matches(Config.REGEX_SEGMENT_SUFFIX);
 //        }
 //        page.prepare();

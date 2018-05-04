@@ -9,7 +9,7 @@
         android:layout_height="match_parent"
         tools:openDrawer="start">
 
-        <me.gavin.app.test.TextView
+        <me.gavin.app.core.TextView
             android:id="@+id/text"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />

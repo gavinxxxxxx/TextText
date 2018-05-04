@@ -1,4 +1,4 @@
-package me.gavin.app.model;
+package me.gavin.app.core.model;
 
 import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Generated;

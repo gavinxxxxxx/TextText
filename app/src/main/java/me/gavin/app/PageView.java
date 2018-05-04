@@ -6,8 +6,8 @@ import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.View;
 
-import me.gavin.app.model.Page;
-import me.gavin.app.model.Word;
+import me.gavin.app.core.model.Page;
+import me.gavin.app.core.model.Word;
 
 /**
  * TextTextView

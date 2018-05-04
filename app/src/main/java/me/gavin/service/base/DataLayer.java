@@ -3,9 +3,9 @@ package me.gavin.service.base;
 import java.util.List;
 
 import io.reactivex.Observable;
-import me.gavin.app.model.Book;
-import me.gavin.app.model.Chapter;
-import me.gavin.app.model.Page;
+import me.gavin.app.core.model.Book;
+import me.gavin.app.core.model.Chapter;
+import me.gavin.app.core.model.Page;
 import okhttp3.ResponseBody;
 
 /**

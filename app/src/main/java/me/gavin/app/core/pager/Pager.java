@@ -1,6 +1,6 @@
-package me.gavin.app.test;
+package me.gavin.app.core.pager;
 
-import me.gavin.app.model.Page;
+import me.gavin.app.core.model.Page;
 
 /**
  * 分页器

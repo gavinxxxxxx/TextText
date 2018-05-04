@@ -1,4 +1,4 @@
-package me.gavin.app.model;
+package me.gavin.app.core.model;
 
 import java.util.ArrayList;
 import java.util.LinkedList;

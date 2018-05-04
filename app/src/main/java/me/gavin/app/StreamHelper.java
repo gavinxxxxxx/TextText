@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import me.gavin.app.model.Chapter;
+import me.gavin.app.core.model.Chapter;
 
 public class StreamHelper {
 

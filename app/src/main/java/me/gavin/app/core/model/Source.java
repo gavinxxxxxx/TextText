@@ -1,4 +1,4 @@
-package me.gavin.app.test;
+package me.gavin.app.core.model;
 
 /**
  * 书源
