@@ -4,12 +4,14 @@
     <android.support.design.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="#2c3e50"
         android:fitsSystemWindows="true">
 
-        <me.gavin.app.core.TextView
-            android:id="@+id/text"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="84dp"
+            android:layout_height="84dp"
+            android:layout_gravity="center"
             android:fitsSystemWindows="true"
             android:visibility="visible" />
 

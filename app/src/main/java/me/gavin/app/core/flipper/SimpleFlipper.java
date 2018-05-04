@@ -1,10 +1,13 @@
 package me.gavin.app.core.flipper;
 
 import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
 import android.view.MotionEvent;
 
 import me.gavin.app.Config;
 import me.gavin.app.core.model.Word;
+import me.gavin.base.App;
+import me.gavin.text.R;
 
 /**
  * 无 - 翻页
@@ -13,14 +16,10 @@ import me.gavin.app.core.model.Word;
  */
 public class SimpleFlipper extends Flipper {
 
-    @Override
-    public void flip(boolean reserve) {
+    private Drawable drawable;
 
-    }
-
-    @Override
-    public void notifyPageChanged() {
-        mView.invalidate();
+    public SimpleFlipper() {
+        drawable = App.get().getDrawable(R.drawable.anim_loading);
     }
 
     @Override
@@ -43,6 +42,8 @@ public class SimpleFlipper extends Flipper {
                 word.draw(canvas, 0, 0);
             }
             canvas.drawText(mView.curr().start + "~" + mView.curr().end, 10, 40, Config.textPaint);
+        } else {
+            canvas.drawText("加载中...", Config.width / 2, Config.height / 2, Config.textPaint);
         }
     }
 }

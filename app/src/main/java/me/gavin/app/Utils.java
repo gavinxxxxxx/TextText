@@ -83,12 +83,38 @@ public final class Utils {
 
     public static Page lastLocal(Page page, long offset) throws IOException {
         page.isReverse = true;
-        page.end = offset;
-        page.isLast = page.end >= page.book.getLength();
-        page.mText = StreamHelper.getText(page.book.open(), page.book.getCharset(), Math.max(page.end - Config.pagePreCount, 0), (int) Math.min(Config.pagePreCount, page.end));
+        page.end = Math.min(page.book.getLength(), offset);
+        page.isLast = page.end == page.book.getLength();
+        // 起始位置
+        long start = Math.max(0, page.end - Config.pagePreCount);
+        // 页前多加载字符 - 用来判断首行是否缩进
+        int preCountH = start > Config.segmentPreCount ? Config.segmentPreCount : (int) page.start;
+        int preCountF = page.end < page.book.length - Config.segmentPreCount ? Config.segmentPreCount : (int) (page.book.length - page.end);
+        String text = StreamHelper.getText(page.book.open(), page.book.getCharset(),
+                start - preCountH, (int) (page.end - start) + preCountH + preCountF);
+        page.mText = text.substring(preCountH, text.length() - preCountF);
+        page.mTextSp = Utils.trim(page.mText).split(Config.REGEX_SEGMENT);
+        // 首行缩进条件： 是第一页 || 开头符合分段后 || 前一截符合分段前
+        page.indent = start == 0 || page.mText.matches(Config.REGEX_SEGMENT_SUFFIX)
+                || text.substring(0, preCountH).matches(Config.REGEX_SEGMENT_PREFIX);
+        page.align = !page.isFirst && !page.mText.matches(Config.REGEX_SEGMENT_PREFIX)
+                && !text.substring(text.length() - preCountF).matches(Config.REGEX_SEGMENT_SUFFIX);
+        perpare(page);
+        page.ready = true;
+        return page;
+    }
+
+    public static Page lastOnline(Page page, long offset) {
+        page.isReverse = true;
+        page.end = Math.min(page.chapter.length(), offset);
+        page.isLast = page.index >= page.book.getCount() - 1 && page.end == page.chapter.length();
+        // 起始位置
+        int start = Math.max(0, (int) page.end - Config.pagePreCount);
+        // TODO: 2018/5/4 这里开始
+        page.mText = page.chapter.substring(start, start + Math.min(Config.pagePreCount, (int) page.end));
         page.mTextSp = Utils.trim(page.mText).split(Config.REGEX_SEGMENT);
         page.indent = true;
-        String fix = StreamHelper.getText(page.book.open(), page.book.getCharset(), page.end, Config.segmentPreCount);
+        String fix = page.chapter.substring((int) page.end, Math.min(page.chapter.length(), (int) page.end + Config.segmentPreCount));
         page.align = !page.mText.matches(Config.REGEX_SEGMENT_PREFIX) && !fix.matches(Config.REGEX_SEGMENT_SUFFIX);
         perpare(page);
         page.ready = true;
@@ -99,31 +125,15 @@ public final class Utils {
         page.isReverse = false;
         page.start = Math.max(0, offset);
         page.isFirst = page.start == 0;
-        page.mText = StreamHelper.getText(page.book.open(), page.book.getCharset(), page.start, Config.pagePreCount);
+        // 页前多加载字符 - 用来判断首行是否缩进
+        int preCountH = page.start > Config.segmentPreCount ? Config.segmentPreCount : (int) page.start;
+        String text = StreamHelper.getText(page.book.open(), page.book.getCharset(),
+                page.start - preCountH, Config.pagePreCount + preCountH);
+        page.mText = text.substring(preCountH);
         page.mTextSp = Utils.trim(page.mText).split(Config.REGEX_SEGMENT);
-        page.align = true;
-        if (page.isFirst || page.mText.matches(Config.REGEX_SEGMENT_SUFFIX)) {
-            page.indent = true;
-        } else {
-            int preCount = (int) (page.start >= Config.segmentPreCount ? Config.segmentPreCount : page.start);
-            String fix = StreamHelper.getText(page.book.open(), page.book.getCharset(), page.start - preCount, preCount);
-            page.indent = fix.matches(Config.REGEX_SEGMENT_PREFIX);
-        }
-        perpare(page);
-        page.ready = true;
-        return page;
-    }
-
-    public static Page lastOnline(Page page, long offset) {
-        page.isReverse = true;
-        page.end = offset;
-        page.isLast = page.index >= page.book.getCount() - 1 && page.end >= page.chapter.length();
-        int si = Math.max((int) page.end - Config.pagePreCount, 0);
-        page.mText = page.chapter.substring(si, si + Math.min(Config.pagePreCount, (int) page.end));
-        page.mTextSp = Utils.trim(page.mText).split(Config.REGEX_SEGMENT);
-        page.indent = true;
-        String fix = page.chapter.substring((int) page.end, Math.min(page.chapter.length(), (int) page.end + Config.segmentPreCount));
-        page.align = !page.mText.matches(Config.REGEX_SEGMENT_PREFIX) && !fix.matches(Config.REGEX_SEGMENT_SUFFIX);
+        // 首行缩进条件： 是第一页 || 开头符合分段后 || 前一截符合分段前
+        page.indent = page.isFirst || page.mText.matches(Config.REGEX_SEGMENT_SUFFIX)
+                || text.substring(0, preCountH).matches(Config.REGEX_SEGMENT_PREFIX);
         perpare(page);
         page.ready = true;
         return page;
@@ -131,18 +141,13 @@ public final class Utils {
 
     public static Page nextOnline(Page page, long offset) {
         page.isReverse = false;
-        page.start = offset;
-        page.isFirst = page.index <= 0 && page.start <= 0;
+        page.start = Math.max(0, offset);
+        page.isFirst = page.index == 0 && page.start == 0;
         page.mText = page.chapter.substring((int) page.start, Math.min((int) page.start + Config.pagePreCount, page.chapter.length()));
         page.mTextSp = Utils.trim(page.mText).split(Config.REGEX_SEGMENT);
         page.align = true;
-        if (page.isFirst || page.mText.matches(Config.REGEX_SEGMENT_SUFFIX)) {
-            page.indent = true;
-        } else {
-            int preCount = (int) (page.start >= Config.segmentPreCount ? Config.segmentPreCount : page.start);
-            String fix = page.chapter.substring((int) page.start - preCount, (int) page.start);
-            page.indent = fix.matches(Config.REGEX_SEGMENT_PREFIX);
-        }
+        page.indent = page.isFirst || page.mText.matches(Config.REGEX_SEGMENT_SUFFIX)
+                || page.chapter.substring(0, (int) page.start).matches(Config.REGEX_SEGMENT_PREFIX);
         perpare(page);
         page.ready = true;
         return page;

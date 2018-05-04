@@ -1,6 +1,7 @@
 package me.gavin.app.core.flipper;
 
 import android.graphics.Canvas;
+import android.text.StaticLayout;
 import android.view.MotionEvent;
 
 import me.gavin.app.core.TextView;
@@ -14,11 +15,8 @@ public abstract class Flipper {
 
     public TextView mView;
 
-    public abstract void flip(boolean reserve);
-
-    public abstract void notifyPageChanged();
-
     public abstract boolean onTouchEvent(MotionEvent event);
 
     public abstract void onDraw(Canvas canvas);
+
 }

@@ -1,9 +1,9 @@
 package me.gavin.app.test;
 
+import android.graphics.drawable.Animatable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 
-import me.gavin.app.core.model.Page;
 import me.gavin.base.BindingActivity;
 import me.gavin.text.R;
 import me.gavin.text.databinding.ActivityTestBinding;
@@ -22,12 +22,16 @@ public class TestActivity extends BindingActivity<ActivityTestBinding> {
 
     @Override
     protected void afterCreate(@Nullable Bundle savedInstanceState) {
-        set();
-    }
-
-    private final Page[] mPages = new Page[3];
-
-    private void set() {
-
+        mBinding.imageView.setElevation(10);
+        mBinding.imageView.setImageDrawable(getDrawable(R.drawable.anim_loading));
+        mBinding.imageView.setOnClickListener(v -> {
+            if (mBinding.imageView.getDrawable() instanceof Animatable) {
+                if (((Animatable) mBinding.imageView.getDrawable()).isRunning()) {
+                    ((Animatable) mBinding.imageView.getDrawable()).stop();
+                } else {
+                    ((Animatable) mBinding.imageView.getDrawable()).start();
+                }
+            }
+        });
     }
 }
