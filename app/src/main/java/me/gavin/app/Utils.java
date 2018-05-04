@@ -1,5 +1,7 @@
 package me.gavin.app;
 
+import android.graphics.Path;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -97,8 +99,10 @@ public final class Utils {
         // 首行缩进条件： 是第一页 || 开头符合分段后 || 前一截符合分段前
         page.indent = start == 0 || page.mText.matches(Config.REGEX_SEGMENT_SUFFIX)
                 || text.substring(0, preCountH).matches(Config.REGEX_SEGMENT_PREFIX);
-        page.align = !page.isFirst && !page.mText.matches(Config.REGEX_SEGMENT_PREFIX)
+        page.align = !page.isLast && !page.mText.matches(Config.REGEX_SEGMENT_PREFIX)
                 && !text.substring(text.length() - preCountF).matches(Config.REGEX_SEGMENT_SUFFIX);
+        page.suffix = !page.isLast && text.substring(text.length() - preCountF - 1,
+                text.length() - preCountF + 1).matches(Config.REGEX_WORD);
         perpare(page);
         page.ready = true;
         return page;
@@ -110,12 +114,14 @@ public final class Utils {
         page.isLast = page.index >= page.book.getCount() - 1 && page.end == page.chapter.length();
         // 起始位置
         int start = Math.max(0, (int) page.end - Config.pagePreCount);
-        // TODO: 2018/5/4 这里开始
-        page.mText = page.chapter.substring(start, start + Math.min(Config.pagePreCount, (int) page.end));
+        page.mText = page.chapter.substring(start, (int) page.end);
         page.mTextSp = Utils.trim(page.mText).split(Config.REGEX_SEGMENT);
-        page.indent = true;
-        String fix = page.chapter.substring((int) page.end, Math.min(page.chapter.length(), (int) page.end + Config.segmentPreCount));
-        page.align = !page.mText.matches(Config.REGEX_SEGMENT_PREFIX) && !fix.matches(Config.REGEX_SEGMENT_SUFFIX);
+        page.indent = start == 0 || page.mText.matches(Config.REGEX_SEGMENT_SUFFIX)
+                || page.chapter.substring(0, start).matches(Config.REGEX_SEGMENT_PREFIX);
+        page.align = !page.isLast && !page.mText.matches(Config.REGEX_SEGMENT_PREFIX)
+                && !page.chapter.substring((int) page.end).matches(Config.REGEX_SEGMENT_SUFFIX);
+        page.suffix = page.end < page.chapter.length()
+                && page.chapter.substring((int) page.end - 1, (int) page.end + 1).matches(Config.REGEX_WORD);
         perpare(page);
         page.ready = true;
         return page;
@@ -145,7 +151,6 @@ public final class Utils {
         page.isFirst = page.index == 0 && page.start == 0;
         page.mText = page.chapter.substring((int) page.start, Math.min((int) page.start + Config.pagePreCount, page.chapter.length()));
         page.mTextSp = Utils.trim(page.mText).split(Config.REGEX_SEGMENT);
-        page.align = true;
         page.indent = page.isFirst || page.mText.matches(Config.REGEX_SEGMENT_SUFFIX)
                 || page.chapter.substring(0, (int) page.start).matches(Config.REGEX_SEGMENT_PREFIX);
         perpare(page);
@@ -159,6 +164,7 @@ public final class Utils {
         for (Line line : page.lineList) {
             line2Words(page, line);
         }
+        word2Path(page);
     }
 
     private static void text2Line(Page page) { // TODO: 2018/5/2 反向如果只有单行逻辑上有问题
@@ -172,17 +178,14 @@ public final class Utils {
                 if (!page.isReverse && y + Config.textHeight > Config.height - Config.bottomPadding) { // 正向 & 已排满页面
                     page.limit = page.mText.indexOf(subText);
                     page.end = page.start + page.limit;
-                    if (page.book.type == Book.TYPE_ONLINE) {
-                        page.isLast = page.index >= page.book.getCount() - 1 && page.end >= length;
-                    } else {
-                        page.isLast = page.end >= length;
-                    }
+                    page.isLast = page.book.type == Book.TYPE_LOCAL ? page.end >= length
+                            : page.index >= page.book.getCount() - 1 && page.end >= length;
                     return;
                 }
                 String remaining = segment.substring(segmentStart);
                 boolean lineIndent = i == 0 && segmentStart == 0 && page.indent || i != 0 && segmentStart == 0;
                 int count = breakText(remaining, lineIndent);
-                String suffix = count < 0 ? "-" : ""; // TODO: 2018/5/2 反向最后一行断词 现在是始终无 "-"
+                String suffix = count < 0 || page.suffix ? "-" : "";
                 count = Math.abs(count);
                 String text = segment.substring(segmentStart, segmentStart + count);
                 boolean lineAlignNo = segmentStart + count >= segment.length() // 不对齐 - 段落尾行 && !(反向尾行)
@@ -248,8 +251,7 @@ public final class Utils {
      */
     private static int countReset(String remaining, int count, boolean lineIndent) {
         if (remaining.substring(count, count + 1).matches(Config.REGEX_PUNCTUATION_N)) { // 下一行第一个是标点
-            if (!remaining.substring(count - 2, count)
-                    .matches(Config.REGEX_PUNCTUATION_N + "*")) { // 当前行末两不都是标点 - 标准状况下
+            if (!remaining.substring(count - 2, count).matches(Config.REGEX_PUNCTUATION_N + "*")) { // 当前行末两不都是标点 - 标准状况下
                 count -= 1;
                 return countReset(remaining, count, lineIndent);
             }
@@ -326,6 +328,15 @@ public final class Utils {
                 x = startX + Config.textPaint.measureText(line.text.substring(0, i)) + workSpacing * i;
                 page.wordList.add(new Word(word, x, line.y));
             }
+        }
+    }
+
+    private static void word2Path(Page page) {
+        for (Word word : page.wordList) {
+            Path temp = new Path();
+            Config.textPaint.getTextPath(word.text, 0, word.text.length(), word.x, word.y, temp);
+//            page.paths.add(temp);
+            page.path.addPath(temp);
         }
     }
 }

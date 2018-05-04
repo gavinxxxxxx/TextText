@@ -1,6 +1,7 @@
 package me.gavin.app.core.flipper;
 
 import android.graphics.Canvas;
+import android.graphics.Path;
 import android.graphics.drawable.Drawable;
 import android.view.MotionEvent;
 
@@ -38,9 +39,13 @@ public class SimpleFlipper extends Flipper {
     public void onDraw(Canvas canvas) {
         canvas.drawRect(0, 0, Config.width, Config.height, Config.bgPaint);
         if (mView.curr() != null && mView.curr().ready) {
-            for (Word word : mView.curr().wordList) {
-                word.draw(canvas, 0, 0);
-            }
+//            for (Word word : mView.curr().wordList) {
+//                word.draw(canvas, 0, 0);
+//            }
+            canvas.drawPath(mView.curr().path, Config.textPaint);
+//            for (Path path : mView.curr().paths) {
+//                canvas.drawPath(path, Config.textPaint);
+//            }
             canvas.drawText(mView.curr().start + "~" + mView.curr().end, 10, 40, Config.textPaint);
         } else {
             canvas.drawText("加载中...", Config.width / 2, Config.height / 2, Config.textPaint);
