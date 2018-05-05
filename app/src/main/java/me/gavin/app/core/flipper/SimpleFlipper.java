@@ -39,10 +39,10 @@ public class SimpleFlipper extends Flipper {
     public void onDraw(Canvas canvas) {
         canvas.drawRect(0, 0, Config.width, Config.height, Config.bgPaint);
         if (mView.curr() != null && mView.curr().ready) {
-//            for (Word word : mView.curr().wordList) {
-//                word.draw(canvas, 0, 0);
-//            }
-            canvas.drawPath(mView.curr().path, Config.textPaint);
+            for (Word word : mView.curr().wordList) {
+                word.draw(canvas, 0, 0);
+            }
+//            canvas.drawPath(mView.curr().path, Config.textPaint);
 //            for (Path path : mView.curr().paths) {
 //                canvas.drawPath(path, Config.textPaint);
 //            }

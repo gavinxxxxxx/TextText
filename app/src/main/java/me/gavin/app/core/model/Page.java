@@ -18,7 +18,6 @@ public class Page {
 
     public int index;
     public long start;
-    public int limit;
     public long end;
 
     public boolean isFirst;

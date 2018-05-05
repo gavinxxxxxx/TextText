@@ -39,4 +39,9 @@ public class ShelfManager extends BaseManager implements DataLayer.ShelfService 
                 // .orderAsc(BookDao.Properties.Name) 多重排序
                 .list());
     }
+
+    @Override
+    public void removeBook(Book book) {
+        getDaoSession().getBookDao().delete(book);
+    }
 }

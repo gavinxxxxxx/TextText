@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/actionTop"
+        android:icon="@color/colorAccent"
+        android:title="置顶" />
+
+    <item
+        android:id="@+id/actionDel"
+        android:icon="@drawable/vt_search"
+        android:title="移除" />
+
+</menu>

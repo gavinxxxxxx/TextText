@@ -1,7 +1,6 @@
 package me.gavin.app;
 
 import android.graphics.Paint;
-import android.text.TextPaint;
 import android.view.ViewConfiguration;
 
 import me.gavin.base.App;
@@ -50,7 +49,8 @@ public final class Config {
     public static int segmentSpacing; // 段间距
     public static int lineSpacing; // 行间距
     public static float indent; // 首行缩进
-    public static float wordSpacingMax; // 单词最大间距
+    public static float lineAlignSlop; // 行分散对齐临界值
+    public static float wordSpacingSlop; // 单词最大间距
 
     public static final Paint textPaint, bgPaint, debugPaint;
 
@@ -72,9 +72,10 @@ public final class Config {
         segmentSpacing = SPUtil.getInt("segmentSpacing", textSize);
         lineSpacing = SPUtil.getInt("lineSpacing", textSize / 2);
         indent = SPUtil.getFloat("indent", textSize * 2f);
-        wordSpacingMax = textSize * 0.5f;
+        lineAlignSlop = 10f;
+        wordSpacingSlop = textSize * 0.5f;
 
-        textPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
+        textPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         textPaint.setTextSize(textSize);
         textPaint.setColor(textColor);
 
@@ -105,12 +106,12 @@ public final class Config {
     public static void applySizeChange(int w, int h) {
         width = w;
         height = h;
-        segmentPreCount = (int) Math.ceil((width - leftPadding - rightPadding) / getLetterMinWidth());
+        segmentPreCount = (int) Math.ceil((width - leftPadding - rightPadding) / getLetterMinWidth()) / 2;
         pagePreCount = segmentPreCount * (int) Math.ceil((height - topPadding - bottomPadding) / textHeight);
     }
 
     /**
-     * 获取字母最小宽度
+     * 获取字母最小宽度 todo 预加载的数量过多 改成不够在取？
      */
     private static float getLetterMinWidth() {
         String[] ss = {"f", "i", "j", "l", "r", "1"};

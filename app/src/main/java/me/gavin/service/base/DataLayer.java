@@ -49,6 +49,8 @@ public class DataLayer {
         Book loadBook(long bookId);
 
         Observable<List<Book>> loadAllBooks();
+
+        void removeBook(Book book);
     }
 
     public interface SourceService {

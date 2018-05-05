@@ -3,18 +3,19 @@ package me.gavin.app.shelf;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.SearchView;
+import android.view.Gravity;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.Observable;
 import me.gavin.app.RxTransformer;
-import me.gavin.app.explorer.ExplorerActivity;
 import me.gavin.app.core.model.Book;
+import me.gavin.app.explorer.ExplorerActivity;
 import me.gavin.app.read.NewReadActivity;
 import me.gavin.app.search.SearchActivity;
-import me.gavin.app.test.TestActivity;
 import me.gavin.base.BindingActivity;
 import me.gavin.base.BundleKey;
 import me.gavin.base.recycler.BindingAdapter;
@@ -29,7 +30,7 @@ import me.gavin.text.databinding.ActivityShelfBinding;
 public class ShelfActivity extends BindingActivity<ActivityShelfBinding> {
 
     private final List<Book> mList = new ArrayList<>();
-    private BindingAdapter mAdapter;
+    private ShelfAdapter mAdapter;
 
     @Override
     protected int getLayoutId() {
@@ -44,7 +45,7 @@ public class ShelfActivity extends BindingActivity<ActivityShelfBinding> {
         mBinding.includeToolbar.toolbar.inflateMenu(R.menu.main);
         mBinding.includeToolbar.toolbar.setOnMenuItemClickListener(item -> {
             if (item.getItemId() == R.id.action_test) {
-                startActivity(new Intent(this, TestActivity.class));
+                //
             }
             return true;
         });
@@ -82,7 +83,7 @@ public class ShelfActivity extends BindingActivity<ActivityShelfBinding> {
                 })
                 .subscribe(books -> {
                     mList.addAll(books);
-                    mAdapter = new BindingAdapter<>(this, mList, R.layout.item_shelf_book);
+                    mAdapter = new ShelfAdapter(this, mList);
                     mAdapter.setOnItemClickListener(i -> {
                         if (mList.get(i).getType() == Book.TYPE_LOCAL) {
                             startActivity(new Intent(this, NewReadActivity.class)
@@ -91,6 +92,20 @@ public class ShelfActivity extends BindingActivity<ActivityShelfBinding> {
                             startActivity(new Intent(this, NewReadActivity.class)
                                     .putExtra(BundleKey.BOOK_ID, mList.get(i).get_id()));
                         }
+                    });
+                    mAdapter.setOnItemLongClickListener((v, i) -> {
+                        PopupMenu popupMenu = new PopupMenu(this, v);
+                        popupMenu.setGravity(Gravity.CENTER);
+                        popupMenu.inflate(R.menu.item_shelf);
+                        popupMenu.show();
+                        popupMenu.setOnMenuItemClickListener(item -> {
+                            if (item.getItemId() == R.id.actionDel) {
+                                getDataLayer().getShelfService().removeBook(mList.get(i));
+                                mList.remove(i.intValue());
+                                mAdapter.notifyItemRemoved(i);
+                            }
+                            return true;
+                        });
                     });
                     mBinding.recycler.setAdapter(mAdapter);
                 });
