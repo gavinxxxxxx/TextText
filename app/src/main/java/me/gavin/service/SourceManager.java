@@ -20,7 +20,6 @@ import me.gavin.db.dao.ChapterDao;
 import me.gavin.service.base.BaseManager;
 import me.gavin.service.base.DataLayer;
 import me.gavin.util.CacheHelper;
-import me.gavin.util.L;
 import okhttp3.ResponseBody;
 import okio.BufferedSink;
 import okio.BufferedSource;
@@ -176,9 +175,6 @@ public class SourceManager extends BaseManager implements DataLayer.SourceServic
         }
         return Observable.just(0)
                 .flatMap(arg0 -> {
-                    if (target.chapter == null) {
-                        L.e(target.chapter);
-                    }
                     if (target.end < target.chapter.length()) {
                         page.chapter = target.chapter;
                         page.index = target.index;

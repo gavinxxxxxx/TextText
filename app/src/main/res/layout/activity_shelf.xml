@@ -25,7 +25,7 @@
                 android:padding="16dp"
                 app:layoutManager="GridLayoutManager"
                 app:layout_behavior="@string/appbar_scrolling_view_behavior"
-                app:spanCount="3"
+                app:spanCount="4"
                 tools:listitem="@layout/item_shelf_book" />
 
         </LinearLayout>
