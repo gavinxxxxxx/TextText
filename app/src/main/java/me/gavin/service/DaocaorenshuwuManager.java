@@ -51,7 +51,7 @@ public class DaocaorenshuwuManager extends BaseManager implements DataLayer.Sour
                     book.setName(elements.get(0).child(0).attr("title"));
                     book.setAuthor(elements.get(1).text());
                     String uri = elements.get(0).child(0).attr("href"); // /book/bookId/
-                    book.setId(uri.substring(6, uri.length() - 1));
+                    book.setId(uri.substring(1, uri.length() - 1));
                     book.setType(Book.TYPE_ONLINE);
                     book.setSrc("daocaorenshuwu");
                     book.setSrcName("稻草人书屋");
@@ -61,14 +61,20 @@ public class DaocaorenshuwuManager extends BaseManager implements DataLayer.Sour
 
     @Override
     public Observable<Book> detail(String id) {
-        return getApi().daocaorenshuwuDetail(id)
+        String[] split = id.split("/");
+        String prefix = split.length > 1 ? split[0] : "";
+        String rid = split.length > 1 ? split[1] : split[0];
+        return getApi().daocaorenshuwuDetail(prefix, rid)
                 .map(ResponseBody::string)
                 .map(s -> new Book());
     }
 
     @Override
     public Observable<List<Chapter>> directory(String id) {
-        return getApi().daocaorenshuwuDirectory(id)
+        String[] split = id.split("/");
+        String prefix = split.length > 1 ? split[0] : "";
+        String rid = split.length > 1 ? split[1] : split[0];
+        return getApi().daocaorenshuwuDirectory(prefix, rid)
                 .map(ResponseBody::byteStream)
                 .map(this::read)
                 .map(Jsoup::parse)
@@ -108,7 +114,10 @@ public class DaocaorenshuwuManager extends BaseManager implements DataLayer.Sour
                                 .queryBuilder()
                                 .where(ChapterDao.Properties.BookId.eq(book.getId()), ChapterDao.Properties.Index.eq(index))
                                 .unique();
-                        return getApi().daocaorenshuwuChapter(book.getId(), chapter.getId())
+                        String[] split = book.getId().split("/");
+                        String prefix = split.length > 1 ? split[0] : "";
+                        String rid = split.length > 1 ? split[1] : split[0];
+                        return getApi().daocaorenshuwuChapter(prefix, rid, chapter.getId())
                                 .map(ResponseBody::byteStream)
                                 .map(this::read)
 //                                .map(s -> s.replaceAll("<br */?>", "\\\\n"))
@@ -119,6 +128,7 @@ public class DaocaorenshuwuManager extends BaseManager implements DataLayer.Sour
                                 .compose(RxTransformer.log())
                                 .map(s -> s.replaceAll("<br */?>", "\\\\n"))
                                 .map(s -> s.replaceAll("<p>(.+)</p>", "\\\\n$1\\\\n"))
+                                .map(s -> s.replaceAll("<div>\\s*\\n*(.*)\\n*\\s*</div>", "\\\\n$1\\\\n"))
                                 .map(s -> s.replaceAll("<[a-z]+ class=[^<]+</[a-z]+>", ""))
 //                                .map(s -> s.replaceAll("(<div class=.*</div>|<span class=.*</span>|<i class=.*</i>|<p class=.*</p>)", ""))
                                 .map(Jsoup::parse)

@@ -85,8 +85,8 @@ public interface ClientAPI {
      * @return Result
      */
     @Headers("Accept-Encoding: gzip, deflate, br")
-    @GET("http://www.daocaorenshuwu.com/book/{id}/")
-    Observable<ResponseBody> daocaorenshuwuDetail(@Path("id") String id);
+    @GET("http://www.daocaorenshuwu.com/{prefix}/{id}/")
+    Observable<ResponseBody> daocaorenshuwuDetail(@Path("prefix") String prefix, @Path("id") String id);
 
 
     /**
@@ -96,8 +96,8 @@ public interface ClientAPI {
      * @return Result
      */
     @Headers("Accept-Encoding: gzip, deflate, br")
-    @GET("http://www.daocaorenshuwu.com/book/{id}/")
-    Observable<ResponseBody> daocaorenshuwuDirectory(@Path("id") String id);
+    @GET("http://www.daocaorenshuwu.com/{prefix}/{id}/")
+    Observable<ResponseBody> daocaorenshuwuDirectory(@Path("prefix") String prefix, @Path("id") String id);
 
 
     /**
@@ -108,8 +108,11 @@ public interface ClientAPI {
      * @return Result
      */
     @Headers("Accept-Encoding: gzip, deflate, br")
-    @GET("http://www.daocaorenshuwu.com/book/{id}/{cid}.html")
-    Observable<ResponseBody> daocaorenshuwuChapter(@Path("id") String id, @Path("cid") String cid);
+    @GET("http://www.daocaorenshuwu.com/{prefix}/{id}/{cid}.html")
+    Observable<ResponseBody> daocaorenshuwuChapter(
+            @Path("prefix") String prefix,
+            @Path("id") String id,
+            @Path("cid") String cid);
 
 
     /* **************************************************************************** *
