@@ -28,6 +28,14 @@ public class RxTransformer {
                 });
     }
 
+    public static <T> ObservableTransformer<T, T> log(Object tag) {
+        return upstream -> upstream
+                .map(t -> {
+                    L.d(String.valueOf(tag), t);
+                    return t;
+                });
+    }
+
     /**
      * 文件过滤
      */
@@ -36,5 +44,4 @@ public class RxTransformer {
                 .filter(subFile -> !subFile.getName().startsWith("."))
                 .filter(subFile -> subFile.isDirectory() || subFile.getName().endsWith(".txt"));
     }
-
 }

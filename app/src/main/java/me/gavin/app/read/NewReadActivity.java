@@ -94,7 +94,6 @@ public class NewReadActivity extends BindingActivity<ActivityReadNewBinding> imp
         if (mBook != null && mBinding.text != null) {
             mBook.setIndex(mBinding.text.curr().index);
             mBook.setOffset(mBinding.text.curr().start);
-            getDataLayer().getShelfService().updateBook(mBook);
             mBook.setTime(System.currentTimeMillis());
             getDataLayer().getShelfService().updateBook(mBook);
         }

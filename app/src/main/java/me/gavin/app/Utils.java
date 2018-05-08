@@ -118,7 +118,7 @@ public final class Utils {
         page.mTextSp = Utils.trim(page.mText).split(Config.REGEX_SEGMENT);
         page.indent = start == 0 || page.mText.matches(Config.REGEX_SEGMENT_SUFFIX)
                 || page.chapter.substring(0, start).matches(Config.REGEX_SEGMENT_PREFIX);
-        page.align = !page.isLast && !page.mText.matches(Config.REGEX_SEGMENT_PREFIX)
+        page.align = page.end < page.chapter.length() && !page.mText.matches(Config.REGEX_SEGMENT_PREFIX)
                 && !page.chapter.substring((int) page.end).matches(Config.REGEX_SEGMENT_SUFFIX);
         page.suffix = page.end < page.chapter.length()
                 && page.chapter.substring((int) page.end - 1, (int) page.end + 1).matches(Config.REGEX_WORD);
@@ -151,7 +151,7 @@ public final class Utils {
         page.isFirst = page.index == 0 && page.start == 0;
         page.mText = page.chapter.substring((int) page.start, Math.min((int) page.start + Config.pagePreCount, page.chapter.length()));
         page.mTextSp = Utils.trim(page.mText).split(Config.REGEX_SEGMENT);
-        page.indent = page.isFirst || page.mText.matches(Config.REGEX_SEGMENT_SUFFIX)
+        page.indent = page.start == 0 || page.mText.matches(Config.REGEX_SEGMENT_SUFFIX)
                 || page.chapter.substring(0, (int) page.start).matches(Config.REGEX_SEGMENT_PREFIX);
         prepare(page);
         page.ready = true;

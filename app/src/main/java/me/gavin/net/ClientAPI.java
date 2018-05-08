@@ -67,6 +67,51 @@ public interface ClientAPI {
     Observable<ResponseBody> yanmoxuanChapter(@Path("id") String id, @Path("cid") String cid);
 
 
+    /**
+     * 搜索 - 稻草人书屋
+     *
+     * @param query
+     * @return Result
+     */
+    @Headers("Accept-Encoding: gzip, deflate, br")
+    @GET("http://www.daocaorenshuwu.com/plus/search.php")
+    Observable<ResponseBody> daocaorenshuwuQuery(@Query("q") String query);
+
+
+    /**
+     * 详情 - 稻草人书屋
+     *
+     * @param id
+     * @return Result
+     */
+    @Headers("Accept-Encoding: gzip, deflate, br")
+    @GET("http://www.daocaorenshuwu.com/book/{id}/")
+    Observable<ResponseBody> daocaorenshuwuDetail(@Path("id") String id);
+
+
+    /**
+     * 目录 - 稻草人书屋
+     *
+     * @param id 书籍id
+     * @return Result
+     */
+    @Headers("Accept-Encoding: gzip, deflate, br")
+    @GET("http://www.daocaorenshuwu.com/book/{id}/")
+    Observable<ResponseBody> daocaorenshuwuDirectory(@Path("id") String id);
+
+
+    /**
+     * 章节 - 稻草人书屋
+     *
+     * @param id  书籍id
+     * @param cid 章节id
+     * @return Result
+     */
+    @Headers("Accept-Encoding: gzip, deflate, br")
+    @GET("http://www.daocaorenshuwu.com/book/{id}/{cid}.html")
+    Observable<ResponseBody> daocaorenshuwuChapter(@Path("id") String id, @Path("cid") String cid);
+
+
     /* **************************************************************************** *
      * *********************************** 干货集中营福利 *************************** *
      * **************************************************************************** */
@@ -90,5 +135,4 @@ public interface ClientAPI {
     @Streaming
     @GET
     Observable<ResponseBody> download(@Url String url);
-
 }
