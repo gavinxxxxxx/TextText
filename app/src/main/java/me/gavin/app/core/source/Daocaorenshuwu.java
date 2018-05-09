@@ -65,10 +65,10 @@ public final class Daocaorenshuwu extends Source {
     }
 
     @Override
-    public Chapter directory2Chapter(Element element) {
+    public Chapter directory2Chapter(Element element, String bookId) {
         String uri = element.attr("href");
         String cid = uri.substring(uri.lastIndexOf("/") + 1, uri.lastIndexOf("."));
-        return new Chapter(cid, element.attr("title"));
+        return new Chapter(bookId, cid, element.attr("title"));
     }
 
     @Override

@@ -3,8 +3,6 @@ package me.gavin.service;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -17,15 +15,10 @@ import me.gavin.app.core.model.Book;
 import me.gavin.app.core.model.Chapter;
 import me.gavin.app.core.model.Page;
 import me.gavin.app.core.source.Source;
-import me.gavin.base.App;
-import me.gavin.db.dao.ChapterDao;
 import me.gavin.service.base.BaseManager;
 import me.gavin.service.base.DataLayer;
-import me.gavin.util.CacheHelper;
 import okhttp3.ResponseBody;
-import okio.BufferedSink;
 import okio.BufferedSource;
-import okio.GzipSink;
 import okio.GzipSource;
 import okio.Okio;
 
@@ -62,48 +55,28 @@ public class SourceManager extends BaseManager implements DataLayer.SourceServic
                 .map(Jsoup::parse)
                 .map(document -> document.select(source.directorySelector()))
                 .compose(source.directoryFilter())
-                .map(source::directory2Chapter)
+                .map(element -> source.directory2Chapter(element, id))
                 .toList()
                 .toObservable()
                 .map(chapters -> {
-                    getDaoSession().getChapterDao()
-                            .queryBuilder()
-                            .where(ChapterDao.Properties.BookId.eq(id))
-                            .buildDelete()
-                            .executeDeleteWithoutDetachingEntities();
                     for (int i = 0; i < chapters.size(); i++) {
-                        chapters.get(i).setBookId(id);
-                        chapters.get(i).setIndex(i);
+                        chapters.get(i).bookId = id;
+                        chapters.get(i).index = i;
                     }
-                    getDaoSession().getChapterDao().saveInTx(chapters);
                     return chapters;
                 });
     }
 
     @Override
     public Observable<String> chapter(Source source, Book book, int index) {
-        return Observable.just("/%s(%s)/%s/%s")
-                .map(format -> String.format(format, book.getName(), book.getAuthor(), book.getSrc(), index))
-                .map(sf -> CacheHelper.getFilesDir(App.get(), ".book") + sf)
-                .map(File::new)
-                .flatMap(file -> {
-                    if (!file.exists() || file.isDirectory()) {
-                        Chapter chapter = getDaoSession().getChapterDao()
-                                .queryBuilder()
-                                .where(ChapterDao.Properties.BookId.eq(book.getId()), ChapterDao.Properties.Index.eq(index))
-                                .unique();
-                        return getApi().get(source.chapterUrl(chapter), Config.cacheControlChapter)
-                                .map(ResponseBody::byteStream)
-                                .map(this::read)
-                                .compose(source.chapter2Text())
-                                .map(Element::text)
-                                .map(s -> s.replaceAll("\\\\n", "\n"))
-                                .map(s -> write(s, file));
-                    }
-                    return Observable.just(file)
-                            .map(FileInputStream::new)
-                            .map(this::read);
-                })
+        return directory(source, book.getId())
+                .map(chapters -> chapters.get(index))
+                .flatMap(chapter -> getApi().get(source.chapterUrl(chapter), Config.cacheControlChapter))
+                .map(ResponseBody::byteStream)
+                .map(this::read)
+                .compose(source.chapter2Text())
+                .map(Element::text)
+                .map(s -> s.replaceAll("\\\\n", "\n"))
                 .compose(RxTransformer.log());
     }
 
@@ -172,16 +145,6 @@ public class SourceManager extends BaseManager implements DataLayer.SourceServic
                     }
                 })
                 .map(page1 -> Utils.nextOnline(page, page.start));
-    }
-
-    private String write(String s, File file) throws IOException {
-        file.delete();
-        file.getParentFile().mkdirs();
-        file.createNewFile();
-        try (BufferedSink bufferedSink = Okio.buffer(new GzipSink(Okio.sink(file)))) {
-            bufferedSink.writeUtf8(s);
-            return s;
-        }
     }
 
     private String read(InputStream in) throws IOException {

@@ -40,7 +40,7 @@ public abstract class Source {
 
     public abstract ObservableTransformer<Elements, Element> directoryFilter();
 
-    public abstract Chapter directory2Chapter(Element element);
+    public abstract Chapter directory2Chapter(Element element, String bookId);
 
     /* ******************************************** 章节 **************************************** */
 

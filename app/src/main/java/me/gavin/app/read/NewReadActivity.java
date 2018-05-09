@@ -92,7 +92,7 @@ public class NewReadActivity extends BindingActivity<ActivityReadNewBinding> imp
     @Override
     protected void onPause() {
         super.onPause();
-        if (mBook != null && mBinding.text != null) {
+        if (mBook != null && mBinding.text != null && mBinding.text.curr() != null) {
             mBook.setIndex(mBinding.text.curr().index);
             mBook.setOffset(mBinding.text.curr().start);
             mBook.setTime(System.currentTimeMillis());
