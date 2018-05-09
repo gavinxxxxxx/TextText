@@ -3,6 +3,7 @@ package me.gavin.app.search;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +16,6 @@ import me.gavin.base.BundleKey;
 import me.gavin.base.recycler.BindingAdapter;
 import me.gavin.text.R;
 import me.gavin.text.databinding.ActivitySearchBinding;
-import me.gavin.util.L;
 
 /**
  * 搜索
@@ -64,6 +64,6 @@ public class SearchActivity extends BindingActivity<ActivitySearchBinding> {
                 .subscribe(book -> {
                     mList.add(book);
                     mAdapter.notifyDataSetChanged();
-                }, L::e);
+                }, t -> Snackbar.make(mBinding.recycler, t.getMessage(), Snackbar.LENGTH_LONG).show());
     }
 }

@@ -99,9 +99,9 @@ public class ShelfActivity extends BindingActivity<ActivityShelfBinding> {
                         popupMenu.show();
                         popupMenu.setOnMenuItemClickListener(item -> {
                             if (item.getItemId() == R.id.actionDel) {
+                                getDataLayer().getShelfService().removeBook(mList.get(i));
                                 mAdapter.notifyItemRemoved(i);
                                 mList.remove(i.intValue());
-                                getDataLayer().getShelfService().removeBook(mList.get(i));
                             }
                             return true;
                         });

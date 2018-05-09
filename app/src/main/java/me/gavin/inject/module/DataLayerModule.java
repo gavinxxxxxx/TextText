@@ -6,7 +6,7 @@ import dagger.Module;
 import dagger.Provides;
 import me.gavin.service.SettingManager;
 import me.gavin.service.ShelfManager;
-import me.gavin.service.TestManager;
+import me.gavin.service.SourceManager;
 import me.gavin.service.base.DataLayer;
 
 /**
@@ -19,27 +19,27 @@ public class DataLayerModule {
 
     @Singleton
     @Provides
-    public ShelfManager provideShelfManager() {
+    ShelfManager provideShelfManager() {
         return new ShelfManager();
     }
 
     @Singleton
     @Provides
-    public TestManager provideSourceManager() {
-        return new TestManager();
+    SourceManager provideSourceManager() {
+        return new SourceManager();
     }
 
     @Singleton
     @Provides
-    public SettingManager provideSettingManager() {
+    SettingManager provideSettingManager() {
         return new SettingManager();
     }
 
     @Singleton
     @Provides
-    public DataLayer provideDataLayer(
+    DataLayer provideDataLayer(
             ShelfManager shelfManager,
-            TestManager sourceManager,
+            SourceManager sourceManager,
             SettingManager settingManager) {
         return new DataLayer(shelfManager, sourceManager, settingManager);
     }

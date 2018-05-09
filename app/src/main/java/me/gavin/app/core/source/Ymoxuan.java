@@ -15,7 +15,7 @@ import me.gavin.app.core.model.Chapter;
  * @author gavin.xiong 2018/4/28.
  * @link {https://www.ymoxuan.com/}
  */
-public final class SourceYmoxuan extends Source {
+public final class Ymoxuan extends Source {
 
     @Override
     public String queryUrl(String query) {

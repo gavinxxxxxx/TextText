@@ -1,5 +1,7 @@
 package me.gavin.inject.module;
 
+import android.app.Application;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -10,7 +12,6 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import me.gavin.inject.component.ApplicationComponent;
 import me.gavin.net.ClientAPI;
 import me.gavin.text.BuildConfig;
 import me.gavin.util.CacheHelper;
@@ -45,7 +46,7 @@ public class ClientAPIModule {
      */
     @Singleton
     @Provides
-    public ClientAPI provideClientApi(OkHttpClient client, Converter.Factory converterFactory) {
+    ClientAPI provideClientApi(OkHttpClient client, Converter.Factory converterFactory) {
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
                 .addConverterFactory(ScalarsConverterFactory.create())
@@ -64,7 +65,7 @@ public class ClientAPIModule {
      */
     @Singleton
     @Provides
-    public Converter.Factory provideConverter(Gson gson) {
+    Converter.Factory provideConverter(Gson gson) {
         return GsonConverterFactory.create(gson);
     }
 
@@ -75,7 +76,7 @@ public class ClientAPIModule {
      */
     @Singleton
     @Provides
-    public Gson provideGson() {
+    Gson provideGson() {
         return new GsonBuilder()
 //                .excludeFieldsWithoutExposeAnnotation() //不导出实体中没有用@Expose注解的属性
 //                .enableComplexMapKeySerialization() //支持Map的key为复杂对象的形式
@@ -97,11 +98,11 @@ public class ClientAPIModule {
      */
     @Singleton
     @Provides
-    public OkHttpClient provideClient(HttpLoggingInterceptor logging,
-                                      OKHttpLoggingInterceptor logging2,
-                                      OKHttpCacheInterceptor cacheInterceptor,
-                                      OKHttpCacheNetworkInterceptor cacheNetworkInterceptor,
-                                      Cache cache) {
+    OkHttpClient provideClient(HttpLoggingInterceptor logging,
+                               OKHttpLoggingInterceptor logging2,
+                               OKHttpCacheInterceptor cacheInterceptor,
+                               OKHttpCacheNetworkInterceptor cacheNetworkInterceptor,
+                               Cache cache) {
         return new OkHttpClient.Builder()
                 .connectTimeout(10, TimeUnit.SECONDS)
                 .readTimeout(10, TimeUnit.SECONDS)
@@ -121,7 +122,7 @@ public class ClientAPIModule {
      */
     @Singleton
     @Provides
-    public HttpLoggingInterceptor provideLogger() {
+    HttpLoggingInterceptor provideLogger() {
         return new HttpLoggingInterceptor()
                 .setLevel(BuildConfig.LOG_DEBUG ? HttpLoggingInterceptor.Level.BODY : HttpLoggingInterceptor.Level.NONE);
     }
@@ -133,7 +134,7 @@ public class ClientAPIModule {
      */
     @Singleton
     @Provides
-    public OKHttpLoggingInterceptor provideOKHttpLogger() {
+    OKHttpLoggingInterceptor provideOKHttpLogger() {
         return new OKHttpLoggingInterceptor();
     }
 
@@ -144,7 +145,7 @@ public class ClientAPIModule {
      */
     @Singleton
     @Provides
-    public OKHttpCacheInterceptor provideCacheInterceptor() {
+    OKHttpCacheInterceptor provideCacheInterceptor() {
         return new OKHttpCacheInterceptor();
     }
 
@@ -155,18 +156,18 @@ public class ClientAPIModule {
      */
     @Singleton
     @Provides
-    public OKHttpCacheNetworkInterceptor provideCacheNetworkInterceptor() {
+    OKHttpCacheNetworkInterceptor provideCacheNetworkInterceptor() {
         return new OKHttpCacheNetworkInterceptor();
     }
 
     /**
-     * OkHttp缓存 50 MiB
+     * OkHttp 缓存 100 M
      *
      * @return Cache
      */
     @Singleton
     @Provides
-    public Cache provideCache() {
-        return new Cache(new File(CacheHelper.getCacheDir(ApplicationComponent.Instance.get().getApplication()), "responses"), 50 * 1024 * 1024);
+    Cache provideCache(Application application) {
+        return new Cache(new File(CacheHelper.getCacheDir(application), "responses"), 1024 * 1024 * 100);
     }
 }

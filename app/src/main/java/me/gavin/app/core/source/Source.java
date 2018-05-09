@@ -55,9 +55,9 @@ public abstract class Source {
     public static Source getSource(String src) {
         switch (src) {
             case "ymoxuan":
-                return new SourceYmoxuan();
+                return new Ymoxuan();
             case "daocaorenshuwu":
-                return new SourceDaocaorenshuwu();
+                return new Daocaorenshuwu();
             default:
                 return null;
         }
