@@ -18,7 +18,6 @@ import me.gavin.app.read.NewReadActivity;
 import me.gavin.app.search.SearchActivity;
 import me.gavin.base.BindingActivity;
 import me.gavin.base.BundleKey;
-import me.gavin.base.recycler.BindingAdapter;
 import me.gavin.text.R;
 import me.gavin.text.databinding.ActivityShelfBinding;
 
@@ -100,9 +99,9 @@ public class ShelfActivity extends BindingActivity<ActivityShelfBinding> {
                         popupMenu.show();
                         popupMenu.setOnMenuItemClickListener(item -> {
                             if (item.getItemId() == R.id.actionDel) {
-                                getDataLayer().getShelfService().removeBook(mList.get(i));
-                                mList.remove(i.intValue());
                                 mAdapter.notifyItemRemoved(i);
+                                mList.remove(i.intValue());
+                                getDataLayer().getShelfService().removeBook(mList.get(i));
                             }
                             return true;
                         });

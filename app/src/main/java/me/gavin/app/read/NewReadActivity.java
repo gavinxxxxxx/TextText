@@ -19,6 +19,7 @@ import me.gavin.app.core.model.Book;
 import me.gavin.app.core.model.Chapter;
 import me.gavin.app.core.model.Page;
 import me.gavin.app.core.pager.Pager;
+import me.gavin.app.core.source.Source;
 import me.gavin.base.BindingActivity;
 import me.gavin.base.BundleKey;
 import me.gavin.base.recycler.BindingAdapter;
@@ -152,7 +153,7 @@ public class NewReadActivity extends BindingActivity<ActivityReadNewBinding> imp
                     .map(is -> StreamHelper.getChapters(is, mBook.getCharset()));
         } else if (mBook.type == Book.TYPE_ONLINE) {
             return getDataLayer().getSourceService()
-                    .directory(mBook.id);
+                    .directory(Source.getSource(mBook.src), mBook.id);
         }
         return Observable.just(mChapterList);
     }

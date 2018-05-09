@@ -4,10 +4,9 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import me.gavin.service.DaocaorenshuwuManager;
 import me.gavin.service.SettingManager;
 import me.gavin.service.ShelfManager;
-import me.gavin.service.SourceManager;
+import me.gavin.service.TestManager;
 import me.gavin.service.base.DataLayer;
 
 /**
@@ -26,14 +25,8 @@ public class DataLayerModule {
 
     @Singleton
     @Provides
-    public SourceManager provideSourceManager() {
-        return new SourceManager();
-    }
-
-    @Singleton
-    @Provides
-    public DaocaorenshuwuManager provideDaocaorenshuwuManager() {
-        return new DaocaorenshuwuManager();
+    public TestManager provideSourceManager() {
+        return new TestManager();
     }
 
     @Singleton
@@ -46,7 +39,7 @@ public class DataLayerModule {
     @Provides
     public DataLayer provideDataLayer(
             ShelfManager shelfManager,
-            DaocaorenshuwuManager sourceManager,
+            TestManager sourceManager,
             SettingManager settingManager) {
         return new DataLayer(shelfManager, sourceManager, settingManager);
     }

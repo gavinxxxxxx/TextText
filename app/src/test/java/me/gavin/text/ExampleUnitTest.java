@@ -113,6 +113,55 @@ public class ExampleUnitTest {
                 "<p>美国人虽然没有我们的探测能力，但他们的各种乱七八糟的探测器也不少，按说不应该会错过通道入口才对，现在这种情况只能说明对方把通道口藏的非常好，至少美国人的探测器是发现不了的。 <div class='Xpf937'>欢迎到稻草人书屋看书</div> </p>\n" +
                 "<p>“现在怎么办？我们总不能自己再把通道全都检查一遍吧？” <p class='Xpf937'>内容来自daoＣaorenshuwu.com</p> </p>";
 //        System.out.println(s.replaceAll("<[a-z]+ class=[^<]+</[a-z]+>",""));
-        System.out.println(s.replaceAll("<[a-z]+ class=[^<]+</[a-z]+>", ""));
+        System.out.println(s.replaceAll("<([a-z]+) class=[^<]+?</\\1>", ""));
+    }
+
+    @Test
+    public void textRegex3() {
+        String s = "<h1>abcdefg</h1>\n" +
+                "<h1>abcdefg</h2>\n" +
+                "<h2>abcdefg</h2>\n" +
+                "<h3>abcdefg</h2>\n" +
+                "<h3>abcdefg</h3>\n" +
+                "<h3>abcdefg</h4>\n" +
+                "<h4>abcdefg</h4>\n" +
+                "<h5>abcdefg</h4>\n" +
+                "<h5>abcdefg</h5>";
+        Matcher matcher = Pattern.compile("<[hH]([1-6])>.*?</[hH]\\1>").matcher(s);
+        while (matcher.find()) {
+            System.out.println(matcher.group());
+        }
+    }
+
+    @Test
+    public void textRegex4() {
+        String s = "\n" +
+                "        <div id=\"cont-text\" class=\"cont-text\">\n" +
+                "          <script>DaoCaoRen.getCode(\"ui-content\");</script>\n" +
+                "          <style> .Rtb759 { display:none; } </style>\n" +
+                "<div>\n" +
+                "\t　　水兰中学外，小雨淅沥沥的下着。\n" +
+                "</div>\n" +
+                "<div>\n" +
+                "\t　　校门外，挤满了撑着雨伞的家长，他们被雨水淋湿的脸上满是期望。</div>\n" +
+                "<div>\n" +
+                "\t　　今天可是他们孩子的升学大事啊，能不能上天澜魔法高中，能不能将来考上一个好大学就看孩子今日的表现了！</div>\n" +
+
+                "<p>“你算什么！我可是连早饭都没来及吃就来了，你好歹还吃了个汉堡！”阿伟嘟囔着。 <i class='Xld851'>欢迎到稻草人书屋看书</i> </p>\n" +
+                "<p>“你算什么！我可是连早饭都没来及吃就来了，你好歹还吃了个汉堡！”阿伟嘟囔着。 <i class='Xld851'>欢迎到稻草人书屋看书</i> </p>\n" +
+                "<p>“你算什么！我可是连早饭都没来及吃就来了，你好歹还吃了个汉堡！”阿伟嘟囔着。 <i class='Xld851'>欢迎到稻草人书屋看书</i> </p>\n" +
+
+                "<div>\n" +
+                "\t　　你没看错。</div>\n" +
+                " \n" +
+                "        </div>\n";
+//        Matcher matcher = Pattern.compile("<(p|div)>(?s)(.*?)</\\1>").matcher(s);
+//        while (matcher.find()) {
+//            System.out.println(matcher.group());
+//            System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+//        }
+
+        String result = s.replaceAll("<(p|div)>(?s)(.*?)</\\1>","$2");
+        System.out.println(result);
     }
 }

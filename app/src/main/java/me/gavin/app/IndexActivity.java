@@ -20,6 +20,6 @@ public class IndexActivity extends AppCompatActivity {
 //        startActivity(new Intent(this, ReadActivity.class)
 //                .setData(Uri.parse("file:///storage/emulated/0/gavin/book/dpcq.a.txt")));
         startActivity(new Intent(this, ShelfActivity.class));
-//        finish();
+        finish();
     }
 }

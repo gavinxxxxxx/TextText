@@ -9,6 +9,7 @@ import java.util.List;
 
 import me.gavin.app.RxTransformer;
 import me.gavin.app.core.model.Book;
+import me.gavin.app.core.source.Source;
 import me.gavin.base.BindingActivity;
 import me.gavin.base.BundleKey;
 import me.gavin.base.recycler.BindingAdapter;
@@ -56,7 +57,8 @@ public class SearchActivity extends BindingActivity<ActivitySearchBinding> {
 
     private void doSearch(String query) {
         getDataLayer().getSourceService()
-                .search(query)
+                .search(Source.getSource("daocaorenshuwu"), query)
+//                .search(Source.getSource("ymoxuan"), query)
                 .compose(RxTransformer.applySchedulers())
                 .doOnSubscribe(mCompositeDisposable::add)
                 .subscribe(book -> {

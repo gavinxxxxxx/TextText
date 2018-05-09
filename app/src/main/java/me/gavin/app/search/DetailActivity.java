@@ -8,6 +8,7 @@ import java.util.List;
 import me.gavin.app.RxTransformer;
 import me.gavin.app.core.model.Book;
 import me.gavin.app.core.model.Chapter;
+import me.gavin.app.core.source.Source;
 import me.gavin.base.BindingActivity;
 import me.gavin.base.BundleKey;
 import me.gavin.base.recycler.BindingAdapter;
@@ -38,18 +39,18 @@ public class DetailActivity extends BindingActivity<ActivityDetailBinding> {
     }
 
     private void detail(String id) {
-        getDataLayer().getSourceService()
-                .detail(id)
-                .compose(RxTransformer.applySchedulers())
-                .doOnSubscribe(mCompositeDisposable::add)
-                .subscribe(L::e, L::e);
+//        getDataLayer().getSourceService()
+//                .detail(Source.getSource(mBook.getSrc()), id)
+//                .compose(RxTransformer.applySchedulers())
+//                .doOnSubscribe(mCompositeDisposable::add)
+//                .subscribe(L::e, L::e);
     }
 
     private List<Chapter> chapterList;
 
     private void directory(String id) {
         getDataLayer().getSourceService()
-                .directory(id)
+                .directory(Source.getSource(mBook.getSrc()), id)
                 .compose(RxTransformer.applySchedulers())
                 .doOnSubscribe(mCompositeDisposable::add)
                 .subscribe(chapters -> {
@@ -89,7 +90,7 @@ public class DetailActivity extends BindingActivity<ActivityDetailBinding> {
 
         mBook.setIndex(i);
         getDataLayer().getSourceService()
-                .chapter(mBook, mBook.getIndex())
+                .chapter(Source.getSource(mBook.getSrc()), mBook, mBook.getIndex())
                 .compose(RxTransformer.applySchedulers())
                 .doOnSubscribe(mCompositeDisposable::add)
                 .subscribe(s -> {
