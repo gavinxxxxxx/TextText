@@ -1,8 +1,10 @@
 package me.gavin.app.read;
 
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
+import android.support.v4.graphics.ColorUtils;
 import android.support.v4.widget.DrawerLayout;
 import android.view.Gravity;
 
@@ -10,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.Observable;
+import me.gavin.app.Config;
 import me.gavin.app.RxTransformer;
 import me.gavin.app.StreamHelper;
 import me.gavin.app.core.flipper.SimpleFlipper;
@@ -35,6 +38,7 @@ public class NewReadActivity extends BindingActivity<ActivityReadNewBinding> imp
 
     @Override
     protected void afterCreate(@Nullable Bundle savedInstanceState) {
+        getWindow().setStatusBarColor(0);
         getWindow().getDecorView().setSystemUiVisibility(0);
         long bookId = getIntent().getLongExtra(BundleKey.BOOK_ID, -1);
         mBook = getDataLayer().getShelfService().loadBook(bookId);
@@ -44,13 +48,24 @@ public class NewReadActivity extends BindingActivity<ActivityReadNewBinding> imp
 
         mBinding.drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
 
+        float[] hsl = new float[3];
+        ColorUtils.colorToHSL(Config.bgColor, hsl);
+        hsl[1] = Math.max(0, hsl[1] - 0.025f);
+        hsl[2] = Math.max(0, hsl[2] - 0.025f);
+        mBinding.includeContent.cover.setBackgroundColor(ColorUtils.HSLToColor(hsl));
         mBinding.includeContent.toolbar.setTitle(mBook.name);
+        Drawable drawable = getDrawable(R.drawable.ic_arrow_back_24dp);
+        drawable.setTint(Config.textColor);
+        mBinding.includeContent.toolbar.setNavigationIcon(drawable);
         mBinding.includeContent.toolbar.setNavigationOnClickListener(v -> finish());
+        mBinding.includeContent.toolbar.setTitleTextColor(Config.textColor);
+        mBinding.includeContent.toolbar.setBackgroundColor(Config.bgColor);
 
         mBinding.includeContent.text.setPager(this);
         // mBinding.text.setFlipper(new CoverFlipper());
         mBinding.includeContent.text.setFlipper(new SimpleFlipper());
         mBinding.includeContent.text.setOnSystemUiVisibilityChangeListener(visibility -> {
+            mBinding.includeContent.cover.setVisibility(visibility);
             mBinding.includeContent.toolbar.setVisibility(visibility);
         });
 

@@ -40,6 +40,7 @@ public final class Config {
     public static int textBottom;
     public static int textHeight; // 文字高度
     public static int textColor; // 文字颜色
+    public static int bgColor;
 
     public static int topPadding;
     public static int bottomPadding;
@@ -68,6 +69,7 @@ public final class Config {
     static {
         textSize = SPUtil.getInt("textSize", 40);
         textColor = SPUtil.getInt("textColor", 0xFFA9B7C6);
+        bgColor = SPUtil.getInt("bgColor", 0xFF252525);
 
         topPadding = SPUtil.getInt("topPadding", 80);
         bottomPadding = SPUtil.getInt("bottomPadding", 50);
@@ -85,8 +87,7 @@ public final class Config {
         textPaint.setColor(textColor);
 
         bgPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        bgPaint.setColor(0xFF252525);
-//        bgPaint.setColor(0xFFFFFFFF);
+        bgPaint.setColor(bgColor);
 
         debugPaint = new Paint();
         debugPaint.setColor(0x22222222);

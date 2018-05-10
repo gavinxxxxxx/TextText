@@ -1,11 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="me.gavin.util.DisplayUtil" />
+    </data>
 
     <android.support.design.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fitsSystemWindows="true">
+
+        <View
+            android:id="@+id/cover"
+            android:layout_width="match_parent"
+            android:layout_height="25dp"
+            android:elevation="4dp"
+            android:fitsSystemWindows="true"
+            app:height="@{DisplayUtil.statusHeight}"
+            tools:background="@color/colorAccent"
+            tools:visibility="visible" />
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
