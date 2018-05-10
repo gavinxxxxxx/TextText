@@ -17,6 +17,14 @@ import me.gavin.app.core.model.Chapter;
  */
 public final class Ymoxuan extends Source {
 
+    public static Ymoxuan get() {
+        return Hold.INSTANCE;
+    }
+
+    public static class Hold {
+        static Ymoxuan INSTANCE = new Ymoxuan();
+    }
+
     @Override
     public String queryUrl(String query) {
         return String.format("https://www.ymoxuan.com/search.htm?keyword=%s", query);

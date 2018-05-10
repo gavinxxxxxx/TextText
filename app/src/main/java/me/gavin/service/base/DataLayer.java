@@ -55,11 +55,13 @@ public class DataLayer {
     }
 
     public interface SourceService {
+        Observable<Book> search(List<Source> sources, String query);
+
         Observable<Book> search(Source source, String query);
 
         Observable<Book> detail(Source source, String id);
 
-        Observable<List<Chapter>> directory(Source source, String id);
+        Observable<List<Chapter>> directory(Book book);
 
         Observable<String> chapter(Source source, Book book, int index);
 

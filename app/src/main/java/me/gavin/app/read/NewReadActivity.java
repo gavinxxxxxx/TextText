@@ -153,7 +153,7 @@ public class NewReadActivity extends BindingActivity<ActivityReadNewBinding> imp
                     .map(is -> StreamHelper.getChapters(is, mBook.getCharset()));
         } else if (mBook.type == Book.TYPE_ONLINE) {
             return getDataLayer().getSourceService()
-                    .directory(Source.getSource(mBook.src), mBook.id);
+                    .directory(mBook);
         }
         return Observable.just(mChapterList);
     }

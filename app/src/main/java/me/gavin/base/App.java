@@ -6,6 +6,7 @@ import me.gavin.db.DBHelper;
 import me.gavin.inject.component.ApplicationComponent;
 import me.gavin.inject.component.DaggerApplicationComponent;
 import me.gavin.inject.module.ApplicationModule;
+import me.gavin.util.CrashHandler;
 
 /**
  * 自定义 Application
@@ -17,6 +18,7 @@ public class App extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        CrashHandler.get().init();
         initDagger();
         DBHelper.init(true);
     }

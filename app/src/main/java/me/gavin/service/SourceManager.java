@@ -5,6 +5,7 @@ import org.jsoup.nodes.Element;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.Observable;
@@ -30,6 +31,21 @@ import okio.Okio;
 public class SourceManager extends BaseManager implements DataLayer.SourceService {
 
     @Override
+    public Observable<Book> search(List<Source> sources, String query) {
+        List<Observable<Book>> observables = new ArrayList<>();
+        for (Source source : sources) {
+            observables.add(search(source, query));
+        }
+        return Observable.merge(observables);
+//        return Observable.fromIterable(sources)
+//                .flatMap(source -> search(source, query));
+    }
+
+    public Observable<String> o1() {
+        return Observable.just("A", "B","C", "D","E", "F");
+    }
+
+    @Override
     public Observable<Book> search(Source source, String query) {
         return getApi().get(source.queryUrl(query), Config.cacheControlQuery)
                 .map(ResponseBody::byteStream)
@@ -48,28 +64,31 @@ public class SourceManager extends BaseManager implements DataLayer.SourceServic
     }
 
     @Override
-    public Observable<List<Chapter>> directory(Source source, String id) {
-        return getApi().get(source.directoryUrl(id), Config.cacheControlDirectory)
+    public Observable<List<Chapter>> directory(Book book) {
+        Source source = Source.getSource(book.getSrc());
+        return getApi().get(source.directoryUrl(book.id), Config.cacheControlDirectory)
                 .map(ResponseBody::byteStream)
                 .map(this::read)
                 .map(Jsoup::parse)
                 .map(document -> document.select(source.directorySelector()))
                 .compose(source.directoryFilter())
-                .map(element -> source.directory2Chapter(element, id))
+                .map(element -> source.directory2Chapter(element, book.id))
                 .toList()
                 .toObservable()
                 .map(chapters -> {
                     for (int i = 0; i < chapters.size(); i++) {
-                        chapters.get(i).bookId = id;
+                        chapters.get(i).bookId = book.id;
                         chapters.get(i).index = i;
                     }
+                    book.count = chapters.size();
+                    getDaoSession().getBookDao().update(book);
                     return chapters;
                 });
     }
 
     @Override
     public Observable<String> chapter(Source source, Book book, int index) {
-        return directory(source, book.getId())
+        return directory(book)
                 .map(chapters -> chapters.get(index))
                 .flatMap(chapter -> getApi().get(source.chapterUrl(chapter), Config.cacheControlChapter))
                 .map(ResponseBody::byteStream)

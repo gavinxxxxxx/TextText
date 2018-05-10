@@ -50,7 +50,7 @@ public class DetailActivity extends BindingActivity<ActivityDetailBinding> {
 
     private void directory(String id) {
         getDataLayer().getSourceService()
-                .directory(Source.getSource(mBook.getSrc()), id)
+                .directory(mBook)
                 .compose(RxTransformer.applySchedulers())
                 .doOnSubscribe(mCompositeDisposable::add)
                 .subscribe(chapters -> {
@@ -59,9 +59,6 @@ public class DetailActivity extends BindingActivity<ActivityDetailBinding> {
                             this, chapters, R.layout.item_chapter);
                     adapter.setOnItemClickListener(this::chapter);
                     mBinding.recycler.setAdapter(adapter);
-
-                    mBook.setCount(chapters.size());
-                    getDataLayer().getShelfService().updateBook(mBook);
                 }, L::e);
     }
 

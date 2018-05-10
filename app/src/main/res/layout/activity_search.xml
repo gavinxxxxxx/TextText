@@ -13,15 +13,23 @@
             android:id="@+id/includeToolbar"
             layout="@layout/layout_toolbar" />
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/recycler"
+        <android.support.v4.widget.SwipeRefreshLayout
+            android:id="@+id/refresh"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:clipToPadding="false"
-            android:paddingBottom="8dp"
-            android:paddingTop="8dp"
-            app:layoutManager="LinearLayoutManager"
-            tools:listitem="@layout/item_search" />
+            app:colorSchemeColors="@{@intArray/colorScheme}">
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recycler"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clipToPadding="false"
+                android:paddingBottom="8dp"
+                android:paddingTop="8dp"
+                app:layoutManager="LinearLayoutManager"
+                tools:listitem="@layout/item_search" />
+
+        </android.support.v4.widget.SwipeRefreshLayout>
 
     </LinearLayout>
 

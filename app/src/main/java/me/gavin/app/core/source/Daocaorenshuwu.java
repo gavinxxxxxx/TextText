@@ -17,6 +17,14 @@ import me.gavin.app.core.model.Chapter;
  */
 public final class Daocaorenshuwu extends Source {
 
+    public static Daocaorenshuwu get() {
+        return Hold.INSTANCE;
+    }
+
+    public static class Hold {
+        static Daocaorenshuwu INSTANCE = new Daocaorenshuwu();
+    }
+
     @Override
     public String queryUrl(String query) {
         return String.format("http://www.daocaorenshuwu.com/plus/search.php?q=%s", query);

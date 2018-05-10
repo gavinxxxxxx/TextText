@@ -52,15 +52,23 @@ public class SearchActivity extends BindingActivity<ActivitySearchBinding> {
         });
         mBinding.recycler.setAdapter(mAdapter);
 
+        mBinding.refresh.setOnRefreshListener(() -> doSearch(query));
         doSearch(query);
     }
 
     private void doSearch(String query) {
+        List<Source> sources = new ArrayList<>();
+        sources.add(Source.getSource("ymoxuan"));
+        sources.add(Source.getSource("daocaorenshuwu"));
         getDataLayer().getSourceService()
-                .search(Source.getSource("daocaorenshuwu"), query)
-//                .search(Source.getSource("ymoxuan"), query)
+                .search(sources, query)
                 .compose(RxTransformer.applySchedulers())
-                .doOnSubscribe(mCompositeDisposable::add)
+                .doOnSubscribe(disposable -> {
+                    mCompositeDisposable.add(disposable);
+                    mBinding.refresh.setRefreshing(true);
+                })
+                .doOnComplete(() -> mBinding.refresh.setRefreshing(false))
+                .doOnError(throwable -> mBinding.refresh.setRefreshing(false))
                 .subscribe(book -> {
                     mList.add(book);
                     mAdapter.notifyDataSetChanged();

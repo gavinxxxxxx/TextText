@@ -111,7 +111,7 @@ public final class Utils {
     public static Page lastOnline(Page page, long offset) {
         page.isReverse = true;
         page.end = Math.min(page.chapter.length(), offset);
-        page.isLast = page.index >= page.book.getCount() - 1 && page.end == page.chapter.length();
+        page.isLast = page.index >= page.book.count - 1 && page.end == page.chapter.length();
         // 起始位置
         int start = Math.max(0, (int) page.end - Config.pagePreCount);
         page.mText = page.chapter.substring(start, (int) page.end);
@@ -176,7 +176,7 @@ public final class Utils {
                 if (!page.isReverse && y + Config.textHeight > Config.height - Config.bottomPadding) { // 正向 & 已排满页面
                     page.end = page.start + page.mText.indexOf(subText);
                     page.isLast = page.book.type == Book.TYPE_LOCAL ? page.end >= length
-                            : page.index >= page.book.getCount() - 1 && page.end >= length;
+                            : page.index >= page.book.count - 1 && page.end >= length;
                     return;
                 }
                 // 行缩进
@@ -200,7 +200,7 @@ public final class Utils {
 
         if (!page.isReverse && page.start + page.mText.length() >= length) { // 正向 & 还能显示却没有了
             page.end = length;
-            page.isLast = page.book.type == Book.TYPE_LOCAL || page.index >= page.book.getCount() - 1;
+            page.isLast = page.book.type == Book.TYPE_LOCAL || page.index >= page.book.count - 1;
         } else if (page.isReverse) { // 反向
             List<Line> lines = new ArrayList<>();
             y = y - Config.segmentSpacing - Config.lineSpacing; // 最后一行文字底部 - 去掉多余的空隙
