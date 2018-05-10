@@ -1,12 +1,10 @@
 package me.gavin.app.read;
 
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.widget.DrawerLayout;
 import android.view.Gravity;
-import android.view.View;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +17,6 @@ import me.gavin.app.core.model.Book;
 import me.gavin.app.core.model.Chapter;
 import me.gavin.app.core.model.Page;
 import me.gavin.app.core.pager.Pager;
-import me.gavin.app.core.source.Source;
 import me.gavin.base.BindingActivity;
 import me.gavin.base.BundleKey;
 import me.gavin.base.recycler.BindingAdapter;
@@ -38,22 +35,24 @@ public class NewReadActivity extends BindingActivity<ActivityReadNewBinding> imp
 
     @Override
     protected void afterCreate(@Nullable Bundle savedInstanceState) {
+        getWindow().getDecorView().setSystemUiVisibility(0);
         long bookId = getIntent().getLongExtra(BundleKey.BOOK_ID, -1);
         mBook = getDataLayer().getShelfService().loadBook(bookId);
         if (mBook == null) {
             return;
         }
 
-        // 状态栏浅色图标
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
-        }
-
         mBinding.drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
 
-        mBinding.text.setPager(this);
-//        mBinding.text.setFlipper(new CoverFlipper());
-        mBinding.text.setFlipper(new SimpleFlipper());
+        mBinding.includeContent.toolbar.setTitle(mBook.name);
+        mBinding.includeContent.toolbar.setNavigationOnClickListener(v -> finish());
+
+        mBinding.includeContent.text.setPager(this);
+        // mBinding.text.setFlipper(new CoverFlipper());
+        mBinding.includeContent.text.setFlipper(new SimpleFlipper());
+        mBinding.includeContent.text.setOnSystemUiVisibilityChangeListener(visibility -> {
+            mBinding.includeContent.toolbar.setVisibility(visibility);
+        });
 
         initChapter();
     }
@@ -65,7 +64,7 @@ public class NewReadActivity extends BindingActivity<ActivityReadNewBinding> imp
                 .compose(RxTransformer.applySchedulers())
                 .doOnSubscribe(mCompositeDisposable::add)
                 .subscribe(page -> {
-                    mBinding.text.set(page);
+                    mBinding.includeContent.text.set(page);
                 }, Throwable::printStackTrace);
     }
 
@@ -75,7 +74,7 @@ public class NewReadActivity extends BindingActivity<ActivityReadNewBinding> imp
                 .last(target, page)
                 .compose(RxTransformer.applySchedulers())
                 .doOnSubscribe(mCompositeDisposable::add)
-                .subscribe(mBinding.text::update, Throwable::printStackTrace);
+                .subscribe(mBinding.includeContent.text::update, Throwable::printStackTrace);
     }
 
     @Override
@@ -84,7 +83,7 @@ public class NewReadActivity extends BindingActivity<ActivityReadNewBinding> imp
                 .next(target, page)
                 .compose(RxTransformer.applySchedulers())
                 .doOnSubscribe(mCompositeDisposable::add)
-                .subscribe(mBinding.text::update, Throwable::printStackTrace);
+                .subscribe(mBinding.includeContent.text::update, Throwable::printStackTrace);
     }
 
     private boolean lasting, nexting;
@@ -92,9 +91,9 @@ public class NewReadActivity extends BindingActivity<ActivityReadNewBinding> imp
     @Override
     protected void onPause() {
         super.onPause();
-        if (mBook != null && mBinding.text != null && mBinding.text.curr() != null) {
-            mBook.setIndex(mBinding.text.curr().index);
-            mBook.setOffset(mBinding.text.curr().start);
+        if (mBook != null && mBinding.includeContent.text != null && mBinding.includeContent.text.curr() != null) {
+            mBook.setIndex(mBinding.includeContent.text.curr().index);
+            mBook.setOffset(mBinding.includeContent.text.curr().start);
             mBook.setTime(System.currentTimeMillis());
             getDataLayer().getShelfService().updateBook(mBook);
         }

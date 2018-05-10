@@ -30,7 +30,12 @@ public class TextView extends View {
 
     public TextView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
+        setSystemUiVisibility(SYSTEM_UI_FLAG_LAYOUT_STABLE
+                | SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                | SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                | SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
         setKeepScreenOn(true);
+        onTap();
     }
 
     public Page curr() {
@@ -91,6 +96,13 @@ public class TextView extends View {
         }
         invalidate();
         preload();
+    }
+
+    public void onTap() {
+        setSystemUiVisibility(getSystemUiVisibility()
+                ^ (SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                | SYSTEM_UI_FLAG_FULLSCREEN
+                | SYSTEM_UI_FLAG_IMMERSIVE_STICKY));
     }
 
     @Override

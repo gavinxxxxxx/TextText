@@ -26,10 +26,12 @@ public class SimpleFlipper extends Flipper {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_UP) {
-            if (event.getX() < Config.width / 2 && mView.last() != null) {
+            if (event.getX() < Config.width * 0.33 && mView.last() != null) {
                 mView.onFlip(true);
-            } else if (event.getX() > Config.width / 2 && mView.next() != null) {
+            } else if (event.getX() > Config.width * 0.67 && mView.next() != null) {
                 mView.onFlip(false);
+            } else if (event.getX() > Config.width * 0.33 && event.getX() < Config.width * 0.67) {
+                mView.onTap();
             }
         }
         return true;

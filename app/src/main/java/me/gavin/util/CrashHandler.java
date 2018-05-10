@@ -79,8 +79,8 @@ public final class CrashHandler implements Thread.UncaughtExceptionHandler {
      */
     private String getLogDir(Context context) {
         if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())
-                && context.getExternalFilesDir("log") != null) {
-            return context.getExternalFilesDir("log").getPath();
+                && context.getExternalFilesDir("crash") != null) {
+            return context.getExternalFilesDir("crash").getPath();
         } else {
             return null;
         }

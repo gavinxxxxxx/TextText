@@ -9,10 +9,9 @@
         android:layout_height="match_parent"
         tools:openDrawer="start">
 
-        <me.gavin.app.core.TextView
-            android:id="@+id/text"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+        <include
+            android:id="@+id/includeContent"
+            layout="@layout/layout_read_content" />
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/rvChapter"

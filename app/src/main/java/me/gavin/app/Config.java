@@ -86,6 +86,7 @@ public final class Config {
 
         bgPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         bgPaint.setColor(0xFF252525);
+//        bgPaint.setColor(0xFFFFFFFF);
 
         debugPaint = new Paint();
         debugPaint.setColor(0x22222222);
