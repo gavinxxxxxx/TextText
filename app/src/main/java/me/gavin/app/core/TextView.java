@@ -1,6 +1,7 @@
 package me.gavin.app.core;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.graphics.Canvas;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
@@ -35,7 +36,6 @@ public class TextView extends View {
                 | SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
                 | SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
         setKeepScreenOn(true);
-        onTap();
     }
 
     public Page curr() {
@@ -99,10 +99,7 @@ public class TextView extends View {
     }
 
     public void onTap() {
-        setSystemUiVisibility(getSystemUiVisibility()
-                ^ (SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                | SYSTEM_UI_FLAG_FULLSCREEN
-                | SYSTEM_UI_FLAG_IMMERSIVE_STICKY));
+        toggleFull(null);
     }
 
     @Override
@@ -123,5 +120,24 @@ public class TextView extends View {
         if (!pages.isEmpty() && mFlipper != null) {
             mFlipper.onDraw(canvas);
         }
+    }
+
+    @Override
+    protected void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        toggleFull(true);
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasWindowFocus) {
+        super.onWindowFocusChanged(hasWindowFocus);
+        toggleFull(hasWindowFocus);
+    }
+
+    public void toggleFull(Boolean full) {
+        int target = SYSTEM_UI_FLAG_HIDE_NAVIGATION | SYSTEM_UI_FLAG_FULLSCREEN | SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+        int flags = getSystemUiVisibility();
+        flags = full == null ? flags ^ target : full ? flags | target : flags ^ (flags & target);
+        setSystemUiVisibility(flags);
     }
 }
