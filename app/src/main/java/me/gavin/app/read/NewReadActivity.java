@@ -1,5 +1,6 @@
 package me.gavin.app.read;
 
+import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -7,6 +8,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.graphics.ColorUtils;
 import android.support.v4.widget.DrawerLayout;
 import android.view.Gravity;
+import android.view.View;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,6 +62,7 @@ public class NewReadActivity extends BindingActivity<ActivityReadNewBinding> imp
         mBinding.includeContent.toolbar.setNavigationOnClickListener(v -> finish());
         mBinding.includeContent.toolbar.setTitleTextColor(Config.textColor);
         mBinding.includeContent.toolbar.setBackgroundColor(Config.bgColor);
+        mBinding.includeContent.fab.setBackgroundTintList(ColorStateList.valueOf(Config.bgColor));
 
         mBinding.includeContent.text.setPager(this);
         // mBinding.text.setFlipper(new CoverFlipper());
@@ -67,6 +70,11 @@ public class NewReadActivity extends BindingActivity<ActivityReadNewBinding> imp
         mBinding.includeContent.text.setOnSystemUiVisibilityChangeListener(visibility -> {
             mBinding.includeContent.cover.setVisibility(visibility);
             mBinding.includeContent.toolbar.setVisibility(visibility);
+            if ((visibility & (View.INVISIBLE | View.GONE)) != 0) {
+                mBinding.includeContent.fab.hide();
+            } else {
+                mBinding.includeContent.fab.show();
+            }
         });
 
         initChapter();
