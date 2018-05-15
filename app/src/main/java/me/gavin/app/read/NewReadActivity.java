@@ -1,6 +1,7 @@
 package me.gavin.app.read;
 
 import android.content.res.ColorStateList;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -40,6 +41,7 @@ public class NewReadActivity extends BindingActivity<ActivityReadNewBinding> imp
 
     @Override
     protected void afterCreate(@Nullable Bundle savedInstanceState) {
+        getWindow().setBackgroundDrawable(new ColorDrawable(Config.bgColor));
         getWindow().setStatusBarColor(0);
         getWindow().getDecorView().setSystemUiVisibility(0);
         long bookId = getIntent().getLongExtra(BundleKey.BOOK_ID, -1);

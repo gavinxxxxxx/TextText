@@ -3,7 +3,9 @@ package me.gavin.app.core;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Canvas;
+import android.os.Build;
 import android.support.annotation.Nullable;
+import android.support.v4.graphics.ColorUtils;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -31,10 +33,13 @@ public class TextView extends View {
 
     public TextView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
-        setSystemUiVisibility(SYSTEM_UI_FLAG_LAYOUT_STABLE
+        int ufs = SYSTEM_UI_FLAG_LAYOUT_STABLE
                 | SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                | SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                | SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+                | SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;
+        if (ColorUtils.calculateLuminance(Config.bgColor) > 0.5 && Build.VERSION.SDK_INT >= 23) {
+            ufs |= SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
+        }
+        setSystemUiVisibility(ufs);
         setKeepScreenOn(true);
     }
 
