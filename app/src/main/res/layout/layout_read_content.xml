@@ -30,10 +30,10 @@
             android:background="@color/colorPrimary"
             android:elevation="4dp"
             android:fitsSystemWindows="false"
+            android:theme="@style/ToolbarLightOverflow"
             app:navigationIcon="@drawable/ic_arrow_back_24dp"
             app:popupTheme="@style/AppTheme.PopupOverlay"
             app:subtitleTextAppearance="@style/Toolbar.SubtitleOverlay"
-            app:theme="@style/ToolbarLightOverflow"
             app:title="@string/app_name"
             app:titleTextAppearance="@style/Toolbar.TitleOverlay" />
 
