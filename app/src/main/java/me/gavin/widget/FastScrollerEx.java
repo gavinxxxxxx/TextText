@@ -2,6 +2,7 @@ package me.gavin.widget;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.ItemDecoration;
 import android.support.v7.widget.RecyclerView.OnItemTouchListener;
@@ -16,6 +17,9 @@ import me.gavin.util.DisplayUtil;
  * @author gavin.xiong 2018/1/25
  */
 public class FastScrollerEx extends ItemDecoration implements OnItemTouchListener {
+
+    private static final int MIN_SLOP = 2;
+    private static final int MAX_SLOP = 100;
 
     private final RecyclerView mRecyclerView;
     private int mRecyclerViewWidth, mRecyclerViewHeight;
@@ -94,6 +98,9 @@ public class FastScrollerEx extends ItemDecoration implements OnItemTouchListene
             // setState(STATE_HIDDEN);
             return;
         }
+        if (mRecyclerView.computeVerticalScrollRange() < mRecyclerViewHeight * MIN_SLOP) {
+            return;
+        }
         mPaint.setColor(0x20000000);
         canvas.drawRect(mRecyclerViewWidth - mScrollbarWidth, 0, mRecyclerViewWidth, mRecyclerViewHeight, mPaint);
         mPaint.setColor(mIsDrag ? 0xFF0098E2 : 0xFFAAAAAA);
@@ -112,11 +119,18 @@ public class FastScrollerEx extends ItemDecoration implements OnItemTouchListene
      * recyclerView 定位
      */
     private void scrollTo() {
-        int offset = (int) (mScrollbarY / (mRecyclerViewHeight - mScrollHeight)
-                * (mRecyclerView.computeVerticalScrollRange() - mRecyclerView.computeVerticalScrollExtent()));
-        int oldOffset = mRecyclerView.computeVerticalScrollOffset();
-        mRecyclerView.scrollBy(0, offset - oldOffset); // TODO: 2018/1/27 大量数据时频繁 scrollBy 效率低
-        // mRecyclerView.invalidate();
+        if (mRecyclerView.computeVerticalScrollRange() > mRecyclerViewHeight * MAX_SLOP
+                && mRecyclerView.getLayoutManager() instanceof LinearLayoutManager) {
+            int position = (int) (mScrollbarY / (mRecyclerViewHeight - mScrollHeight)
+                    * mRecyclerView.getLayoutManager().getItemCount());
+            ((LinearLayoutManager) mRecyclerView.getLayoutManager())
+                    .scrollToPositionWithOffset(position, 0);
+        } else {
+            int offset = (int) (mScrollbarY / (mRecyclerViewHeight - mScrollHeight)
+                    * (mRecyclerView.computeVerticalScrollRange() - mRecyclerView.computeVerticalScrollExtent()));
+            int oldOffset = mRecyclerView.computeVerticalScrollOffset();
+            mRecyclerView.scrollBy(0, offset - oldOffset); // TODO: 2018/1/27 大量数据时频繁 scrollBy 效率低
+        }
     }
 
     /**
@@ -131,5 +145,4 @@ public class FastScrollerEx extends ItemDecoration implements OnItemTouchListene
                     * (mRecyclerViewHeight - mScrollHeight);
         }
     }
-
 }
