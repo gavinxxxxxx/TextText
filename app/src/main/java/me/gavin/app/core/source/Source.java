@@ -1,65 +1,89 @@
 package me.gavin.app.core.source;
 
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
-
-import io.reactivex.ObservableTransformer;
-import me.gavin.app.core.model.Book;
-import me.gavin.app.core.model.Chapter;
+import org.greenrobot.greendao.annotation.Entity;
+import org.greenrobot.greendao.annotation.Generated;
+import org.greenrobot.greendao.annotation.Id;
 
 /**
  * 书源
  *
  * @author gavin.xiong 2018/4/28.
  */
-public abstract class Source {
+@Entity
+public class Source {
 
+    public static final int FLAG_NONE = 0; // 正常状态
+    public static final int FLAG_ENABLE = 1; // 可用
+    public static final int FLAG_SELECTED = 1 << 1; // 选中
+
+    @Id
     public String id; // daocaorenshuwu
     public String name; // 稻草人书屋
+    public String attr; // 备注
     public String url; // http://www.daocaorenshuwu.com
+    public int flag; // {0:可用 1：已选}
 
-    /* ******************************************** 搜索 **************************************** */
+    @Generated(hash = 126208573)
+    public Source(String id, String name, String attr, String url, int flag) {
+        this.id = id;
+        this.name = name;
+        this.attr = attr;
+        this.url = url;
+        this.flag = flag;
+    }
 
-    public abstract String queryUrl(String query);
+    @Generated(hash = 615387317)
+    public Source() {
+    }
 
-    public abstract String querySelector();
+    public String getId() {
+        return this.id;
+    }
 
-    public abstract ObservableTransformer<Element, Element> queryFilter();
+    public void setId(String id) {
+        this.id = id;
+    }
 
-    public abstract Book query2Book(Element element);
+    public String getName() {
+        return this.name;
+    }
 
-    /* ******************************************** 详情 **************************************** */
+    public void setName(String name) {
+        this.name = name;
+    }
 
+    public String getAttr() {
+        return this.attr;
+    }
 
+    public void setAttr(String attr) {
+        this.attr = attr;
+    }
 
-    /* ******************************************** 目录 **************************************** */
+    public String getUrl() {
+        return this.url;
+    }
 
-    public abstract String directoryUrl(String id);
+    public void setUrl(String url) {
+        this.url = url;
+    }
 
-    public abstract String directorySelector();
+    @Override
+    public String toString() {
+        return "Source{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", attr='" + attr + '\'' +
+                ", url='" + url + '\'' +
+                ", flag=" + flag +
+                '}';
+    }
 
-    public abstract ObservableTransformer<Elements, Element> directoryFilter();
+    public int getFlag() {
+        return this.flag;
+    }
 
-    public abstract Chapter directory2Chapter(Element element, String bookId);
-
-    /* ******************************************** 章节 **************************************** */
-
-    public abstract String chapterUrl(Chapter chapter);
-
-    public abstract String chapterSelector();
-
-    public abstract ObservableTransformer<String, Element> chapter2Text();
-
-    /* ******************************************** 什么 **************************************** */
-
-    public static Source getSource(String src) {
-        switch (src) {
-            case "ymoxuan":
-                return Ymoxuan.get();
-            case "daocaorenshuwu":
-                return Daocaorenshuwu.get();
-            default:
-                return null;
-        }
+    public void setFlag(int flag) {
+        this.flag = flag;
     }
 }

@@ -113,7 +113,7 @@
 //            return Observable.just(book.getOffset())
 //                    .map(offset -> Utils.nextLocal(new Page(book), book.getOffset()));
 //        }
-//        return chapter(Source.getSource(book.src), book, book.getIndex())
+//        return chapter(SourceServicess.getSource(book.src), book, book.getIndex())
 //                .map(s -> {
 //                    Page page = new Page(book);
 //                    page.index = book.getIndex();
@@ -136,7 +136,7 @@
 //                        page.end = target.start;
 //                        return Observable.just(page);
 //                    } else {
-//                        return chapter(Source.getSource(target.book.src), target.book, target.index - 1)
+//                        return chapter(SourceServicess.getSource(target.book.src), target.book, target.index - 1)
 //                                .map(s -> {
 //                                    page.chapter = s;
 //                                    page.index = target.index - 1;
@@ -162,7 +162,7 @@
 //                        page.start = target.end;
 //                        return Observable.just(page);
 //                    } else {
-//                        return chapter(Source.getSource(target.book.src), target.book, target.index + 1)
+//                        return chapter(SourceServicess.getSource(target.book.src), target.book, target.index + 1)
 //                                .map(s -> {
 //                                    page.chapter = s;
 //                                    page.index = target.index + 1;

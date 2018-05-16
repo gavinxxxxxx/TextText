@@ -6,7 +6,7 @@ import io.reactivex.Observable;
 import me.gavin.app.core.model.Book;
 import me.gavin.app.core.model.Chapter;
 import me.gavin.app.core.model.Page;
-import me.gavin.app.core.source.Source;
+import me.gavin.app.core.source.SourceServicess;
 import okhttp3.ResponseBody;
 
 /**
@@ -55,15 +55,15 @@ public class DataLayer {
     }
 
     public interface SourceService {
-        Observable<Book> search(List<Source> sources, String query);
+        Observable<Book> search(List<SourceServicess> sources, String query);
 
-        Observable<Book> search(Source source, String query);
+        Observable<Book> search(SourceServicess source, String query);
 
-        Observable<Book> detail(Source source, String id);
+        Observable<Book> detail(SourceServicess source, String id);
 
         Observable<List<Chapter>> directory(Book book);
 
-        Observable<String> chapter(Source source, Book book, int index);
+        Observable<String> chapter(SourceServicess source, Book book, int index);
 
         Observable<Page> curr(Book book);
 

@@ -10,6 +10,8 @@ import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import me.gavin.db.dao.SourceDao;
+
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -163,5 +165,24 @@ public class ExampleUnitTest {
 
         String result = s.replaceAll("<(p|div)>(?s)(.*?)</\\1>","$2");
         System.out.println(result);
+    }
+
+    @Test
+    public void sql() {
+        int fieldCount = 5;
+        StringBuilder sql = new StringBuilder()
+                .append(" INSERT INTO ")
+                .append(SourceDao.TABLENAME)
+                .append(" VALUES ");
+        for (int j = 0; j < 2; j++) {
+            // for (Source source : sources) {
+            sql.append("(");
+            for (int i = 0; i < fieldCount; i++) {
+                sql.append("?,");
+            }
+            sql.deleteCharAt(sql.lastIndexOf(",")).append("),");
+        }
+        sql.deleteCharAt(sql.lastIndexOf(","));
+        System.out.println(sql.toString());
     }
 }

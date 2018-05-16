@@ -1,16 +1,21 @@
 package me.gavin.inject.module;
 
 import android.app.Application;
+import android.database.sqlite.SQLiteOpenHelper;
+
+import org.greenrobot.greendao.query.QueryBuilder;
 
 import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import me.gavin.db.OpenHelper;
+import me.gavin.db.dao.DaoMaster;
 import me.gavin.db.dao.DaoSession;
-import me.gavin.db.DBHelper;
+import me.gavin.text.BuildConfig;
 
 /**
- * DataLayerModule
+ * DatabaseModule
  *
  * @author gavin.xiong 2017/4/28
  */
@@ -19,8 +24,26 @@ public class DatabaseModule {
 
     @Singleton
     @Provides
-    DaoSession provideDaoSession(Application application) {
-        return DBHelper.getDaoSession(application);
+    SQLiteOpenHelper provideSQLiteOpenHelper(Application application) {
+        enableQueryBuilderLog();
+        return new OpenHelper(application, "text.db");
+    }
+
+    @Singleton
+    @Provides
+    DaoMaster provideDaoMaster(SQLiteOpenHelper openHelper) {
+        return new DaoMaster(openHelper.getWritableDatabase());
+    }
+
+    @Singleton
+    @Provides
+    DaoSession provideDaoSession(DaoMaster daoMaster) {
+        return daoMaster.newSession();
+    }
+
+    private void enableQueryBuilderLog() {
+        QueryBuilder.LOG_SQL = BuildConfig.LOG_DEBUG;
+        QueryBuilder.LOG_VALUES = BuildConfig.LOG_DEBUG;
     }
 
 }

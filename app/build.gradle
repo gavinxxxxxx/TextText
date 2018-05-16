@@ -62,7 +62,7 @@ android {
     }
 
     greendao {
-        schemaVersion 11
+        schemaVersion 17
         daoPackage 'me.gavin.db.dao'
         targetGenDir 'src/main/java'
     }

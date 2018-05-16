@@ -68,6 +68,7 @@ public class StreamHelper {
 
     /**
      * 生成章节信息
+     * todo 回退防切断
      */
     public static List<Chapter> getChapters(InputStream is, String charset) throws IOException {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(is, charset))) {

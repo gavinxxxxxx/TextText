@@ -15,7 +15,7 @@ import me.gavin.app.core.model.Chapter;
  * @author gavin.xiong 2018/4/28.
  * @link {https://www.ymoxuan.com/}
  */
-public final class Ymoxuan extends Source {
+public final class Ymoxuan extends SourceServicess {
 
     public static Ymoxuan get() {
         return Hold.INSTANCE;

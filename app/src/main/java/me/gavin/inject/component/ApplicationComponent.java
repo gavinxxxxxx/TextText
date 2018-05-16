@@ -3,12 +3,15 @@ package me.gavin.inject.component;
 import android.app.Application;
 import android.support.annotation.NonNull;
 
+import com.google.gson.Gson;
+
 import javax.inject.Singleton;
 
 import dagger.Component;
 import me.gavin.base.BaseActivity;
 import me.gavin.base.BaseFragment;
 import me.gavin.base.BaseViewModel;
+import me.gavin.db.dao.DaoSession;
 import me.gavin.inject.module.ApplicationModule;
 import me.gavin.service.base.BaseManager;
 
@@ -33,6 +36,10 @@ public interface ApplicationComponent {
 
     // 可以获取 ApplicationModule 及其 includes 的所有 Module 提供的对象（方法名随意）
     Application getApplication();
+
+    Gson getGson();
+
+    DaoSession getDaoSession();
 
     class Instance {
 

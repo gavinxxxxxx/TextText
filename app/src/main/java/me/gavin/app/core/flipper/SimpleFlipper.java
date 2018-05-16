@@ -28,7 +28,11 @@ public class SimpleFlipper extends Flipper {
                 mVelocityTracker.computeCurrentVelocity(1000);
                 float xv = mVelocityTracker.getXVelocity();
                 if (Math.abs(xv) > Config.flingVelocity) { // 抛动
-                    mView.onFlip(xv > 0);
+                    if (xv > 0 && mView.last() != null) {
+                        mView.onFlip(true);
+                    } else if (xv < 0 && mView.next() != null) {
+                        mView.onFlip(false);
+                    }
                 } else { // 静置松手
                     if (event.getX() < Config.width * 0.33 && mView.last() != null) {
                         mView.onFlip(true);

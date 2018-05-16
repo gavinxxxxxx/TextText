@@ -16,6 +16,7 @@ import me.gavin.app.core.model.Book;
 import me.gavin.app.core.model.Chapter;
 import me.gavin.app.core.model.Page;
 import me.gavin.app.core.source.Source;
+import me.gavin.app.core.source.SourceServicess;
 import me.gavin.service.base.BaseManager;
 import me.gavin.service.base.DataLayer;
 import okhttp3.ResponseBody;
@@ -31,9 +32,9 @@ import okio.Okio;
 public class SourceManager extends BaseManager implements DataLayer.SourceService {
 
     @Override
-    public Observable<Book> search(List<Source> sources, String query) {
+    public Observable<Book> search(List<SourceServicess> sources, String query) {
         List<Observable<Book>> observables = new ArrayList<>();
-        for (Source source : sources) {
+        for (SourceServicess source : sources) {
             observables.add(search(source, query));
         }
         return Observable.merge(observables);
@@ -46,7 +47,7 @@ public class SourceManager extends BaseManager implements DataLayer.SourceServic
     }
 
     @Override
-    public Observable<Book> search(Source source, String query) {
+    public Observable<Book> search(SourceServicess source, String query) {
         return getApi().get(source.queryUrl(query), Config.cacheControlQuery)
                 .map(ResponseBody::byteStream)
                 .map(this::read)
@@ -59,13 +60,13 @@ public class SourceManager extends BaseManager implements DataLayer.SourceServic
     }
 
     @Override
-    public Observable<Book> detail(Source source, String id) {
+    public Observable<Book> detail(SourceServicess source, String id) {
         return null;
     }
 
     @Override
     public Observable<List<Chapter>> directory(Book book) {
-        Source source = Source.getSource(book.getSrc());
+        SourceServicess source = SourceServicess.getSource(book.getSrc());
         return getApi().get(source.directoryUrl(book.id), Config.cacheControlDirectory)
                 .map(ResponseBody::byteStream)
                 .map(this::read)
@@ -87,7 +88,7 @@ public class SourceManager extends BaseManager implements DataLayer.SourceServic
     }
 
     @Override
-    public Observable<String> chapter(Source source, Book book, int index) {
+    public Observable<String> chapter(SourceServicess source, Book book, int index) {
         return directory(book)
                 .map(chapters -> chapters.get(index))
                 .flatMap(chapter -> getApi().get(source.chapterUrl(chapter), Config.cacheControlChapter))
@@ -105,7 +106,7 @@ public class SourceManager extends BaseManager implements DataLayer.SourceServic
             return Observable.just(book.getOffset())
                     .map(offset -> Utils.nextLocal(new Page(book), book.getOffset()));
         }
-        return chapter(Source.getSource(book.src), book, book.getIndex())
+        return chapter(SourceServicess.getSource(book.src), book, book.getIndex())
                 .map(s -> {
                     Page page = new Page(book);
                     page.index = book.getIndex();
@@ -128,7 +129,7 @@ public class SourceManager extends BaseManager implements DataLayer.SourceServic
                         page.end = target.start;
                         return Observable.just(page);
                     } else {
-                        return chapter(Source.getSource(target.book.src), target.book, target.index - 1)
+                        return chapter(SourceServicess.getSource(target.book.src), target.book, target.index - 1)
                                 .map(s -> {
                                     page.chapter = s;
                                     page.index = target.index - 1;
@@ -154,7 +155,7 @@ public class SourceManager extends BaseManager implements DataLayer.SourceServic
                         page.start = target.end;
                         return Observable.just(page);
                     } else {
-                        return chapter(Source.getSource(target.book.src), target.book, target.index + 1)
+                        return chapter(SourceServicess.getSource(target.book.src), target.book, target.index + 1)
                                 .map(s -> {
                                     page.chapter = s;
                                     page.index = target.index + 1;

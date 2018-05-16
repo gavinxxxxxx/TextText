@@ -15,7 +15,7 @@ import me.gavin.app.core.model.Chapter;
  * @author gavin.xiong 2018/5/9
  * @link {http://www.daocaorenshuwu.com/}
  */
-public final class Daocaorenshuwu extends Source {
+public final class Daocaorenshuwu extends SourceServicess {
 
     public static Daocaorenshuwu get() {
         return Hold.INSTANCE;
