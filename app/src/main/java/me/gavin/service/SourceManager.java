@@ -17,6 +17,7 @@ import me.gavin.app.core.model.Chapter;
 import me.gavin.app.core.model.Page;
 import me.gavin.app.core.source.Source;
 import me.gavin.app.core.source.SourceServicess;
+import me.gavin.db.dao.SourceDao;
 import me.gavin.service.base.BaseManager;
 import me.gavin.service.base.DataLayer;
 import okhttp3.ResponseBody;
@@ -32,18 +33,21 @@ import okio.Okio;
 public class SourceManager extends BaseManager implements DataLayer.SourceService {
 
     @Override
-    public Observable<Book> search(List<SourceServicess> sources, String query) {
-        List<Observable<Book>> observables = new ArrayList<>();
-        for (SourceServicess source : sources) {
-            observables.add(search(source, query));
-        }
-        return Observable.merge(observables);
-//        return Observable.fromIterable(sources)
-//                .flatMap(source -> search(source, query));
-    }
-
-    public Observable<String> o1() {
-        return Observable.just("A", "B","C", "D","E", "F");
+    public Observable<Book> search(String query) {
+        String sql = " WHERE " + SourceDao.Properties.Flag.columnName + " & " + Source.FLAG_SELECTED + " = " + Source.FLAG_SELECTED;
+        return Observable.just(sql)
+                .map(getDaoSession().getSourceDao()::queryRaw)
+                .flatMap(Observable::fromIterable)
+                .map(src -> SourceServicess.getSource(src.id))
+                .toList()
+                .toObservable()
+                .flatMap(srcss -> {
+                    List<Observable<Book>> observables = new ArrayList<>();
+                    for (SourceServicess source : srcss) {
+                        observables.add(search(source, query));
+                    }
+                    return Observable.merge(observables);
+                });
     }
 
     @Override

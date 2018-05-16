@@ -86,4 +86,12 @@ public class Source {
     public void setFlag(int flag) {
         this.flag = flag;
     }
+
+    public boolean isSelected() {
+        return (flag & FLAG_SELECTED) == FLAG_SELECTED;
+    }
+
+    public void setSelected(boolean selected) {
+        flag ^= FLAG_SELECTED;
+    }
 }

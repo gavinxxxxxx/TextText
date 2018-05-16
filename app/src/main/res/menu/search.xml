@@ -6,7 +6,7 @@
         android:id="@+id/action_test"
         android:orderInCategory="100"
         android:title="TEST"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="always" />
 
     <item
         android:id="@+id/action_loading"
@@ -19,6 +19,6 @@
         android:icon="@drawable/vt_search"
         android:title="搜索"
         app:actionViewClass="android.support.v7.widget.SearchView"
-        app:showAsAction="ifRoom|collapseActionView" />
+        app:showAsAction="always|collapseActionView" />
 
 </menu>

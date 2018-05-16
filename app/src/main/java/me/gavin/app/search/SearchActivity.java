@@ -10,7 +10,6 @@ import java.util.List;
 
 import me.gavin.app.RxTransformer;
 import me.gavin.app.core.model.Book;
-import me.gavin.app.core.source.SourceServicess;
 import me.gavin.base.BindingActivity;
 import me.gavin.base.BundleKey;
 import me.gavin.base.recycler.BindingAdapter;
@@ -38,6 +37,13 @@ public class SearchActivity extends BindingActivity<ActivitySearchBinding> {
         mBinding.includeToolbar.toolbar.setTitle(query);
         mBinding.includeToolbar.toolbar.setNavigationIcon(R.drawable.ic_arrow_back_24dp);
         mBinding.includeToolbar.toolbar.setNavigationOnClickListener(v -> finish());
+        mBinding.includeToolbar.toolbar.inflateMenu(R.menu.activity_search);
+        mBinding.includeToolbar.toolbar.setOnMenuItemClickListener(item -> {
+            if (item.getItemId() == R.id.action_source) {
+                startActivity(new Intent(this, SourceActivity.class));
+            }
+            return true;
+        });
 
         mAdapter = new BindingAdapter<>(this, mList, R.layout.item_search);
         mAdapter.setOnItemClickListener(i -> {
@@ -57,11 +63,8 @@ public class SearchActivity extends BindingActivity<ActivitySearchBinding> {
     }
 
     private void doSearch(String query) {
-        List<SourceServicess> sources = new ArrayList<>();
-        sources.add(SourceServicess.getSource("ymoxuan"));
-        sources.add(SourceServicess.getSource("daocaorenshuwu"));
         getDataLayer().getSourceService()
-                .search(sources, query)
+                .search(query)
                 .compose(RxTransformer.applySchedulers())
                 .doOnSubscribe(disposable -> {
                     mCompositeDisposable.add(disposable);

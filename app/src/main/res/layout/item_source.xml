@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="@layout/activity_source">
+
+    <data>
+
+        <variable
+            name="item"
+            type="me.gavin.app.core.source.Source" />
+    </data>
+
+    <LinearLayout
+        android:id="@+id/item"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true"
+        android:onClick="@{v -> checkbox.toggle()}"
+        android:orientation="horizontal"
+        android:paddingBottom="8dp"
+        android:paddingLeft="14dp"
+        android:paddingRight="14dp"
+        android:paddingTop="8dp">
+
+        <CheckBox
+            android:id="@+id/checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="@={item.selected}"
+            android:paddingEnd="0dp"
+            android:paddingStart="5dp"
+            android:text="@{item.name}" />
+
+    </LinearLayout>
+
+</layout>
