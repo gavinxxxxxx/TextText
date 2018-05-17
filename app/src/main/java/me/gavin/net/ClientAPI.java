@@ -18,7 +18,10 @@ public interface ClientAPI {
     /**
      * 获取
      */
-    @Headers("Accept-Encoding: gzip, deflate, br")
+    @Headers({
+            "Accept-Encoding: gzip, deflate",
+            "User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.139 Safari/537.36",
+    })
     @GET
     Observable<ResponseBody> get(@Url String url, @Header("Cache-Control") String cacheControl);
 

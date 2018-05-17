@@ -34,8 +34,8 @@ public class SourceManager extends BaseManager implements DataLayer.SourceServic
 
     @Override
     public Observable<Book> search(String query) {
-        String sql = " WHERE " + SourceDao.Properties.Flag.columnName + " & " + Source.FLAG_SELECTED + " = " + Source.FLAG_SELECTED;
-        return Observable.just(sql)
+        return Observable.just(Source.FLAG_CHECKED)
+                .map(flag -> " WHERE " + SourceDao.Properties.Flag.columnName + " & " + flag + " = " + flag)
                 .map(getDaoSession().getSourceDao()::queryRaw)
                 .flatMap(Observable::fromIterable)
                 .map(src -> SourceServicess.getSource(src.id))

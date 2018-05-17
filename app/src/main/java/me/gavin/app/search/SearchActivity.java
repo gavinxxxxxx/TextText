@@ -51,9 +51,9 @@ public class SearchActivity extends BindingActivity<ActivitySearchBinding> {
             book.setTime(System.currentTimeMillis());
             getDataLayer().getShelfService()
                     .insertBook(book)
-                    .subscribe(aLong -> {
+                    .subscribe(bookId -> {
                         startActivity(new Intent(this, DetailActivity.class)
-                                .putExtra(BundleKey.BOOK_ID, aLong));
+                                .putExtra(BundleKey.BOOK_ID, bookId));
                     });
         });
         mBinding.recycler.setAdapter(mAdapter);
@@ -69,12 +69,14 @@ public class SearchActivity extends BindingActivity<ActivitySearchBinding> {
                 .doOnSubscribe(disposable -> {
                     mCompositeDisposable.add(disposable);
                     mBinding.refresh.setRefreshing(true);
+                    mList.clear();
+                    mAdapter.notifyDataSetChanged();
                 })
                 .doOnComplete(() -> mBinding.refresh.setRefreshing(false))
                 .doOnError(throwable -> mBinding.refresh.setRefreshing(false))
                 .subscribe(book -> {
                     mList.add(book);
-                    mAdapter.notifyDataSetChanged();
+                    mAdapter.notifyItemInserted(mList.indexOf(book));
                 }, t -> Snackbar.make(mBinding.recycler, t.getMessage(), Snackbar.LENGTH_LONG).show());
     }
 }

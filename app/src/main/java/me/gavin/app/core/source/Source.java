@@ -14,7 +14,7 @@ public class Source {
 
     public static final int FLAG_NONE = 0; // 正常状态
     public static final int FLAG_ENABLE = 1; // 可用
-    public static final int FLAG_SELECTED = 1 << 1; // 选中
+    public static final int FLAG_CHECKED = 1 << 1; // 选中
 
     @Id
     public String id; // daocaorenshuwu
@@ -68,6 +68,22 @@ public class Source {
         this.url = url;
     }
 
+    public int getFlag() {
+        return this.flag;
+    }
+
+    public void setFlag(int flag) {
+        this.flag = flag;
+    }
+
+    public boolean isChecked() {
+        return (flag & FLAG_CHECKED) == FLAG_CHECKED;
+    }
+
+    public void setChecked(boolean checked) {
+        flag = checked ? flag | FLAG_CHECKED : flag ^ flag & FLAG_CHECKED;
+    }
+
     @Override
     public String toString() {
         return "Source{" +
@@ -77,21 +93,5 @@ public class Source {
                 ", url='" + url + '\'' +
                 ", flag=" + flag +
                 '}';
-    }
-
-    public int getFlag() {
-        return this.flag;
-    }
-
-    public void setFlag(int flag) {
-        this.flag = flag;
-    }
-
-    public boolean isSelected() {
-        return (flag & FLAG_SELECTED) == FLAG_SELECTED;
-    }
-
-    public void setSelected(boolean selected) {
-        flag ^= FLAG_SELECTED;
     }
 }
