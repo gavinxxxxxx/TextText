@@ -54,10 +54,12 @@ public class Book implements Serializable {
     public int count; // 章节数
     public int index; // 章节进度
 
-    @Generated(hash = 799521487)
+    public String srcs;
+
+    @Generated(hash = 1891326005)
     public Book(Long _id, String name, String author, String cover, int type, long offset,
-                long time, String uri, String charset, long length, String MD5, String id,
-                String src, String srcName, int count, int index) {
+            long time, String uri, String charset, long length, String MD5, String id,
+            String src, String srcName, int count, int index, String srcs) {
         this._id = _id;
         this.name = name;
         this.author = author;
@@ -74,6 +76,7 @@ public class Book implements Serializable {
         this.srcName = srcName;
         this.count = count;
         this.index = index;
+        this.srcs = srcs;
     }
 
     @Generated(hash = 1839243756)
@@ -182,17 +185,6 @@ public class Book implements Serializable {
         return App.get().getContentResolver().openInputStream(Uri.parse(uri));
     }
 
-    @Override
-    public String toString() {
-        return "Book{" +
-                "name='" + name + '\'' +
-                ", author='" + author + '\'' +
-                ", charset='" + charset + '\'' +
-                ", length=" + length +
-                ", uri='" + uri + '\'' +
-                '}';
-    }
-
     public String getCover() {
         return this.cover;
     }
@@ -247,5 +239,24 @@ public class Book implements Serializable {
 
     public void setSrcName(String srcName) {
         this.srcName = srcName;
+    }
+
+    public String getSrcs() {
+        return this.srcs;
+    }
+
+    public void setSrcs(String srcs) {
+        this.srcs = srcs;
+    }
+
+    @Override
+    public String toString() {
+        return "Book{" +
+                "name='" + name + '\'' +
+                ", author='" + author + '\'' +
+                ", charset='" + charset + '\'' +
+                ", length=" + length +
+                ", uri='" + uri + '\'' +
+                '}';
     }
 }

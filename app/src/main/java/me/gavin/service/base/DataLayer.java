@@ -55,9 +55,9 @@ public class DataLayer {
     }
 
     public interface SourceService {
-        Observable<Book> search(String query);
+        Observable<List<Book>> search(String query);
 
-        Observable<Book> search(SourceServicess source, String query);
+        Observable<List<Book>> search(SourceServicess source, String query);
 
         Observable<Book> detail(SourceServicess source, String id);
 

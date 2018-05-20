@@ -74,9 +74,9 @@ public class SearchActivity extends BindingActivity<ActivitySearchBinding> {
                 })
                 .doOnComplete(() -> mBinding.refresh.setRefreshing(false))
                 .doOnError(throwable -> mBinding.refresh.setRefreshing(false))
-                .subscribe(book -> {
-                    mList.add(book);
-                    mAdapter.notifyItemInserted(mList.indexOf(book));
+                .subscribe(books -> {
+                    mList.addAll(books);
+                    mAdapter.notifyItemRangeInserted(mList.indexOf(books.get(0)), books.size());
                 }, t -> Snackbar.make(mBinding.recycler, t.getMessage(), Snackbar.LENGTH_LONG).show());
     }
 }

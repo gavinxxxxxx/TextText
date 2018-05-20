@@ -33,7 +33,7 @@ import okio.Okio;
 public class SourceManager extends BaseManager implements DataLayer.SourceService {
 
     @Override
-    public Observable<Book> search(String query) {
+    public Observable<List<Book>> search(String query) {
         return Observable.just(Source.FLAG_CHECKED)
                 .map(flag -> " WHERE " + SourceDao.Properties.Flag.columnName + " & " + flag + " = " + flag)
                 .map(getDaoSession().getSourceDao()::queryRaw)
@@ -42,7 +42,7 @@ public class SourceManager extends BaseManager implements DataLayer.SourceServic
                 .toList()
                 .toObservable()
                 .flatMap(srcss -> {
-                    List<Observable<Book>> observables = new ArrayList<>();
+                    List<Observable<List<Book>>> observables = new ArrayList<>();
                     for (SourceServicess source : srcss) {
                         observables.add(search(source, query));
                     }
@@ -51,7 +51,7 @@ public class SourceManager extends BaseManager implements DataLayer.SourceServic
     }
 
     @Override
-    public Observable<Book> search(SourceServicess source, String query) {
+    public Observable<List<Book>> search(SourceServicess source, String query) {
         return getApi().get(source.queryUrl(query), Config.cacheControlQuery)
                 .map(ResponseBody::byteStream)
                 .map(this::read)
@@ -60,7 +60,10 @@ public class SourceManager extends BaseManager implements DataLayer.SourceServic
                 .flatMap(Observable::fromIterable)
                 .compose(source.queryFilter())
                 .compose(RxTransformer.log())
-                .map(source::query2Book);
+                .map(source::query2Book)
+                .toList()
+                .toObservable()
+                .filter(books -> !books.isEmpty());
     }
 
     @Override
