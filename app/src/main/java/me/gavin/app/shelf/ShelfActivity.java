@@ -84,7 +84,7 @@ public class ShelfActivity extends BindingActivity<ActivityShelfBinding> {
                     mList.addAll(books);
                     mAdapter = new ShelfAdapter(this, mList);
                     mAdapter.setOnItemClickListener(i -> {
-                        if (mList.get(i).getType() == Book.TYPE_LOCAL) {
+                        if (mList.get(i).type == Book.TYPE_LOCAL) {
                             startActivity(new Intent(this, NewReadActivity.class)
                                     .putExtra(BundleKey.BOOK_ID, mList.get(i).get_id()));
                         } else {

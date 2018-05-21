@@ -14,4 +14,6 @@ public interface Pager {
     void last(Page target, Page page);
 
     void next(Page target, Page page);
+
+    void onFlip(Page page);
 }

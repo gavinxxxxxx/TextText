@@ -113,10 +113,10 @@ public class SourceManager extends BaseManager implements DataLayer.SourceServic
             return Observable.just(book.getOffset())
                     .map(offset -> Utils.nextLocal(new Page(book), book.getOffset()));
         }
-        return chapter(SourceServicess.getSource(book.src), book, book.getIndex())
+        return chapter(SourceServicess.getSource(book.src), book, book.index)
                 .map(s -> {
                     Page page = new Page(book);
-                    page.index = book.getIndex();
+                    page.index = book.index;
                     page.chapter = s;
                     return Utils.nextOnline(page, book.getOffset());
                 });

@@ -100,6 +100,7 @@ public class TextView extends View {
             index++;
         }
         invalidate();
+        mPager.onFlip(curr());
         preload();
     }
 

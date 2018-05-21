@@ -2,10 +2,13 @@ package me.gavin.app.search;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
+import android.support.v7.util.DiffUtil;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import me.gavin.app.RxTransformer;
@@ -74,9 +77,44 @@ public class SearchActivity extends BindingActivity<ActivitySearchBinding> {
                 })
                 .doOnComplete(() -> mBinding.refresh.setRefreshing(false))
                 .doOnError(throwable -> mBinding.refresh.setRefreshing(false))
+                .map(this::distinctAndSoft)
                 .subscribe(books -> {
+                    DiffUtil.calculateDiff(new DiffCallback(mList, books)).dispatchUpdatesTo(mAdapter);
+                    mList.clear();
                     mList.addAll(books);
-                    mAdapter.notifyItemRangeInserted(mList.indexOf(books.get(0)), books.size());
-                }, t -> Snackbar.make(mBinding.recycler, t.getMessage(), Snackbar.LENGTH_LONG).show());
+                }, t -> {
+                    t.printStackTrace();
+                    Snackbar.make(mBinding.recycler, t.getMessage(), Snackbar.LENGTH_LONG).show();
+                });
+    }
+
+    @NonNull
+    private List<Book> distinctAndSoft(List<Book> insertList) {
+        final List<Book> newList = new ArrayList<>();
+        newList.addAll(mList);
+        for (Book nb : insertList) {
+            boolean c = false;
+            for (Book ob : mList) {
+                if (ob.name.equals(nb.name) && ob.author.equals(nb.author)) {
+                    c = true;
+                    nb.srcCount = ob.srcCount + 1;
+                    nb.ids = ob.ids.concat("," + nb.id);
+                    nb.srcs = ob.srcs.concat("," + nb.src);
+                    nb.srcNames = ob.srcNames.concat("," + nb.srcName);
+                    newList.remove(ob);
+                    newList.add(nb);
+                    break;
+                }
+            }
+            if (!c) {
+                nb.srcCount = 1;
+                nb.ids = nb.id;
+                nb.srcs = nb.src;
+                nb.srcNames = nb.srcName;
+                newList.add(nb);
+            }
+        }
+        Collections.sort(newList, (o1, o2) -> o2.srcCount - o1.srcCount);
+        return newList;
     }
 }

@@ -38,6 +38,6 @@ public class DiffCallback extends DiffUtil.Callback {
 
     @Override
     public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
-        return mOldList.get(oldItemPosition).srcs.equals(mNewList.get(newItemPosition).srcs);
+        return mOldList.get(oldItemPosition).srcCount == mNewList.get(newItemPosition).srcCount;
     }
 }

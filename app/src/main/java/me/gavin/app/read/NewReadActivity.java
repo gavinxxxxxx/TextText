@@ -111,6 +111,25 @@ public class NewReadActivity extends BindingActivity<ActivityReadNewBinding> imp
                 .subscribe(mBinding.includeContent.text::update, Throwable::printStackTrace);
     }
 
+    @Override
+    public void onFlip(Page page) {
+        mBook.setIndex(mBinding.includeContent.text.curr().index);
+        mBook.setOffset(mBinding.includeContent.text.curr().start);
+        Chapter curr = mChapterList.get(0);
+        if (mBook.type == Book.TYPE_LOCAL) {
+            for (Chapter t : mChapterList) {
+                if (t.offset > mBook.offset)
+                    break;
+                curr = t;
+            }
+        } else {
+            curr = mChapterList.get(mBook.index);
+        }
+        curr.selected = true;
+        mBinding.rvChapter.getAdapter().notifyDataSetChanged();
+        mBinding.rvChapter.scrollToPosition(mChapterList.indexOf(curr));
+    }
+
     private boolean lasting, nexting;
 
     @Override
@@ -135,18 +154,21 @@ public class NewReadActivity extends BindingActivity<ActivityReadNewBinding> imp
     }
 
     private void initChapter() {
-        directory()
-                .compose(RxTransformer.applySchedulers())
+        directory().compose(RxTransformer.applySchedulers())
                 .subscribe(chapters -> {
                     mChapterList.addAll(chapters);
                     if (mChapterList.isEmpty()) {
                         Snackbar.make(mBinding.rvChapter, "暂无章节信息", Snackbar.LENGTH_LONG).show();
                     } else {
                         Chapter curr = mChapterList.get(0);
-                        for (Chapter t : mChapterList) {
-                            if (t.offset > mBook.getOffset())
-                                break;
-                            curr = t;
+                        if (mBook.type == Book.TYPE_LOCAL) {
+                            for (Chapter t : mChapterList) {
+                                if (t.offset > mBook.offset)
+                                    break;
+                                curr = t;
+                            }
+                        } else {
+                            curr = mChapterList.get(mBook.index);
                         }
                         curr.selected = true;
 

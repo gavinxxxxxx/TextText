@@ -51,15 +51,18 @@ public class Book implements Serializable {
     public String id;
     public String src;
     public String srcName;
+    public int srcCount;
+    public String ids;
+    public String srcs;
+    public String srcNames;
     public int count; // 章节数
     public int index; // 章节进度
 
-    public String srcs;
-
-    @Generated(hash = 1891326005)
+    @Generated(hash = 1405018574)
     public Book(Long _id, String name, String author, String cover, int type, long offset,
             long time, String uri, String charset, long length, String MD5, String id,
-            String src, String srcName, int count, int index, String srcs) {
+            String src, String srcName, int srcCount, String ids, String srcs,
+            String srcNames, int count, int index) {
         this._id = _id;
         this.name = name;
         this.author = author;
@@ -74,9 +77,12 @@ public class Book implements Serializable {
         this.id = id;
         this.src = src;
         this.srcName = srcName;
+        this.srcCount = srcCount;
+        this.ids = ids;
+        this.srcs = srcs;
+        this.srcNames = srcNames;
         this.count = count;
         this.index = index;
-        this.srcs = srcs;
     }
 
     @Generated(hash = 1839243756)
@@ -249,14 +255,38 @@ public class Book implements Serializable {
         this.srcs = srcs;
     }
 
+    public int getSrcCount() {
+        return this.srcCount;
+    }
+
+    public void setSrcCount(int srcCount) {
+        this.srcCount = srcCount;
+    }
+
+    public String getIds() {
+        return this.ids;
+    }
+
+    public void setIds(String ids) {
+        this.ids = ids;
+    }
+
+    public String getSrcNames() {
+        return this.srcNames;
+    }
+
+    public void setSrcNames(String srcNames) {
+        this.srcNames = srcNames;
+    }
+
     @Override
     public String toString() {
         return "Book{" +
                 "name='" + name + '\'' +
                 ", author='" + author + '\'' +
-                ", charset='" + charset + '\'' +
-                ", length=" + length +
-                ", uri='" + uri + '\'' +
+                ", ids='" + ids + '\'' +
+                ", srcs='" + srcs + '\'' +
+                ", srcNames='" + srcNames + '\'' +
                 '}';
     }
 }

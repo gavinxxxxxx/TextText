@@ -34,8 +34,8 @@ public class DetailActivity extends BindingActivity<ActivityDetailBinding> {
     protected void afterCreate(@Nullable Bundle savedInstanceState) {
         long bookId = getIntent().getLongExtra(BundleKey.BOOK_ID, 0);
         mBook = getDataLayer().getShelfService().loadBook(bookId);
-        detail(mBook.getId());
-        directory(mBook.getId());
+        detail(mBook.id);
+        directory(mBook.id);
     }
 
     private void detail(String id) {
@@ -87,7 +87,7 @@ public class DetailActivity extends BindingActivity<ActivityDetailBinding> {
 
         mBook.setIndex(i);
         getDataLayer().getSourceService()
-                .chapter(SourceServicess.getSource(mBook.getSrc()), mBook, mBook.getIndex())
+                .chapter(SourceServicess.getSource(mBook.getSrc()), mBook, mBook.index)
                 .compose(RxTransformer.applySchedulers())
                 .doOnSubscribe(mCompositeDisposable::add)
                 .subscribe(s -> {

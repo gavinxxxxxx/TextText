@@ -90,7 +90,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="end"
                 android:singleLine="true"
-                android:text="@{item.srcName}"
+                android:text="@{item.srcNames.replaceAll(`,`, `・`)}"
                 android:textColor="@color/textColorTertiary"
                 android:textSize="10sp"
                 app:layout_constraintBottom_toBottomOf="parent"
