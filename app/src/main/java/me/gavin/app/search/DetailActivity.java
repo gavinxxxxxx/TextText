@@ -2,6 +2,7 @@ package me.gavin.app.search;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.LinearLayoutManager;
 
 import java.util.List;
 
@@ -17,7 +18,7 @@ import me.gavin.text.databinding.ActivityDetailBinding;
 import me.gavin.util.L;
 
 /**
- * 这里是萌萌哒注释菌
+ * 详情
  *
  * @author gavin.xiong 2018/4/26.
  */
@@ -34,6 +35,14 @@ public class DetailActivity extends BindingActivity<ActivityDetailBinding> {
     protected void afterCreate(@Nullable Bundle savedInstanceState) {
         long bookId = getIntent().getLongExtra(BundleKey.BOOK_ID, 0);
         mBook = getDataLayer().getShelfService().loadBook(bookId);
+        mBinding.setItem(mBook);
+        mBinding.recycler.setLayoutManager(new LinearLayoutManager(this){
+            @Override
+            public boolean canScrollVertically() {
+                return false;
+            }
+        });
+
         detail(mBook.id);
         directory(mBook.id);
     }
@@ -54,9 +63,9 @@ public class DetailActivity extends BindingActivity<ActivityDetailBinding> {
                 .compose(RxTransformer.applySchedulers())
                 .doOnSubscribe(mCompositeDisposable::add)
                 .subscribe(chapters -> {
-                    chapterList = chapters;
+                    chapterList = chapters.size() > 10 ? chapters.subList(0, 10) : chapters;
                     BindingAdapter<Chapter> adapter = new BindingAdapter<>(
-                            this, chapters, R.layout.item_chapter);
+                            this, chapterList, R.layout.item_chapter);
                     adapter.setOnItemClickListener(chapter -> chapter(chapters.indexOf(chapter)));
                     mBinding.recycler.setAdapter(adapter);
                 }, L::e);
