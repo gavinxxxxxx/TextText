@@ -16,6 +16,7 @@ import me.gavin.app.core.model.Book;
 import me.gavin.app.explorer.ExplorerActivity;
 import me.gavin.app.read.NewReadActivity;
 import me.gavin.app.search.SearchActivity;
+import me.gavin.app.test.TestActivity;
 import me.gavin.base.BindingActivity;
 import me.gavin.base.BundleKey;
 import me.gavin.text.R;
@@ -41,14 +42,10 @@ public class ShelfActivity extends BindingActivity<ActivityShelfBinding> {
         mBinding.fab.setOnClickListener(v ->
                 startActivityForResult(new Intent(this, ExplorerActivity.class), 0));
 
+        mBinding.includeToolbar.toolbar.setNavigationIcon(R.drawable.vt_menu);
+        mBinding.includeToolbar.toolbar.setNavigationOnClickListener(v ->
+                startActivity(new Intent(this, TestActivity.class)));
         mBinding.includeToolbar.toolbar.inflateMenu(R.menu.main);
-        mBinding.includeToolbar.toolbar.setOnMenuItemClickListener(item -> {
-            if (item.getItemId() == R.id.action_test) {
-                //
-            }
-            return true;
-        });
-
         SearchView searchView = (SearchView) mBinding
                 .includeToolbar
                 .toolbar
@@ -83,25 +80,19 @@ public class ShelfActivity extends BindingActivity<ActivityShelfBinding> {
                 .subscribe(books -> {
                     mList.addAll(books);
                     mAdapter = new ShelfAdapter(this, mList);
-                    mAdapter.setOnItemClickListener(i -> {
-                        if (mList.get(i).type == Book.TYPE_LOCAL) {
+                    mAdapter.setOnItemClickListener(book ->
                             startActivity(new Intent(this, NewReadActivity.class)
-                                    .putExtra(BundleKey.BOOK_ID, mList.get(i).get_id()));
-                        } else {
-                            startActivity(new Intent(this, NewReadActivity.class)
-                                    .putExtra(BundleKey.BOOK_ID, mList.get(i).get_id()));
-                        }
-                    });
-                    mAdapter.setOnItemLongClickListener((v, i) -> {
+                                    .putExtra(BundleKey.BOOK_ID, book.get_id())));
+                    mAdapter.setOnItemLongClickListener((v, book) -> {
                         PopupMenu popupMenu = new PopupMenu(this, v);
                         popupMenu.setGravity(Gravity.CENTER);
                         popupMenu.inflate(R.menu.item_shelf);
                         popupMenu.show();
                         popupMenu.setOnMenuItemClickListener(item -> {
                             if (item.getItemId() == R.id.actionDel) {
-                                getDataLayer().getShelfService().removeBook(mList.get(i));
-                                mAdapter.notifyItemRemoved(i);
-                                mList.remove(i.intValue());
+                                getDataLayer().getShelfService().removeBook(book);
+                                mAdapter.notifyItemRemoved(mList.indexOf(book));
+                                mList.remove(book);
                             }
                             return true;
                         });

@@ -61,7 +61,7 @@ public final class Config {
     public static final int flingVelocity; // 抛投临界值
     public static final float flipAnimDuration; // 翻页动画时长比例
 
-    public static final String cacheControlQuery = "max-stale=86400"; // 60 * 60 * 24
+    public static final String cacheControlQuery = "max-stale=0"; // 60 * 60 * 24
     public static final String cacheControlDetail = "max-stale=86400";
     public static final String cacheControlDirectory = "max-stale=1800"; // 60 * 30
     public static final String cacheControlChapter = "max-stale=2592000"; // 60 * 60 * 24 * 30

@@ -3,12 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/action_test"
-        android:orderInCategory="100"
-        android:title="TEST"
-        app:showAsAction="ifRoom" />
-
-    <item
         android:id="@+id/actionSearch"
         android:icon="@drawable/vt_search"
         android:title="搜索"

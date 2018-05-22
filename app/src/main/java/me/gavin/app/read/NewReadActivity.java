@@ -170,16 +170,16 @@ public class NewReadActivity extends BindingActivity<ActivityReadNewBinding> imp
                         }
                         curr.selected = true;
 
-                        BindingAdapter adapter = new BindingAdapter<>(this, mChapterList, R.layout.item_chapter);
-                        adapter.setOnItemClickListener(i -> {
+                        BindingAdapter<Chapter> adapter = new BindingAdapter<>(this, mChapterList, R.layout.item_chapter);
+                        adapter.setOnItemClickListener(chapter -> {
                             mBinding.drawer.closeDrawers();
                             for (Chapter t : mChapterList) {
                                 t.selected = false;
                             }
-                            mChapterList.get(i).selected = true;
+                            chapter.selected = true;
                             adapter.notifyDataSetChanged();
-                            mBook.index = i;
-                            mBook.offset = mBook.type == Book.TYPE_ONLINE ? 0 : mChapterList.get(i).offset;
+                            mBook.index = mChapterList.indexOf(chapter);
+                            mBook.offset = mBook.type == Book.TYPE_ONLINE ? 0 : chapter.offset;
                             curr();
                         });
                         mBinding.rvChapter.setAdapter(adapter);

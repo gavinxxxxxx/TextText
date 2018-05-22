@@ -30,7 +30,7 @@ import me.gavin.text.databinding.ActivityExplorerBinding;
 public class ExplorerActivity extends BindingActivity<ActivityExplorerBinding> {
 
     private final List<FileItem> mList = new ArrayList<>();
-    private BindingAdapter mAdapter;
+    private BindingAdapter<FileItem> mAdapter;
 
     private File mRoot;
     private Map<String, Integer> mOffsetMap;
@@ -45,8 +45,7 @@ public class ExplorerActivity extends BindingActivity<ActivityExplorerBinding> {
         mBinding.includeToolbar.toolbar.setNavigationOnClickListener(v -> onBackPressedSupport());
 
         mAdapter = new BindingAdapter<>(this, mList, R.layout.item_explorer);
-        mAdapter.setOnItemClickListener(i -> {
-            FileItem item = mList.get(i);
+        mAdapter.setOnItemClickListener(item -> {
             if (item.isDir()) {
                 putOffset(false);
                 mRoot = item.getFile();

@@ -8,6 +8,7 @@ import com.android.databinding.library.baseAdapters.BR;
 
 import java.util.List;
 
+import me.gavin.base.function.Consumer;
 import me.gavin.base.function.IntConsumer;
 import me.gavin.text.R;
 
@@ -18,13 +19,13 @@ import me.gavin.text.R;
  */
 public class BindingAdapter<T> extends RecyclerAdapter<T, ViewDataBinding> {
 
-    private IntConsumer mListener;
+    private Consumer<T> mListener;
 
     public BindingAdapter(Context context, List<T> list, @LayoutRes int layoutId) {
         super(context, list, layoutId);
     }
 
-    public void setOnItemClickListener(IntConsumer onItemClickListener) {
+    public void setOnItemClickListener(Consumer<T> onItemClickListener) {
         this.mListener = onItemClickListener;
     }
 
@@ -33,7 +34,7 @@ public class BindingAdapter<T> extends RecyclerAdapter<T, ViewDataBinding> {
         holder.binding.setVariable(BR.item, t);
         holder.binding.executePendingBindings();
         if (mListener != null) {
-            holder.itemView.findViewById(R.id.item).setOnClickListener(v -> mListener.accept(position));
+            holder.itemView.findViewById(R.id.item).setOnClickListener(v -> mListener.accept(t));
         }
     }
 }

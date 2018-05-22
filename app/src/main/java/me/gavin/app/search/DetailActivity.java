@@ -57,7 +57,7 @@ public class DetailActivity extends BindingActivity<ActivityDetailBinding> {
                     chapterList = chapters;
                     BindingAdapter<Chapter> adapter = new BindingAdapter<>(
                             this, chapters, R.layout.item_chapter);
-                    adapter.setOnItemClickListener(this::chapter);
+                    adapter.setOnItemClickListener(chapter -> chapter(chapters.indexOf(chapter)));
                     mBinding.recycler.setAdapter(adapter);
                 }, L::e);
     }
