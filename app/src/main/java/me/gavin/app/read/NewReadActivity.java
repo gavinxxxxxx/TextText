@@ -130,8 +130,6 @@ public class NewReadActivity extends BindingActivity<ActivityReadNewBinding> imp
         mBinding.rvChapter.scrollToPosition(mChapterList.indexOf(curr));
     }
 
-    private boolean lasting, nexting;
-
     @Override
     protected void onPause() {
         super.onPause();
@@ -185,7 +183,6 @@ public class NewReadActivity extends BindingActivity<ActivityReadNewBinding> imp
                             curr();
                         });
                         mBinding.rvChapter.setAdapter(adapter);
-
                         mBinding.rvChapter.scrollToPosition(mChapterList.indexOf(curr));
                         mBinding.drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
                     }

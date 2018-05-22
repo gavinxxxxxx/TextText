@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.Observable;
+import io.reactivex.schedulers.Schedulers;
 import me.gavin.app.Config;
 import me.gavin.app.RxTransformer;
 import me.gavin.app.Utils;
@@ -44,7 +45,8 @@ public class SourceManager extends BaseManager implements DataLayer.SourceServic
                 .flatMap(srcss -> {
                     List<Observable<List<Book>>> observables = new ArrayList<>();
                     for (SourceServicess source : srcss) {
-                        observables.add(search(source, query));
+                        observables.add(search(source, query)
+                                .subscribeOn(Schedulers.io()));
                     }
                     return Observable.merge(observables);
                 });

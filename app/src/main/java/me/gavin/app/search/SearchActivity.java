@@ -15,7 +15,6 @@ import me.gavin.app.RxTransformer;
 import me.gavin.app.core.model.Book;
 import me.gavin.base.BindingActivity;
 import me.gavin.base.BundleKey;
-import me.gavin.base.recycler.BindingAdapter;
 import me.gavin.text.R;
 import me.gavin.text.databinding.ActivitySearchBinding;
 
@@ -27,7 +26,7 @@ import me.gavin.text.databinding.ActivitySearchBinding;
 public class SearchActivity extends BindingActivity<ActivitySearchBinding> {
 
     private final List<Book> mList = new ArrayList<>();
-    private BindingAdapter<Book> mAdapter;
+    private SearchAdapter mAdapter;
 
     @Override
     protected int getLayoutId() {
@@ -48,7 +47,7 @@ public class SearchActivity extends BindingActivity<ActivitySearchBinding> {
             return true;
         });
 
-        mAdapter = new BindingAdapter<>(this, mList, R.layout.item_search);
+        mAdapter = new SearchAdapter(this, mList);
         mAdapter.setOnItemClickListener(i -> {
             Book book = mList.get(i);
             book.setTime(System.currentTimeMillis());
@@ -79,7 +78,8 @@ public class SearchActivity extends BindingActivity<ActivitySearchBinding> {
                 .doOnError(throwable -> mBinding.refresh.setRefreshing(false))
                 .map(this::distinctAndSoft)
                 .subscribe(books -> {
-                    DiffUtil.calculateDiff(new DiffCallback(mList, books)).dispatchUpdatesTo(mAdapter);
+                    DiffUtil.calculateDiff(new DiffCallback(mList, books))
+                            .dispatchUpdatesTo(new DiffUpdateCallback(mBinding.recycler));
                     mList.clear();
                     mList.addAll(books);
                 }, t -> {
