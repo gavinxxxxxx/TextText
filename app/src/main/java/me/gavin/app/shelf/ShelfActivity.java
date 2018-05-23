@@ -52,7 +52,7 @@ public class ShelfActivity extends BindingActivity<ActivityShelfBinding> {
                 .getMenu()
                 .findItem(R.id.actionSearch)
                 .getActionView();
-        searchView.setQueryHint("输入点什么");
+        searchView.setQueryHint("输入书名或作者");
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
