@@ -93,6 +93,12 @@ public class ShelfActivity extends BindingActivity<ActivityShelfBinding> {
                                 getDataLayer().getShelfService().removeBook(book);
                                 mAdapter.notifyItemRemoved(mList.indexOf(book));
                                 mList.remove(book);
+                            } else if (item.getItemId() == R.id.actionTop) {
+                                book.setTime(System.currentTimeMillis());
+                                getDataLayer().getShelfService().updateBook(book);
+                                mAdapter.notifyItemMoved(mList.indexOf(book), 0);
+                                mList.remove(book);
+                                mList.add(0, book);
                             }
                             return true;
                         });

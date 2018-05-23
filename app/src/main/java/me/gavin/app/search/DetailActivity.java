@@ -1,15 +1,15 @@
 package me.gavin.app.search;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
-
-import java.util.List;
 
 import me.gavin.app.RxTransformer;
 import me.gavin.app.core.model.Book;
 import me.gavin.app.core.model.Chapter;
 import me.gavin.app.core.source.SourceServicess;
+import me.gavin.app.read.NewReadActivity;
 import me.gavin.base.BindingActivity;
 import me.gavin.base.BundleKey;
 import me.gavin.base.recycler.BindingAdapter;
@@ -33,19 +33,24 @@ public class DetailActivity extends BindingActivity<ActivityDetailBinding> {
 
     @Override
     protected void afterCreate(@Nullable Bundle savedInstanceState) {
-        long bookId = getIntent().getLongExtra(BundleKey.BOOK_ID, 0);
-        mBook = getDataLayer().getShelfService().loadBook(bookId);
-        mBinding.setItem(mBook);
-        mBinding.recycler.setLayoutManager(new LinearLayoutManager(this){
+        mBook = (Book) getIntent().getSerializableExtra(BundleKey.BOOK);
+
+        mBinding.includeToolbar.toolbar.setTitle("书籍详情");
+        mBinding.includeToolbar.toolbar.setNavigationIcon(R.drawable.ic_arrow_back_24dp);
+        mBinding.includeToolbar.toolbar.setNavigationOnClickListener(v -> finish());
+
+        mBinding.recycler.setLayoutManager(new LinearLayoutManager(this) {
             @Override
             public boolean canScrollVertically() {
                 return false;
             }
         });
 
-        detail();
-//        directory(mBook.id);
+        mBinding.fab.setOnClickListener(v -> aaa(0));
 
+        mBinding.setItem(mBook);
+
+        detail();
     }
 
     private void detail() {
@@ -54,53 +59,26 @@ public class DetailActivity extends BindingActivity<ActivityDetailBinding> {
                 .compose(RxTransformer.applySchedulers())
                 .doOnSubscribe(mCompositeDisposable::add)
                 .subscribe(book -> {
-                    mBook.updateChapter = "few";
                     mBinding.setItem(mBook);
-
-
-
-                }, L::e);
-    }
-
-    private List<Chapter> chapterList;
-
-    private void directory(String id) {
-        getDataLayer().getSourceService()
-                .directory(mBook)
-                .compose(RxTransformer.applySchedulers())
-                .doOnSubscribe(mCompositeDisposable::add)
-                .subscribe(chapters -> {
-                    chapterList = chapters.size() > 10 ? chapters.subList(0, 10) : chapters;
-                    BindingAdapter<Chapter> adapter = new BindingAdapter<>(
-                            this, chapterList, R.layout.item_chapter);
-                    adapter.setOnItemClickListener(chapter -> chapter(chapters.indexOf(chapter)));
+                    BindingAdapter<Chapter> adapter = new BindingAdapter<>(this, book.chapters, R.layout.item_chapter);
+                    adapter.setOnItemClickListener(chapter -> aaa(book.chapters.indexOf(chapter)));
                     mBinding.recycler.setAdapter(adapter);
+                    mBinding.fab.show();
                 }, L::e);
     }
 
-    private boolean flag = false;
+    private void aaa(int index) {
+        mBook.index = index;
+        mBook.offset = 0;
+        getDataLayer().getShelfService()
+                .insertOrUpdate(mBook)
+                .subscribe(bookId -> {
+                    startActivity(new Intent(this, NewReadActivity.class)
+                            .putExtra(BundleKey.BOOK_ID, bookId));
+                }, L::e);
+    }
 
     public void chapter(int i) {
-//        if (!flag) {
-//            getDataLayer().getSourceService()
-//                    .getFromNet(mBook.getId(), chapterList.get(i).getId())
-//                    .compose(RxTransformer.applySchedulers())
-//                    .doOnSubscribe(mCompositeDisposable::add)
-//                    .subscribe(s -> {
-//                        flag = true;
-//                        L.e(s);
-//                    }, L::e);
-//        } else {
-//            getDataLayer().getSourceService()
-//                    .getFromCache(mBook, i)
-//                    .compose(RxTransformer.applySchedulers())
-//                    .doOnSubscribe(mCompositeDisposable::add)
-//                    .subscribe(s -> {
-//                        flag = false;
-//                        L.e(s);
-//                    }, L::e);
-//        }
-
         mBook.setIndex(i);
         getDataLayer().getSourceService()
                 .chapter(SourceServicess.getSource(mBook.getSrc()), mBook, mBook.index)

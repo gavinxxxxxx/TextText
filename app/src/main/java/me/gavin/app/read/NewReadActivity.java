@@ -58,7 +58,7 @@ public class NewReadActivity extends BindingActivity<ActivityReadNewBinding> imp
         hsl[2] = Math.max(0, hsl[2] - 0.025f);
         mBinding.includeContent.cover.setBackgroundColor(ColorUtils.HSLToColor(hsl));
         mBinding.includeContent.toolbar.setTitle(mBook.name);
-        Drawable drawable = getDrawable(R.drawable.ic_arrow_back_24dp);
+        Drawable drawable = getDrawable(R.drawable.ic_arrow_back_24dp).mutate();
         drawable.setTint(Config.textColor);
         mBinding.includeContent.toolbar.setNavigationIcon(drawable);
         mBinding.includeContent.toolbar.setNavigationOnClickListener(v -> finish());

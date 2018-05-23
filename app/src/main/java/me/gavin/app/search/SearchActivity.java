@@ -48,16 +48,9 @@ public class SearchActivity extends BindingActivity<ActivitySearchBinding> {
         });
 
         mAdapter = new SearchAdapter(this, mList);
-        mAdapter.setOnItemClickListener(i -> {
-            Book book = mList.get(i);
-            book.setTime(System.currentTimeMillis());
-            getDataLayer().getShelfService()
-                    .insertBook(book)
-                    .subscribe(bookId -> {
-                        startActivity(new Intent(this, DetailActivity.class)
-                                .putExtra(BundleKey.BOOK_ID, bookId));
-                    });
-        });
+        mAdapter.setOnItemClickListener(i -> startActivity(
+                new Intent(this, DetailActivity.class)
+                        .putExtra(BundleKey.BOOK, mList.get(i))));
         mBinding.recycler.setAdapter(mAdapter);
 
         mBinding.refresh.setOnRefreshListener(() -> doSearch(query));

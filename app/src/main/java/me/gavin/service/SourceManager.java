@@ -78,10 +78,31 @@ public class SourceManager extends BaseManager implements DataLayer.SourceServic
                 .map(this::read)
                 .map(Jsoup::parse)
                 .compose(RxTransformer.log())
-                .map(document -> {
-                    book.intro = "fewafjewoaifjewoifjoiewjafoijewoiajfoiewaf";
-                    return book;
-                });
+                .map(doc -> {
+                    book.cover = "http://www.daocaorenshuwu.com" + doc.selectFirst("body > div:nth-child(5) > div.col-big.fl > div.book-info > div > div > div.media > div.media-left > a > img").attr("src");
+                    book.state = doc.selectFirst("body > div:nth-child(5) > div.col-big.fl > div.book-info > div > div > div.media > div.media-body > div.row > div:nth-child(2)").text();
+                    book.category = doc.selectFirst("body > div:nth-child(5) > div.col-big.fl > div.book-info > div > div > div.media > div.media-body > div.row > div:nth-child(3)").text();
+                    book.updateTime = doc.selectFirst("body > div:nth-child(5) > div.col-big.fl > div.book-info > div > div > div.media > div.media-body > div.row > div:nth-child(8)").text();
+                    book.updateChapter = doc.selectFirst("body > div:nth-child(5) > div.col-big.fl > div.book-info > div > div > div.media > div.media-body > div.row > div:nth-child(7) > a").text();
+                    book.intro = doc.selectFirst("body > div:nth-child(5) > div.col-big.fl > div.book-info > div > div > div.row.mt10 > div.col-sm-11.col-xs-10 > div").text();
+                    return doc;
+                })
+                .flatMap(doc -> Observable.just("#all-chapter > div > div.panel-body > div > div")
+                        .map(doc::select)
+                        .flatMap(Observable::fromIterable)
+                        .take(10)
+                        .map(element -> {
+                            String cid = element.child(0).text();
+                            String title = element.child(0).text();
+                            return new Chapter(book.id, cid, title);
+                        })
+                        .toList()
+                        .toObservable()
+                        .map(chapters -> {
+                            book.chapters.clear();
+                            book.chapters.addAll(chapters);
+                            return book;
+                        }));
     }
 
     @Override

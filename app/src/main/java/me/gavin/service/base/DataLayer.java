@@ -47,6 +47,8 @@ public class DataLayer {
 
         void updateBook(Book book);
 
+        Observable<Long> insertOrUpdate(Book book);
+
         Book loadBook(long bookId);
 
         Observable<List<Book>> loadAllBooks();

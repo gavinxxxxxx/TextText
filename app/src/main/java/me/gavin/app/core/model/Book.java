@@ -13,6 +13,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.List;
 
 import me.gavin.app.StreamHelper;
 import me.gavin.base.App;
@@ -55,9 +57,13 @@ public class Book implements Serializable {
     @Transient
     public String category; // 分类
     @Transient
+    public String state; // 状态
+    @Transient
     public String updateTime; // 更新时间
     @Transient
     public String updateChapter; // 更新章节
+    @Transient
+    public final List<Chapter> chapters = new ArrayList<>(10);
 
     public int count; // 章节数
     public int index; // 章节进度
