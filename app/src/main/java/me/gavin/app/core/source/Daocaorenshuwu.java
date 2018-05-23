@@ -11,9 +11,13 @@ import me.gavin.app.core.model.Chapter;
 
 /**
  * 书源 - 稻草人书屋
+ * -
+ * 书籍id不统一 - abc | book/xyz
  *
  * @author gavin.xiong 2018/5/9
  * @link {http://www.daocaorenshuwu.com/}
+ * @link {http://www.daocaorenshuwu.com/quanzhifashi/}
+ * @link {http://www.daocaorenshuwu.com/book/conglingkaishi/}
  */
 public final class Daocaorenshuwu extends SourceServicess {
 
@@ -55,11 +59,16 @@ public final class Daocaorenshuwu extends SourceServicess {
     }
 
     @Override
+    public String detailsUrl(String id) {
+        return String.format("http://www.daocaorenshuwu.com/%s/", id);
+    }
+
+    @Override
     public String directoryUrl(String id) {
-        String[] split = id.split("/");
-        String prefix = split.length > 1 ? split[0] : "";
-        String rid = split.length > 1 ? split[1] : split[0];
-        return String.format("http://www.daocaorenshuwu.com/%s/%s/", prefix, rid);
+        // String[] split = id.split("/");
+        // String prefix = split.length > 1 ? split[0] : "";
+        // String rid = split.length > 1 ? split[1] : split[0];
+        return String.format("http://www.daocaorenshuwu.com/%s/", id);
     }
 
     @Override
@@ -81,10 +90,7 @@ public final class Daocaorenshuwu extends SourceServicess {
 
     @Override
     public String chapterUrl(Chapter chapter) {
-        String[] split = chapter.bookId.split("/");
-        String prefix = split.length > 1 ? split[0] : "";
-        String rid = split.length > 1 ? split[1] : split[0];
-        return String.format("http://www.daocaorenshuwu.com/%s/%s/%s.html", prefix, rid, chapter.id);
+        return String.format("http://www.daocaorenshuwu.com/%s/%s.html", chapter.bookId, chapter.id);
     }
 
     @Override

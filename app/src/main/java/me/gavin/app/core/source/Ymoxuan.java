@@ -11,9 +11,13 @@ import me.gavin.app.core.model.Chapter;
 
 /**
  * 书源 - 衍墨轩
+ * -
+ * 目录 & 章节 url 中含不明数字 - 改变可能导致部分新章节缺失 - book/0/abc | book/1/abc
  *
  * @author gavin.xiong 2018/4/28.
  * @link {https://www.ymoxuan.com/}
+ * @link {https://www.ymoxuan.com/book/0/27334/index.html}
+ * @link {https://www.ymoxuan.com/book/1/27334/index.html}
  */
 public final class Ymoxuan extends SourceServicess {
 
@@ -56,8 +60,13 @@ public final class Ymoxuan extends SourceServicess {
     }
 
     @Override
+    public String detailsUrl(String id) {
+        return String.format("https://www.ymoxuan.com/%s.html", id);
+    }
+
+    @Override
     public String directoryUrl(String id) {
-        return String.format("https://www.ymoxuan.com/book/0/%s/index.html", id);
+        return String.format("https://www.ymoxuan.com/book/99/%s/index.html", id);
     }
 
     @Override
@@ -82,7 +91,7 @@ public final class Ymoxuan extends SourceServicess {
 
     @Override
     public String chapterUrl(Chapter chapter) {
-        return String.format("https://www.ymoxuan.com/book/0/%s/%s.html", chapter.bookId, chapter.id);
+        return String.format("https://www.ymoxuan.com/book/99/%s/%s.html", chapter.bookId, chapter.id);
     }
 
     @Override

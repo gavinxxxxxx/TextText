@@ -5,6 +5,8 @@
 
     <data>
 
+        <import type="android.text.TextUtils" />
+
         <variable
             name="item"
             type="me.gavin.app.core.model.Book" />
@@ -69,18 +71,18 @@
                     android:text="@{`作者：` + item.author}"
                     android:textColor="@color/textColorSecondary"
                     android:textSize="14sp"
-                    app:layout_constraintBottom_toTopOf="@+id/tvType"
+                    app:layout_constraintBottom_toTopOf="@+id/tvCategory"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="@+id/tvName"
                     app:layout_constraintTop_toBottomOf="@+id/tvName"
                     tools:text="作者：雷云风暴" />
 
                 <TextView
-                    android:id="@+id/tvType"
+                    android:id="@+id/tvCategory"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:singleLine="true"
-                    android:text="@{`类型：` + item.author}"
+                    android:text="@{TextUtils.isEmpty(item.category) ? `` : `类型：` + item.category}"
                     android:textColor="@color/textColorSecondary"
                     android:textSize="14sp"
                     app:layout_constraintBottom_toTopOf="@+id/tvTime"
@@ -94,13 +96,13 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:singleLine="true"
-                    android:text="@{`更新：` + item.author}"
+                    android:text="@{TextUtils.isEmpty(item.updateTime) ? `` : `更新：` + item.updateTime}"
                     android:textColor="@color/textColorSecondary"
                     android:textSize="14sp"
                     app:layout_constraintBottom_toTopOf="@+id/tvChapter"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="@+id/tvName"
-                    app:layout_constraintTop_toBottomOf="@+id/tvType"
+                    app:layout_constraintTop_toBottomOf="@+id/tvCategory"
                     tools:text="更新：2018-01-01" />
 
                 <TextView
@@ -108,7 +110,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:singleLine="true"
-                    android:text="@{`章节：` + item.author}"
+                    android:text="@{TextUtils.isEmpty(item.updateChapter) ? `` : `章节：` + item.updateChapter}"
                     android:textColor="@color/textColorSecondary"
                     android:textSize="14sp"
                     app:layout_constraintBottom_toTopOf="@+id/tvSrc"

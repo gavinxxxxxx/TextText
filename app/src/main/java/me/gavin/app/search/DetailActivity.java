@@ -43,16 +43,23 @@ public class DetailActivity extends BindingActivity<ActivityDetailBinding> {
             }
         });
 
-        detail(mBook.id);
-        directory(mBook.id);
+        detail();
+//        directory(mBook.id);
+
     }
 
-    private void detail(String id) {
-//        getDataLayer().getSourceService()
-//                .detail(SourceServicess.getSource(mBook.getSrc()), id)
-//                .compose(RxTransformer.applySchedulers())
-//                .doOnSubscribe(mCompositeDisposable::add)
-//                .subscribe(L::e, L::e);
+    private void detail() {
+        getDataLayer().getSourceService()
+                .detail(mBook)
+                .compose(RxTransformer.applySchedulers())
+                .doOnSubscribe(mCompositeDisposable::add)
+                .subscribe(book -> {
+                    mBook.updateChapter = "few";
+                    mBinding.setItem(mBook);
+
+
+
+                }, L::e);
     }
 
     private List<Chapter> chapterList;

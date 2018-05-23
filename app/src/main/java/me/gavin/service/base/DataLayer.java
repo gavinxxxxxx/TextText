@@ -59,7 +59,7 @@ public class DataLayer {
 
         Observable<List<Book>> search(SourceServicess source, String query);
 
-        Observable<Book> detail(SourceServicess source, String id);
+        Observable<Book> detail(Book book);
 
         Observable<List<Chapter>> directory(Book book);
 

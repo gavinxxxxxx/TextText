@@ -51,18 +51,27 @@ public class Book implements Serializable {
     public String id;
     public String src;
     public String srcName;
+
+    @Transient
+    public String category; // 分类
+    @Transient
+    public String updateTime; // 更新时间
+    @Transient
+    public String updateChapter; // 更新章节
+
+    public int count; // 章节数
+    public int index; // 章节进度
+
     public int srcCount;
     public String ids;
     public String srcs;
     public String srcNames;
-    public int count; // 章节数
-    public int index; // 章节进度
 
-    @Generated(hash = 1405018574)
-    public Book(Long _id, String name, String author, String cover, int type, long offset,
-            long time, String uri, String charset, long length, String MD5, String id,
-            String src, String srcName, int srcCount, String ids, String srcs,
-            String srcNames, int count, int index) {
+    @Generated(hash = 1571614333)
+    public Book(Long _id, String name, String author, String cover, int type,
+                long offset, long time, String uri, String charset, long length,
+                String MD5, String id, String src, String srcName, int count, int index,
+                int srcCount, String ids, String srcs, String srcNames) {
         this._id = _id;
         this.name = name;
         this.author = author;
@@ -77,12 +86,12 @@ public class Book implements Serializable {
         this.id = id;
         this.src = src;
         this.srcName = srcName;
+        this.count = count;
+        this.index = index;
         this.srcCount = srcCount;
         this.ids = ids;
         this.srcs = srcs;
         this.srcNames = srcNames;
-        this.count = count;
-        this.index = index;
     }
 
     @Generated(hash = 1839243756)
@@ -113,44 +122,20 @@ public class Book implements Serializable {
         this.author = author;
     }
 
-    public String getCharset() {
-        return this.charset;
+    public String getCover() {
+        return this.cover;
     }
 
-    public void setCharset(String charset) {
-        this.charset = charset;
+    public void setCover(String cover) {
+        this.cover = cover;
     }
 
-    public long getLength() {
-        return this.length;
+    public int getType() {
+        return this.type;
     }
 
-    public void setLength(long length) {
-        this.length = length;
-    }
-
-    public String getUri() {
-        return this.uri;
-    }
-
-    public void setUri(String uri) {
-        this.uri = uri;
-    }
-
-    public String getMD5() {
-        return this.MD5;
-    }
-
-    public void setMD5(String MD5) {
-        this.MD5 = MD5;
-    }
-
-    public String getSrc() {
-        return src;
-    }
-
-    public void setSrc(String src) {
-        this.src = src;
+    public void setType(int type) {
+        this.type = type;
     }
 
     public long getOffset() {
@@ -167,6 +152,110 @@ public class Book implements Serializable {
 
     public void setTime(long time) {
         this.time = time;
+    }
+
+    public String getUri() {
+        return this.uri;
+    }
+
+    public void setUri(String uri) {
+        this.uri = uri;
+    }
+
+    public String getCharset() {
+        return this.charset;
+    }
+
+    public void setCharset(String charset) {
+        this.charset = charset;
+    }
+
+    public long getLength() {
+        return this.length;
+    }
+
+    public void setLength(long length) {
+        this.length = length;
+    }
+
+    public String getMD5() {
+        return this.MD5;
+    }
+
+    public void setMD5(String MD5) {
+        this.MD5 = MD5;
+    }
+
+    public String getId() {
+        return this.id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getSrc() {
+        return this.src;
+    }
+
+    public void setSrc(String src) {
+        this.src = src;
+    }
+
+    public String getSrcName() {
+        return this.srcName;
+    }
+
+    public void setSrcName(String srcName) {
+        this.srcName = srcName;
+    }
+
+    public int getCount() {
+        return this.count;
+    }
+
+    public void setCount(int count) {
+        this.count = count;
+    }
+
+    public int getIndex() {
+        return this.index;
+    }
+
+    public void setIndex(int index) {
+        this.index = index;
+    }
+
+    public int getSrcCount() {
+        return this.srcCount;
+    }
+
+    public void setSrcCount(int srcCount) {
+        this.srcCount = srcCount;
+    }
+
+    public String getIds() {
+        return this.ids;
+    }
+
+    public void setIds(String ids) {
+        this.ids = ids;
+    }
+
+    public String getSrcs() {
+        return this.srcs;
+    }
+
+    public void setSrcs(String srcs) {
+        this.srcs = srcs;
+    }
+
+    public String getSrcNames() {
+        return this.srcNames;
+    }
+
+    public void setSrcNames(String srcNames) {
+        this.srcNames = srcNames;
     }
 
     public static Book fromUri(Uri uri) throws IOException, NoSuchAlgorithmException {
@@ -189,94 +278,6 @@ public class Book implements Serializable {
 
     public InputStream open() throws IOException {
         return App.get().getContentResolver().openInputStream(Uri.parse(uri));
-    }
-
-    public String getCover() {
-        return this.cover;
-    }
-
-    public void setCover(String cover) {
-        this.cover = cover;
-    }
-
-    public String getId() {
-        return this.id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public int getType() {
-        return this.type;
-    }
-
-    public void setType(int type) {
-        this.type = type;
-    }
-
-    public int getIndex() {
-        return this.index;
-    }
-
-    public void setIndex(int index) {
-        this.index = index;
-    }
-
-    public int getCount() {
-        return this.count;
-    }
-
-    public void setCount(int count) {
-        this.count = count;
-    }
-
-    public String getIntro() {
-        return this.intro;
-    }
-
-    public void setIntro(String intro) {
-        this.intro = intro;
-    }
-
-    public String getSrcName() {
-        return this.srcName;
-    }
-
-    public void setSrcName(String srcName) {
-        this.srcName = srcName;
-    }
-
-    public String getSrcs() {
-        return this.srcs;
-    }
-
-    public void setSrcs(String srcs) {
-        this.srcs = srcs;
-    }
-
-    public int getSrcCount() {
-        return this.srcCount;
-    }
-
-    public void setSrcCount(int srcCount) {
-        this.srcCount = srcCount;
-    }
-
-    public String getIds() {
-        return this.ids;
-    }
-
-    public void setIds(String ids) {
-        this.ids = ids;
-    }
-
-    public String getSrcNames() {
-        return this.srcNames;
-    }
-
-    public void setSrcNames(String srcNames) {
-        this.srcNames = srcNames;
     }
 
     @Override

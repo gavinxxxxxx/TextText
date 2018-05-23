@@ -1,5 +1,7 @@
 package me.gavin.app.core.source;
 
+import android.support.annotation.NonNull;
+
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
@@ -26,7 +28,7 @@ public abstract class SourceServicess {
 
     /* ******************************************** 详情 **************************************** */
 
-
+    public abstract String detailsUrl(String id);
 
     /* ******************************************** 目录 **************************************** */
 
@@ -48,6 +50,7 @@ public abstract class SourceServicess {
 
     /* ******************************************** 什么 **************************************** */
 
+    @NonNull
     public static SourceServicess getSource(String src) {
         switch (src) {
             case "ymoxuan":
@@ -55,7 +58,7 @@ public abstract class SourceServicess {
             case "daocaorenshuwu":
                 return Daocaorenshuwu.get();
             default:
-                return null;
+                throw new NullPointerException();
         }
     }
 }

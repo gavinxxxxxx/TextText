@@ -69,8 +69,19 @@ public class SourceManager extends BaseManager implements DataLayer.SourceServic
     }
 
     @Override
-    public Observable<Book> detail(SourceServicess source, String id) {
-        return null;
+    public Observable<Book> detail(Book book) {
+        return Observable.just(0)
+                .map(arg0 -> SourceServicess.getSource(book.src))
+                .map(source -> source.detailsUrl(book.id))
+                .flatMap(url -> getApi().get(url, Config.cacheControlDetail))
+                .map(ResponseBody::byteStream)
+                .map(this::read)
+                .map(Jsoup::parse)
+                .compose(RxTransformer.log())
+                .map(document -> {
+                    book.intro = "fewafjewoaifjewoifjoiewjafoijewoiajfoiewaf";
+                    return book;
+                });
     }
 
     @Override
