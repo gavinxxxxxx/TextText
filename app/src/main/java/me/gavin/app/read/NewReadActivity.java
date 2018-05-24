@@ -23,6 +23,7 @@ import me.gavin.app.core.model.Book;
 import me.gavin.app.core.model.Chapter;
 import me.gavin.app.core.model.Page;
 import me.gavin.app.core.pager.Pager;
+import me.gavin.app.core.source.SourceServicess;
 import me.gavin.base.BindingActivity;
 import me.gavin.base.BundleKey;
 import me.gavin.base.recycler.BindingAdapter;
@@ -56,6 +57,10 @@ public class NewReadActivity extends BindingActivity<ActivityReadNewBinding> imp
         ColorUtils.colorToHSL(Config.bgColor, hsl);
         hsl[1] = Math.max(0, hsl[1] - 0.025f);
         hsl[2] = Math.max(0, hsl[2] - 0.025f);
+        float[] hsl2 = new float[3];
+        ColorUtils.colorToHSL(Config.bgColor, hsl2);
+        hsl2[1] = Math.max(0, hsl[1] + 0.03f);
+        hsl2[2] = Math.max(0, hsl[2] + 0.03f);
         mBinding.includeContent.cover.setBackgroundColor(ColorUtils.HSLToColor(hsl));
         mBinding.includeContent.toolbar.setTitle(mBook.name);
         Drawable drawable = getDrawable(R.drawable.ic_arrow_back_24dp).mutate();
@@ -64,6 +69,9 @@ public class NewReadActivity extends BindingActivity<ActivityReadNewBinding> imp
         mBinding.includeContent.toolbar.setNavigationOnClickListener(v -> finish());
         mBinding.includeContent.toolbar.setTitleTextColor(Config.textColor);
         mBinding.includeContent.toolbar.setBackgroundColor(Config.bgColor);
+        mBinding.includeContent.llSrc.setBackgroundColor(ColorUtils.HSLToColor(hsl2));
+        mBinding.includeContent.tvUrl.setTextColor(Config.textColor);
+        mBinding.includeContent.tvSrc.setTextColor(Config.textColor);
         mBinding.includeContent.fab.setBackgroundTintList(ColorStateList.valueOf(Config.bgColor));
 
         mBinding.includeContent.text.setPager(this);
@@ -72,6 +80,7 @@ public class NewReadActivity extends BindingActivity<ActivityReadNewBinding> imp
         mBinding.includeContent.text.setOnSystemUiVisibilityChangeListener(visibility -> {
             mBinding.includeContent.cover.setVisibility(visibility);
             mBinding.includeContent.toolbar.setVisibility(visibility);
+            mBinding.includeContent.llSrc.setVisibility(visibility);
             if ((visibility & (View.INVISIBLE | View.GONE)) != 0) {
                 mBinding.includeContent.fab.hide();
             } else {
@@ -114,6 +123,9 @@ public class NewReadActivity extends BindingActivity<ActivityReadNewBinding> imp
     @Override
     public void onFlip(Page page) {
         // TODO: 2018/5/24 无章节时 crash
+        mBinding.includeContent.tvSrc.setText(mBook.srcName);
+        mBinding.includeContent.tvUrl.setText(SourceServicess
+                .getSource(mBook.src).chapterUrl(mChapterList.get(mBook.index)));
         mBook.setIndex(mBinding.includeContent.text.curr().index);
         mBook.setOffset(mBinding.includeContent.text.curr().start);
         Chapter curr = mChapterList.get(0);
