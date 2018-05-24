@@ -113,6 +113,7 @@ public class NewReadActivity extends BindingActivity<ActivityReadNewBinding> imp
 
     @Override
     public void onFlip(Page page) {
+        // TODO: 2018/5/24 无章节时 crash
         mBook.setIndex(mBinding.includeContent.text.curr().index);
         mBook.setOffset(mBinding.includeContent.text.curr().start);
         Chapter curr = mChapterList.get(0);

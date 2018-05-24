@@ -8,6 +8,7 @@ import org.greenrobot.greendao.annotation.Id;
 import org.greenrobot.greendao.annotation.Transient;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -272,7 +273,7 @@ public class Book implements Serializable {
             book.uri = uri.toString();
             book.name = file.getName().substring(0, file.getName().lastIndexOf("."));
             book.type = TYPE_LOCAL;
-            String encoding = StreamHelper.getCharsetByJUniversalCharDet(file);
+            String encoding = StreamHelper.getCharsetByJUniversalCharDet(new FileInputStream(file));
             book.charset = encoding != null ? encoding : "utf-8";
             book.MD5 = StreamHelper.getFileMD5(file);
             book.length = StreamHelper.getLength(book.open(), book.charset);

@@ -7,7 +7,6 @@ import org.mozilla.universalchardet.UniversalDetector;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -31,34 +30,22 @@ public class StreamHelper {
      * @link {https://code.google.com/archive/p/juniversalchardet/}
      */
     @Nullable
-    public static String getCharsetByJUniversalCharDet(@NonNull File textFile) throws IOException {
-        try (FileInputStream fis = new FileInputStream(textFile)) {
+    public static String getCharsetByJUniversalCharDet(@NonNull InputStream is) throws IOException {
+        try {
             byte[] buffer = new byte[4096];
             UniversalDetector detector = new UniversalDetector(null);
             int length;
-            while ((length = fis.read(buffer)) > 0 && !detector.isDone()) {
+            while ((length = is.read(buffer)) > 0 && !detector.isDone()) {
                 detector.handleData(buffer, 0, length);
             }
             detector.dataEnd();
             String encoding = detector.getDetectedCharset();
             detector.reset();
             return encoding;
+        } finally {
+            is.close();
         }
     }
-
-//    /**
-//     * 使用 ICU4J 获取文本文件编码
-//     *
-//     * @link {http://site.icu-project.org/download/60#TOC-ICU4J-Download}
-//     * @link {http://www.th7.cn/Program/Android/201704/1146516.shtml}
-//     */
-//    public static String getCharsetByICU4J(byte[] bytes){
-//        CharsetDetector detector = new CharsetDetector();
-//        detector.setText(bytes);
-//        CharsetMatch match = detector.detect();
-//        String encode = match.getName();
-//        return encode;
-//    }
 
     public static long getLength(InputStream is, String charset) throws IOException {
         try (Reader reader = new InputStreamReader(is, charset)) {

@@ -62,6 +62,8 @@ public abstract class SourceServicess {
                 return Ymoxuan.get();
             case "daocaorenshuwu":
                 return Daocaorenshuwu.get();
+            case "22ff":
+                return _22ff.get();
             default:
                 throw new NullPointerException();
         }
