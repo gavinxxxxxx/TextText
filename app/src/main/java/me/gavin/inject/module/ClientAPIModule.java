@@ -18,6 +18,7 @@ import me.gavin.util.CacheHelper;
 import me.gavin.util.okhttp.OKHttpCacheInterceptor;
 import me.gavin.util.okhttp.OKHttpCacheNetworkInterceptor;
 import me.gavin.util.okhttp.OKHttpLoggingInterceptor;
+import me.gavin.util.okhttp.OKHttpParseInterceptor;
 import okhttp3.Cache;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -110,6 +111,7 @@ public class ClientAPIModule {
                 .addInterceptor(logging)
                 .addInterceptor(logging2)
                 .addInterceptor(cacheInterceptor)
+                .addInterceptor(new OKHttpParseInterceptor())
                 .addNetworkInterceptor(cacheNetworkInterceptor)
                 .cache(cache)
                 .build();

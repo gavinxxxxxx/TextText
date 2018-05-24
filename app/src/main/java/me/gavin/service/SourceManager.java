@@ -3,18 +3,13 @@ package me.gavin.service;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.zip.GZIPInputStream;
 
 import io.reactivex.Observable;
 import io.reactivex.schedulers.Schedulers;
 import me.gavin.app.Config;
 import me.gavin.app.RxTransformer;
-import me.gavin.app.StreamHelper;
 import me.gavin.app.Utils;
 import me.gavin.app.core.model.Book;
 import me.gavin.app.core.model.Chapter;
@@ -26,8 +21,6 @@ import me.gavin.service.base.BaseManager;
 import me.gavin.service.base.DataLayer;
 import okhttp3.ResponseBody;
 import okio.BufferedSource;
-import okio.GzipSource;
-import okio.Okio;
 
 /**
  * SourceManager
@@ -58,8 +51,8 @@ public class SourceManager extends BaseManager implements DataLayer.SourceServic
     @Override
     public Observable<List<Book>> search(SourceServicess source, String query) {
         return getApi().get(source.queryUrl(query), Config.cacheControlQuery)
-                .map(ResponseBody::bytes)
-                .map(this::read)
+                .map(ResponseBody::source)
+                .map(BufferedSource::readUtf8)
                 .map(Jsoup::parse)
                 .map(document -> document.select(source.querySelector()))
                 .flatMap(Observable::fromIterable)
@@ -76,8 +69,8 @@ public class SourceManager extends BaseManager implements DataLayer.SourceServic
         SourceServicess source = SourceServicess.getSource(book.src);
         return Observable.just(source.detailsUrl(book.id))
                 .flatMap(url -> getApi().get(url, Config.cacheControlDetail))
-                .map(ResponseBody::bytes)
-                .map(this::read)
+                .map(ResponseBody::source)
+                .map(BufferedSource::readUtf8)
                 .map(Jsoup::parse)
                 .compose(RxTransformer.log())
                 .map(doc -> source.bookInfo(book, doc))
@@ -95,8 +88,8 @@ public class SourceManager extends BaseManager implements DataLayer.SourceServic
     public Observable<List<Chapter>> directory(Book book) {
         SourceServicess source = SourceServicess.getSource(book.getSrc());
         return getApi().get(source.directoryUrl(book.id), Config.cacheControlDirectory)
-                .map(ResponseBody::bytes)
-                .map(this::read)
+                .map(ResponseBody::source)
+                .map(BufferedSource::readUtf8)
                 .map(Jsoup::parse)
                 .map(document -> document.select(source.directorySelector()))
                 .compose(RxTransformer.log())
@@ -121,8 +114,8 @@ public class SourceManager extends BaseManager implements DataLayer.SourceServic
         return directory(book)
                 .map(chapters -> chapters.get(index))
                 .flatMap(chapter -> getApi().get(source.chapterUrl(chapter), Config.cacheControlChapter))
-                .map(ResponseBody::bytes)
-                .map(this::read)
+                .map(ResponseBody::source)
+                .map(BufferedSource::readUtf8)
                 .compose(source.chapter2Text())
                 .map(Element::text)
                 .map(s -> s.replaceAll("\\\\n", "\n"))
@@ -194,13 +187,5 @@ public class SourceManager extends BaseManager implements DataLayer.SourceServic
                     }
                 })
                 .map(page1 -> Utils.nextOnline(page, page.start));
-    }
-
-    private String read(byte[] bytes) throws IOException {
-        try (GZIPInputStream gis = new GZIPInputStream(new ByteArrayInputStream(bytes));
-             BufferedSource buffer = Okio.buffer(new GzipSource(Okio.source(new ByteArrayInputStream(bytes))))) {
-            String encoding = StreamHelper.getCharsetByJUniversalCharDet(gis);
-            return buffer.readString(Charset.forName(encoding));
-        }
     }
 }

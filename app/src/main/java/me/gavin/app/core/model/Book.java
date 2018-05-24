@@ -274,7 +274,7 @@ public class Book implements Serializable {
             book.name = file.getName().substring(0, file.getName().lastIndexOf("."));
             book.type = TYPE_LOCAL;
             String encoding = StreamHelper.getCharsetByJUniversalCharDet(new FileInputStream(file));
-            book.charset = encoding != null ? encoding : "utf-8";
+            book.charset = encoding != null ? encoding : "UTF-8";
             book.MD5 = StreamHelper.getFileMD5(file);
             book.length = StreamHelper.getLength(book.open(), book.charset);
             book.time = System.currentTimeMillis();

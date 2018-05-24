@@ -17,8 +17,6 @@ import okio.BufferedSource;
  */
 public final class OKHttpLoggingInterceptor implements Interceptor {
 
-    private static final Charset UTF8 = Charset.forName("UTF-8");
-
     @Override
     public Response intercept(Chain chain) throws IOException {
         Request request = chain.request();
@@ -26,7 +24,7 @@ public final class OKHttpLoggingInterceptor implements Interceptor {
         try {
             Buffer buffer = new Buffer();
             request.body().writeTo(buffer);
-            L.d("--> " + request.method() + ' ' + request.url() + "\n" + buffer.readString(UTF8));
+            L.d("--> " + request.method() + ' ' + request.url() + "\n" + buffer.readUtf8());
         } catch (NullPointerException e) {
             L.d("--> " + request.method() + ' ' + request.url());
         } catch (Exception e) {
@@ -43,7 +41,7 @@ public final class OKHttpLoggingInterceptor implements Interceptor {
         try {
             BufferedSource source = response.body().source();
             source.request(Long.MAX_VALUE);
-            L.v("<-- " + request.url() + "\n" + source.buffer().clone().readString(UTF8));
+            L.v("<-- " + request.url() + "\n" + source.buffer().clone().readUtf8());
         } catch (Exception e) {
             L.v("<-- " + request.url() + ' ' + e);
         }
