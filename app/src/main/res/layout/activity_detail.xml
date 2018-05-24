@@ -175,7 +175,7 @@
                         android:id="@+id/tvIntro"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/activity_vertical_margin"
+                        android:layout_marginTop="10dp"
                         android:text="@{item.intro}"
                         android:textColor="@color/textColorSecondary"
                         android:textSize="14sp"

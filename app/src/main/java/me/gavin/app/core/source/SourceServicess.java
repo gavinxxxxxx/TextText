@@ -2,6 +2,7 @@ package me.gavin.app.core.source;
 
 import android.support.annotation.NonNull;
 
+import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
@@ -29,6 +30,10 @@ public abstract class SourceServicess {
     /* ******************************************** 详情 **************************************** */
 
     public abstract String detailsUrl(String id);
+
+    public abstract Document bookInfo(Book book, Document doc);
+
+    public abstract ObservableTransformer<Document, Chapter> detailChapters();
 
     /* ******************************************** 目录 **************************************** */
 

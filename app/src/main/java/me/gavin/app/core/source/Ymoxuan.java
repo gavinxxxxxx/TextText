@@ -1,6 +1,7 @@
 package me.gavin.app.core.source;
 
 import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
@@ -61,7 +62,28 @@ public final class Ymoxuan extends SourceServicess {
 
     @Override
     public String detailsUrl(String id) {
-        return String.format("https://www.ymoxuan.com/%s.html", id);
+        return String.format("https://www.ymoxuan.com/text_%s.html", id);
+    }
+
+    @Override
+    public Document bookInfo(Book book, Document doc) {
+        book.cover = doc.selectFirst("body > section > div.left > article.info > div.cover > img").attr("src");
+        book.state = doc.selectFirst("body > section > div.left > article.info > p.detail.pt20 > i:nth-child(3)").text();
+        book.category = doc.selectFirst("body > section > div.left > article.info > p.detail.pt20 > i:nth-child(2) > a").text();
+        book.updateTime = doc.selectFirst("body > section > div.left > article.info > p:nth-child(4) > i").text();
+        book.updateChapter = doc.selectFirst("body > section > div.left > article.info > p:nth-child(5) > i > a").text();
+        book.intro = doc.selectFirst("body > section > div.left > article.info > p.desc").text();
+        return doc;
+    }
+
+    @Override
+    public ObservableTransformer<Document, Chapter> detailChapters() {
+        return upstream -> upstream
+                .map(doc -> doc.select("body > section > div.left > article.info > ul > li > a"))
+                .flatMap(Observable::fromIterable)
+                .take(10)
+                .map(Element::text)
+                .map(title -> new Chapter(null, null, title));
     }
 
     @Override

@@ -1,6 +1,7 @@
 package me.gavin.app.core.source;
 
 import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
@@ -61,6 +62,27 @@ public final class Daocaorenshuwu extends SourceServicess {
     @Override
     public String detailsUrl(String id) {
         return String.format("http://www.daocaorenshuwu.com/%s/", id);
+    }
+
+    @Override
+    public Document bookInfo(Book book, Document doc) {
+        book.cover = "http://www.daocaorenshuwu.com" + doc.selectFirst("body > div:nth-child(5) > div.col-big.fl > div.book-info > div > div > div.media > div.media-left > a > img").attr("src");
+        book.state = doc.selectFirst("body > div:nth-child(5) > div.col-big.fl > div.book-info > div > div > div.media > div.media-body > div.row > div:nth-child(2)").text();
+        book.category = doc.selectFirst("body > div:nth-child(5) > div.col-big.fl > div.book-info > div > div > div.media > div.media-body > div.row > div:nth-child(3)").text();
+        book.updateTime = doc.selectFirst("body > div:nth-child(5) > div.col-big.fl > div.book-info > div > div > div.media > div.media-body > div.row > div:nth-child(8)").text();
+        book.updateChapter = doc.selectFirst("body > div:nth-child(5) > div.col-big.fl > div.book-info > div > div > div.media > div.media-body > div.row > div:nth-child(7) > a").text();
+        book.intro = doc.selectFirst("body > div:nth-child(5) > div.col-big.fl > div.book-info > div > div > div.row.mt10 > div.col-sm-11.col-xs-10 > div").text();
+        return doc;
+    }
+
+    @Override
+    public ObservableTransformer<Document, Chapter> detailChapters() {
+        return upstream -> upstream
+                .map(doc -> doc.select("body > div:nth-child(5) > div.col-big.fl > div.chapter > div:nth-child(1) > div.panel-body > div > div > a"))
+                .flatMap(Observable::fromIterable)
+                .take(10)
+                .map(Element::text)
+                .map(title -> new Chapter(null, null, title));
     }
 
     @Override
