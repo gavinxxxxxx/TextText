@@ -36,6 +36,7 @@ public class SourceModel {
     public static class Directory {
         public String url;
         public String select;
+        public int skip;
         public List<Field> fields;
     }
 
