@@ -185,4 +185,23 @@ public class ExampleUnitTest {
         sql.deleteCharAt(sql.lastIndexOf(","));
         System.out.println(sql.toString());
     }
+
+    @Test
+    public void feature() {
+        String target = "/xs/160026/";
+        System.out.println(target.replaceAll("/xs/(\\w+?)/", "$1"));
+
+        String feature = "/xs/{bookId}/";
+        String regex = feature.replace("{bookId}", "(\\w+?)");
+        System.out.println(regex);
+        String value = "/xs/160026/".replaceFirst(regex, "$1");
+        System.out.println(value);
+    }
+
+    @Test
+    public void feature2() {
+        String feature = "/xs/{chapterId}/";
+        String regex = feature.replaceFirst("(\\{bookId})|(\\{chapterId})", "(\\w+?)");
+        System.out.println(regex);
+    }
 }

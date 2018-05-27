@@ -3,6 +3,7 @@ package me.gavin.app.search;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 
 import me.gavin.app.RxTransformer;
@@ -38,6 +39,17 @@ public class DetailActivity extends BindingActivity<ActivityDetailBinding> {
         mBinding.includeToolbar.toolbar.setTitle("书籍详情");
         mBinding.includeToolbar.toolbar.setNavigationIcon(R.drawable.ic_arrow_back_24dp);
         mBinding.includeToolbar.toolbar.setNavigationOnClickListener(v -> finish());
+        mBinding.includeToolbar.toolbar.inflateMenu(R.menu.activity_details);
+        mBinding.includeToolbar.toolbar.getMenu().getItem(0).setTitle(mBook.srcName);
+        for (String s : mBook.srcNames.split(",")) {
+            mBinding.includeToolbar.toolbar.getMenu().getItem(0).getSubMenu().add(s);
+        }
+        mBinding.includeToolbar.toolbar.setOnMenuItemClickListener(item -> {
+            if (item.getItemId() != R.id.action_source) {
+                Snackbar.make(mBinding.recycler, item.getTitle(), Snackbar.LENGTH_LONG).show();
+            }
+            return true;
+        });
 
         mBinding.recycler.setLayoutManager(new LinearLayoutManager(this) {
             @Override
@@ -64,7 +76,7 @@ public class DetailActivity extends BindingActivity<ActivityDetailBinding> {
                     adapter.setOnItemClickListener(chapter -> aaa(book.chapters.indexOf(chapter)));
                     mBinding.recycler.setAdapter(adapter);
                     mBinding.fab.show();
-                }, L::e);
+                }, Throwable::printStackTrace);
     }
 
     private void aaa(int index) {
@@ -91,6 +103,6 @@ public class DetailActivity extends BindingActivity<ActivityDetailBinding> {
 //                    getDataLayer().getShelfService().updateBook(mBook);
 //                    startActivity(new Intent(this, NewReadActivity.class)
 //                            .putExtra(BundleKey.BOOK_ID, mBook.get_id()));
-                }, L::e);
+                }, Throwable::printStackTrace);
     }
 }

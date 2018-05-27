@@ -54,6 +54,7 @@ public class Book implements Serializable {
     public String id;
     public String src;
     public String srcName;
+    public String ext; // 补充字段
 
     @Transient
     public String category; // 分类
@@ -74,11 +75,10 @@ public class Book implements Serializable {
     public String srcs;
     public String srcNames;
 
-    @Generated(hash = 1571614333)
-    public Book(Long _id, String name, String author, String cover, int type,
-                long offset, long time, String uri, String charset, long length,
-                String MD5, String id, String src, String srcName, int count, int index,
-                int srcCount, String ids, String srcs, String srcNames) {
+    @Generated(hash = 2109721951)
+    public Book(Long _id, String name, String author, String cover, int type, long offset, long time,
+            String uri, String charset, long length, String MD5, String id, String src, String srcName,
+            String ext, int count, int index, int srcCount, String ids, String srcs, String srcNames) {
         this._id = _id;
         this.name = name;
         this.author = author;
@@ -93,6 +93,7 @@ public class Book implements Serializable {
         this.id = id;
         this.src = src;
         this.srcName = srcName;
+        this.ext = ext;
         this.count = count;
         this.index = index;
         this.srcCount = srcCount;
@@ -215,6 +216,14 @@ public class Book implements Serializable {
 
     public void setSrcName(String srcName) {
         this.srcName = srcName;
+    }
+
+    public String getExt() {
+        return this.ext;
+    }
+
+    public void setExt(String ext) {
+        this.ext = ext;
     }
 
     public int getCount() {

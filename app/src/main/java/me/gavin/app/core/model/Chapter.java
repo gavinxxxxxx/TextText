@@ -15,6 +15,9 @@ public class Chapter {
     public boolean selected;
     public String text;
 
+    public Chapter() {
+    }
+
     public Chapter(long offset, String title) {
         this.offset = offset;
         this.title = title;
@@ -30,7 +33,7 @@ public class Chapter {
     @Override
     public String toString() {
         return "Chapter{" +
-                "offset=" + offset +
+                "id='" + id + '\'' +
                 ", title='" + title + '\'' +
                 '}';
     }

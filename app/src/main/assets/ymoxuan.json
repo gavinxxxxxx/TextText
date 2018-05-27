@@ -1,0 +1,84 @@
+{
+  "id": "ymoxuan",
+  "name": "衍墨轩",
+  "attr": null,
+  "host": "https://www.ymoxuan.com",
+  "flag": 3,
+  "query": {
+    "url": "https://www.ymoxuan.com/search.htm?keyword={query}",
+    "select": "body > section > div.left > section > ul > li",
+    "fields": [
+      {
+        "type": "id",
+        "select": "span.n2 > a",
+        "attr": "href",
+        "feature": "//www.ymoxuan.com/text_{bookId}.html"
+      },
+      {
+        "type": "name",
+        "select": "span.n2 > a"
+      },
+      {
+        "type": "author",
+        "select": "span.a2 > a"
+      }
+    ]
+  },
+  "detail": {
+    "url": "https://www.ymoxuan.com/text_{bookId}.html",
+    "select": "body > section > div.left > article.info",
+    "fields": [
+      {
+        "type": "category",
+        "select": "p.detail.pt20 > i:nth-child(2) > a"
+      },
+      {
+        "type": "state",
+        "select": "p.detail.pt20 > i:nth-child(3)"
+      },
+      {
+        "type": "updateTime",
+        "select": "p:nth-child(4) > i"
+      },
+      {
+        "type": "updateChapter",
+        "select": "p:nth-child(5) > i > a"
+      },
+      {
+        "type": "intro",
+        "select": "p.desc"
+      },
+      {
+        "type": "cover",
+        "select": "div.cover > img",
+        "attr": "src"
+      },
+      {
+        "type": "ext",
+        "select": "div.operate.clearfix > a.btn.btn-primary",
+        "attr": "href",
+        "feature": "//www.ymoxuan.com/book/{ext}/\\d+/\\d+.html"
+      }
+    ]
+  },
+  "directory": {
+    "url": "https://www.ymoxuan.com/book/{ext}/{bookId}/index.html",
+    "select": "body > section > article > ul > li.col3 > a",
+    "fields": [
+      {
+        "type": "id",
+        "select": null,
+        "attr": "href",
+        "feature": "//www.ymoxuan.com/book/\\d+/\\d+/{chapterId}.html"
+      },
+      {
+        "type": "name",
+        "select": null
+      }
+    ]
+  },
+  "chapter": {
+    "url": "https://www.ymoxuan.com/book/{ext}/{bookId}/{chapterId}.html",
+    "select": "#content"
+  }
+}
