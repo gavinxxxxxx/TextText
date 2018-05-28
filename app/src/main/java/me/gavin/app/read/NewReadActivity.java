@@ -23,7 +23,6 @@ import me.gavin.app.core.model.Book;
 import me.gavin.app.core.model.Chapter;
 import me.gavin.app.core.model.Page;
 import me.gavin.app.core.pager.Pager;
-import me.gavin.app.core.source.SourceServicess;
 import me.gavin.base.BindingActivity;
 import me.gavin.base.BundleKey;
 import me.gavin.base.recycler.BindingAdapter;
@@ -124,8 +123,8 @@ public class NewReadActivity extends BindingActivity<ActivityReadNewBinding> imp
     public void onFlip(Page page) {
         // TODO: 2018/5/24 无章节时 crash
         mBinding.includeContent.tvSrc.setText(mBook.srcName);
-        mBinding.includeContent.tvUrl.setText(SourceServicess
-                .getSource(mBook.src).chapterUrl(mChapterList.get(mBook.index)));
+//        mBinding.includeContent.tvUrl.setText(SourceServicess
+//                .getSource(mBook.src).chapterUrl(mChapterList.get(mBook.index)));
         mBook.setIndex(mBinding.includeContent.text.curr().index);
         mBook.setOffset(mBinding.includeContent.text.curr().start);
         Chapter curr = mChapterList.get(0);

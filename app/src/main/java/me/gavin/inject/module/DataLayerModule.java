@@ -6,7 +6,6 @@ import dagger.Module;
 import dagger.Provides;
 import me.gavin.service.SettingManager;
 import me.gavin.service.ShelfManager;
-import me.gavin.service.SourceManager;
 import me.gavin.service.SourceManager2;
 import me.gavin.service.base.DataLayer;
 

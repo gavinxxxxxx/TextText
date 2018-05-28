@@ -9,7 +9,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import me.gavin.app.RxTransformer;
 import me.gavin.app.core.model.Book;
 import me.gavin.app.core.model.Chapter;
-import me.gavin.app.core.source.SourceServicess;
 import me.gavin.app.read.NewReadActivity;
 import me.gavin.base.BindingActivity;
 import me.gavin.base.BundleKey;
@@ -93,7 +92,7 @@ public class DetailActivity extends BindingActivity<ActivityDetailBinding> {
     public void chapter(int i) {
         mBook.setIndex(i);
         getDataLayer().getSourceService()
-                .chapter(SourceServicess.getSource(mBook.getSrc()), mBook, mBook.index)
+                .chapter(mBook, mBook.index)
                 .compose(RxTransformer.applySchedulers())
                 .doOnSubscribe(mCompositeDisposable::add)
                 .subscribe(s -> {

@@ -104,7 +104,7 @@ public class ShelfActivity extends BindingActivity<ActivityShelfBinding> {
                         });
                     });
                     mBinding.recycler.setAdapter(mAdapter);
-                });
+                }, Throwable::printStackTrace);
     }
 
     @Override

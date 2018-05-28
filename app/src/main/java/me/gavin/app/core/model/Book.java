@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import me.gavin.app.StreamHelper;
+import me.gavin.app.core.source.SourceModel;
 import me.gavin.base.App;
 
 /**
@@ -54,6 +55,8 @@ public class Book implements Serializable {
     public String id;
     public String src;
     public String srcName;
+    @Transient
+    public SourceModel source;
     public String ext; // 补充字段
 
     @Transient

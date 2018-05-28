@@ -17,7 +17,6 @@ import me.gavin.app.core.model.Book;
 import me.gavin.app.core.model.Chapter;
 import me.gavin.app.core.model.Page;
 import me.gavin.app.core.source.SourceModel;
-import me.gavin.app.core.source.SourceServicess;
 import me.gavin.base.App;
 import me.gavin.inject.component.ApplicationComponent;
 import me.gavin.service.base.BaseManager;
@@ -33,40 +32,39 @@ import okio.Okio;
  */
 public class SourceManager2 extends BaseManager implements DataLayer.SourceService {
 
-    private static SourceModel src;
-
-    static {
-//        Observable.just("src/22ff.json")
-                // Observable.just("src/ymoxuan.json")
-                 Observable.just("src/daocaorenshuwu.json")
+    @Override
+    public Observable<List<Book>> search(String query) {
+        return Observable.just("22ff.json")
+                .map(s -> "src/" + s)
                 .map(App.get().getAssets()::open)
                 .map(Okio::source)
                 .map(Okio::buffer)
                 .map(BufferedSource::readUtf8)
-                .subscribe(json -> {
-                    src = ApplicationComponent.Instance
-                            .get()
-                            .getGson()
-                            .fromJson(json, SourceModel.class);
-                });
+                .map(json -> ApplicationComponent
+                        .Instance
+                        .get()
+                        .getGson()
+                        .fromJson(json, SourceModel.class))
+                .flatMap(src -> search(src, query));
     }
 
     @Override
-    public Observable<List<Book>> search(String query) {
-        return Observable.just(src.queryUrl)
+    public Observable<List<Book>> search(SourceModel src, String query) {
+        return Observable.just(src.data.query.url)
                 .map(s -> s.replace("{query}", query))
                 .flatMap(url -> getApi().get(url, Config.cacheControlQuery))
                 .map(ResponseBody::source)
                 .map(BufferedSource::readUtf8)
                 .map(Jsoup::parse)
-                .map(document -> document.select(src.querySelect))
+                .map(document -> document.select(src.data.query.select))
                 .flatMap(Observable::fromIterable)
                 .map(element -> {
                     Book book = new Book();
                     book.type = Book.TYPE_ONLINE;
                     book.src = src.id;
                     book.srcName = src.name;
-                    for (SourceModel.Field field : src.queryFields) {
+                    book.source = src;
+                    for (SourceModel.Field field : src.data.query.fields) {
                         String regex = TextUtils.isEmpty(field.feature) ? null : field.feature
                                 .replace("{bookId}", "(\\S+)")
                                 .replace("{ext}", "(\\S+)");
@@ -81,13 +79,8 @@ public class SourceManager2 extends BaseManager implements DataLayer.SourceServi
     }
 
     @Override
-    public Observable<List<Book>> search(SourceServicess source, String query) {
-        return null;
-    }
-
-    @Override
     public Observable<Book> detail(Book book) {
-        return Observable.just(src.detailUrl)
+        return Observable.just(book.source.data.detail.url)
                 .map(s -> {
                     s = s.replace("{bookId}", book.id);
                     if (!TextUtils.isEmpty(book.ext))
@@ -98,9 +91,9 @@ public class SourceManager2 extends BaseManager implements DataLayer.SourceServi
                 .map(ResponseBody::source)
                 .map(BufferedSource::readUtf8)
                 .map(Jsoup::parse)
-                .map(document -> document.selectFirst(src.detailSelect))
+                .map(document -> document.selectFirst(book.source.data.detail.select))
                 .map(element -> {
-                    for (SourceModel.Field field : src.detailFields) {
+                    for (SourceModel.Field field : book.source.data.detail.fields) {
                         String regex = TextUtils.isEmpty(field.feature) ? null : field.feature
                                 .replace("{ext}", "(\\S+)");
                         String value = getValue(element, field, regex);
@@ -112,7 +105,7 @@ public class SourceManager2 extends BaseManager implements DataLayer.SourceServi
 
     @Override
     public Observable<List<Chapter>> directory(Book book) {
-        return Observable.just(src.directoryUrl)
+        return Observable.just(book.source.data.directory.url)
                 .map(s -> {
                     s = s.replace("{bookId}", book.id);
                     if (!TextUtils.isEmpty(book.ext))
@@ -123,11 +116,11 @@ public class SourceManager2 extends BaseManager implements DataLayer.SourceServi
                 .map(ResponseBody::source)
                 .map(BufferedSource::readUtf8)
                 .map(Jsoup::parse)
-                .map(document -> document.select(src.directorySelect))
+                .map(document -> document.select(book.source.data.directory.select))
                 .flatMap(Observable::fromIterable)
                 .map(element -> {
                     Chapter chapter = new Chapter();
-                    for (SourceModel.Field field : src.directoryFields) {
+                    for (SourceModel.Field field : book.source.data.directory.fields) {
                         String regex = TextUtils.isEmpty(field.feature) ? null : field.feature
                                 .replace("{chapterId}", "(\\S+)")
                                 .replace("{ext}", "(\\S+)");
@@ -152,12 +145,12 @@ public class SourceManager2 extends BaseManager implements DataLayer.SourceServi
     }
 
     @Override
-    public Observable<String> chapter(SourceServicess source, Book book, int index) {
+    public Observable<String> chapter(Book book, int index) {
         return directory(book)
                 .map(chapters -> chapters.get(index))
                 .map(chapter -> chapter.id)
                 .map(id -> {
-                    String s = src.chapterUrl
+                    String s = book.source.data.chapter.url
                             .replace("{bookId}", book.id)
                             .replace("{chapterId}", id);
                     if (!TextUtils.isEmpty(book.ext))
@@ -168,7 +161,7 @@ public class SourceManager2 extends BaseManager implements DataLayer.SourceServi
                 .map(ResponseBody::source)
                 .map(BufferedSource::readUtf8)
                 .map(Jsoup::parse)
-                .map(document -> document.selectFirst(src.chapterSelect))
+                .map(document -> document.selectFirst(book.source.data.chapter.select))
                 .map(Node::outerHtml)
                 .map(s -> s.replaceAll("<br/?>", "\\\\n"))
                 .map(s -> s.replaceAll("<(p)>(?s)(.*?)</\\1>", "\\\\n$2\\\\n"))
@@ -208,7 +201,7 @@ public class SourceManager2 extends BaseManager implements DataLayer.SourceServi
             return Observable.just(book.getOffset())
                     .map(offset -> Utils.nextLocal(new Page(book), book.getOffset()));
         }
-        return chapter(SourceServicess.getSource(book.src), book, book.index)
+        return chapter(book, book.index)
                 .map(s -> {
                     Page page = new Page(book);
                     page.index = book.index;
@@ -231,7 +224,7 @@ public class SourceManager2 extends BaseManager implements DataLayer.SourceServi
                         page.end = target.start;
                         return Observable.just(page);
                     } else {
-                        return chapter(SourceServicess.getSource(target.book.src), target.book, target.index - 1)
+                        return chapter(target.book, target.index - 1)
                                 .map(s -> {
                                     page.chapter = s;
                                     page.index = target.index - 1;
@@ -257,7 +250,7 @@ public class SourceManager2 extends BaseManager implements DataLayer.SourceServi
                         page.start = target.end;
                         return Observable.just(page);
                     } else {
-                        return chapter(SourceServicess.getSource(target.book.src), target.book, target.index + 1)
+                        return chapter(target.book, target.index + 1)
                                 .map(s -> {
                                     page.chapter = s;
                                     page.index = target.index + 1;
