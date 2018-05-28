@@ -6,6 +6,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
 
+import java.lang.reflect.Field;
 import java.util.List;
 
 import io.reactivex.Observable;
@@ -35,8 +36,9 @@ public class SourceManager2 extends BaseManager implements DataLayer.SourceServi
     private static SourceModel src;
 
     static {
-        Observable.just("22ff.json")
-//        Observable.just("ymoxuan.json")
+//        Observable.just("src/22ff.json")
+                // Observable.just("src/ymoxuan.json")
+                 Observable.just("src/daocaorenshuwu.json")
                 .map(App.get().getAssets()::open)
                 .map(Okio::source)
                 .map(Okio::buffer)
@@ -49,87 +51,27 @@ public class SourceManager2 extends BaseManager implements DataLayer.SourceServi
                 });
     }
 
-    private String getValue(Element element, SourceModel.Field field, String regex) {
-        if (!TextUtils.isEmpty(field.select)) {
-            element = element.selectFirst(field.select);
-        }
-        if (element == null) {
-            return null;
-        }
-        String value = TextUtils.isEmpty(field.attr) ? element.text() : element.attr(field.attr);
-        if (!TextUtils.isEmpty(regex)) {
-            value = value.replaceFirst(regex, "$1");
-        }
-        return value;
-    }
-
-    private void setValue(SourceModel.Field field, Book book, String value) {
-        switch (field.type) {
-            case "id":
-                book.id = value;
-                break;
-            case "name":
-                book.name = value;
-                break;
-            case "author":
-                book.author = value;
-                break;
-            case "category":
-                book.category = value;
-                break;
-            case "state":
-                book.state = value;
-                break;
-            case "updateTime":
-                book.updateTime = value;
-                break;
-            case "updateChapter":
-                book.updateChapter = value;
-                break;
-            case "intro":
-                book.intro = value;
-                break;
-            case "cover":
-                book.cover = value;
-                break;
-            case "ext":
-                book.ext = value;
-                break;
-        }
-    }
-
-    private void setValue(SourceModel.Field field, Chapter chapter, String value) {
-        switch (field.type) {
-            case "id":
-                chapter.id = value;
-                break;
-            case "name":
-                chapter.title = value;
-                break;
-        }
-    }
-
     @Override
     public Observable<List<Book>> search(String query) {
-        return Observable.just(src.query.url)
+        return Observable.just(src.queryUrl)
                 .map(s -> s.replace("{query}", query))
                 .flatMap(url -> getApi().get(url, Config.cacheControlQuery))
                 .map(ResponseBody::source)
                 .map(BufferedSource::readUtf8)
                 .map(Jsoup::parse)
-                .map(document -> document.select(src.query.select))
+                .map(document -> document.select(src.querySelect))
                 .flatMap(Observable::fromIterable)
                 .map(element -> {
                     Book book = new Book();
                     book.type = Book.TYPE_ONLINE;
                     book.src = src.id;
                     book.srcName = src.name;
-                    for (SourceModel.Field field : src.query.fields) {
+                    for (SourceModel.Field field : src.queryFields) {
                         String regex = TextUtils.isEmpty(field.feature) ? null : field.feature
-                                .replace("{bookId}", "(\\w+?)")
-                                .replace("{ext}", "(\\w+?)");
+                                .replace("{bookId}", "(\\S+)")
+                                .replace("{ext}", "(\\S+)");
                         String value = getValue(element, field, regex);
-                        setValue(field, book, value);
+                        setValue(book, field.type, value);
                     }
                     return book;
                 })
@@ -145,7 +87,7 @@ public class SourceManager2 extends BaseManager implements DataLayer.SourceServi
 
     @Override
     public Observable<Book> detail(Book book) {
-        return Observable.just(src.detail.url)
+        return Observable.just(src.detailUrl)
                 .map(s -> {
                     s = s.replace("{bookId}", book.id);
                     if (!TextUtils.isEmpty(book.ext))
@@ -156,13 +98,13 @@ public class SourceManager2 extends BaseManager implements DataLayer.SourceServi
                 .map(ResponseBody::source)
                 .map(BufferedSource::readUtf8)
                 .map(Jsoup::parse)
-                .map(document -> document.selectFirst(src.detail.select))
+                .map(document -> document.selectFirst(src.detailSelect))
                 .map(element -> {
-                    for (SourceModel.Field field : src.detail.fields) {
+                    for (SourceModel.Field field : src.detailFields) {
                         String regex = TextUtils.isEmpty(field.feature) ? null : field.feature
-                                .replace("{ext}", "(\\w+?)");
+                                .replace("{ext}", "(\\S+)");
                         String value = getValue(element, field, regex);
-                        setValue(field, book, value);
+                        setValue(book, field.type, value);
                     }
                     return book;
                 });
@@ -170,7 +112,7 @@ public class SourceManager2 extends BaseManager implements DataLayer.SourceServi
 
     @Override
     public Observable<List<Chapter>> directory(Book book) {
-        return Observable.just(src.directory.url)
+        return Observable.just(src.directoryUrl)
                 .map(s -> {
                     s = s.replace("{bookId}", book.id);
                     if (!TextUtils.isEmpty(book.ext))
@@ -181,16 +123,16 @@ public class SourceManager2 extends BaseManager implements DataLayer.SourceServi
                 .map(ResponseBody::source)
                 .map(BufferedSource::readUtf8)
                 .map(Jsoup::parse)
-                .map(document -> document.select(src.directory.select))
+                .map(document -> document.select(src.directorySelect))
                 .flatMap(Observable::fromIterable)
                 .map(element -> {
                     Chapter chapter = new Chapter();
-                    for (SourceModel.Field field : src.directory.fields) {
+                    for (SourceModel.Field field : src.directoryFields) {
                         String regex = TextUtils.isEmpty(field.feature) ? null : field.feature
-                                .replace("{chapterId}", "(\\w+?)")
-                                .replace("{ext}", "(\\w+?)");
+                                .replace("{chapterId}", "(\\S+)")
+                                .replace("{ext}", "(\\S+)");
                         String value = getValue(element, field, regex);
-                        setValue(field, chapter, value);
+                        setValue(chapter, field.type, value);
                     }
                     return chapter;
                 })
@@ -215,7 +157,7 @@ public class SourceManager2 extends BaseManager implements DataLayer.SourceServi
                 .map(chapters -> chapters.get(index))
                 .map(chapter -> chapter.id)
                 .map(id -> {
-                    String s = src.chapter.url
+                    String s = src.chapterUrl
                             .replace("{bookId}", book.id)
                             .replace("{chapterId}", id);
                     if (!TextUtils.isEmpty(book.ext))
@@ -226,7 +168,7 @@ public class SourceManager2 extends BaseManager implements DataLayer.SourceServi
                 .map(ResponseBody::source)
                 .map(BufferedSource::readUtf8)
                 .map(Jsoup::parse)
-                .map(document -> document.selectFirst(src.chapter.select))
+                .map(document -> document.selectFirst(src.chapterSelect))
                 .map(Node::outerHtml)
                 .map(s -> s.replaceAll("<br/?>", "\\\\n"))
                 .map(s -> s.replaceAll("<(p)>(?s)(.*?)</\\1>", "\\\\n$2\\\\n"))
@@ -234,6 +176,30 @@ public class SourceManager2 extends BaseManager implements DataLayer.SourceServi
                 .map(Element::text)
                 .map(s -> s.replaceAll("\\\\n", "\n"))
                 .compose(RxTransformer.log());
+    }
+
+    private String getValue(Element element, SourceModel.Field field, String regex) {
+        if (!TextUtils.isEmpty(field.select)) {
+            element = element.selectFirst(field.select);
+        }
+        if (element == null) {
+            return null;
+        }
+        String value = TextUtils.isEmpty(field.attr) ? element.text() : element.attr(field.attr);
+        if (!TextUtils.isEmpty(regex)) {
+            value = value.replaceFirst(regex, "$1");
+        }
+        return value;
+    }
+
+    private void setValue(Object target, String type, String value) {
+        try {
+            Field field = target.getClass().getField(type);
+            field.setAccessible(true);
+            field.set(target, value);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

@@ -9,6 +9,12 @@ import java.util.List;
  */
 public class SourceModel {
 
+    public static final int FLAG_NONE = 0; // 正常状态
+    public static final int FLAG_ENABLE = 1; // 可用
+    public static final int FLAG_CHECKED = 1 << 1; // 选中
+    public static final int FLAG_TOP = 1 << 2; // 置顶
+    public static final int FLAG_SYS = 1 << 3; // 内置
+
     public String id; // daocaorenshuwu
     public String name; // 稻草人书屋
     public String attr; // 备注
@@ -16,34 +22,21 @@ public class SourceModel {
     public String json;
     public int flag; // {0:可用 1：已选}
 
-    public Query query;
-    public Detail detail;
-    public Directory directory;
-    public Chapter chapter;
+    public String queryUrl;
+    public String querySelect;
+    public List<Field> queryFields;
 
-    public static class Query {
-        public String url;
-        public String select;
-        public List<Field> fields;
-    }
+    public String detailUrl;
+    public String detailSelect;
+    public List<Field> detailFields;
 
-    public static class Detail {
-        public String url;
-        public String select;
-        public List<Field> fields;
-    }
+    public String directoryUrl;
+    public String directorySelect;
+    public int directorySkip;
+    public List<Field> directoryFields;
 
-    public static class Directory {
-        public String url;
-        public String select;
-        public int skip;
-        public List<Field> fields;
-    }
-
-    public static class Chapter {
-        public String url;
-        public String select;
-    }
+    public String chapterUrl;
+    public String chapterSelect;
 
     public static class Field {
         public String type;

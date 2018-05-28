@@ -1,0 +1,66 @@
+{
+  "id": "22ff",
+  "name": "无弹窗小说网",
+  "attr": null,
+  "host": "http://www.22ff.com",
+  "flag": 3,
+  "queryUrl": "http://www.22ff.com/s_{query}",
+  "querySelect": "body > div:nth-child(3) > div.neirong > ul",
+  "queryFields": [
+    {
+      "type": "id",
+      "select": "li.neirong1 > a",
+      "attr": "href",
+      "feature": "/xs/{bookId}/"
+    },
+    {
+      "type": "name",
+      "select": "li.neirong1 > a"
+    },
+    {
+      "type": "author",
+      "select": "li.neirong4 > a"
+    }
+  ],
+  "detailUrl": "http://www.22ff.com/xs/{bookId}/",
+  "detailSelect": "body div.main table.fw",
+  "detailFields": [
+    {
+      "type": "category",
+      "select": "tr:nth-child(1) > td:nth-child(5) > a"
+    },
+    {
+      "type": "updateTime",
+      "select": "tr:nth-child(1) > td:nth-child(7)"
+    },
+    {
+      "type": "updateChapter",
+      "select": "tr:nth-child(2) > td > a"
+    },
+    {
+      "type": "intro",
+      "select": "tr:nth-child(4) > td"
+    },
+    {
+      "type": "cover",
+      "select": "tr:nth-child(1) > td:nth-child(1) > img",
+      "attr": "src"
+    }
+  ],
+  "directoryUrl": "http://www.22ff.com/xs/{bookId}/",
+  "directorySelect": "body > div.main > div.neirong > div.clc > a",
+  "directoryFields": [
+    {
+      "type": "id",
+      "select": null,
+      "attr": "href",
+      "feature": "/xs/\\d+/{chapterId}/"
+    },
+    {
+      "type": "title",
+      "select": null
+    }
+  ],
+  "chapterUrl": "http://www.22ff.com/xs/{bookId}/{chapterId}/",
+  "chapterSelect": "#chapter_content"
+}

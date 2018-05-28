@@ -204,4 +204,13 @@ public class ExampleUnitTest {
         String regex = feature.replaceFirst("(\\{bookId})|(\\{chapterId})", "(\\w+?)");
         System.out.println(regex);
     }
+
+    @Test
+    public void feature3() {
+        String s1 = "/quanzhifashi/";
+        String s2 = "/book/quanzhifashi/";
+        String feature = "/(\\S+)/";
+        System.out.println(s1.replaceFirst(feature, "$1"));
+        System.out.println(s2.replaceFirst(feature, "$1"));
+    }
 }
