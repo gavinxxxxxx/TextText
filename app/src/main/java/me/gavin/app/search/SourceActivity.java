@@ -2,27 +2,21 @@ package me.gavin.app.search;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.widget.CheckBox;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import me.gavin.app.core.source.Source;
 import me.gavin.base.BindingActivity;
-import me.gavin.base.recycler.BindingAdapter;
-import me.gavin.inject.component.ApplicationComponent;
+import me.gavin.base.BundleKey;
 import me.gavin.text.R;
 import me.gavin.text.databinding.ActivitySourceBinding;
 
 /**
- * 书源管理
+ * 书源 - 新增 & 编辑
  *
- * @author gavin.xiong 2018/5/16
+ * @author gavin.xiong 2018/4/26.
  */
 public class SourceActivity extends BindingActivity<ActivitySourceBinding> {
 
-    private final List<Source> mList = new ArrayList<>();
-    private BindingAdapter<Source> mAdapter;
+    private Source mSource;
 
     @Override
     protected int getLayoutId() {
@@ -31,42 +25,15 @@ public class SourceActivity extends BindingActivity<ActivitySourceBinding> {
 
     @Override
     protected void afterCreate(@Nullable Bundle savedInstanceState) {
-        mBinding.includeToolbar.toolbar.setTitle("书源管理");
+        mSource = (Source) getIntent().getSerializableExtra(BundleKey.SOURCE);
+
+        mBinding.includeToolbar.toolbar.setTitle(mSource == null ? "新增书源" : "编辑书源");
         mBinding.includeToolbar.toolbar.setNavigationIcon(R.drawable.ic_arrow_back_24dp);
         mBinding.includeToolbar.toolbar.setNavigationOnClickListener(v -> finish());
-        mBinding.includeToolbar.toolbar.inflateMenu(R.menu.activity_search);
+        mBinding.includeToolbar.toolbar.inflateMenu(R.menu.action_done);
         mBinding.includeToolbar.toolbar.setOnMenuItemClickListener(item -> {
 
             return true;
         });
-
-        mAdapter = new BindingAdapter<>(this, mList, R.layout.item_source);
-        mBinding.recycler.setAdapter(mAdapter);
-
-        sources();
-
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        ApplicationComponent
-                .Instance
-                .get()
-                .getDaoSession()
-                .getSourceDao()
-                .updateInTx(mList);
-    }
-
-    private void sources() {
-        List list = ApplicationComponent
-                .Instance
-                .get()
-                .getDaoSession()
-                .getSourceDao()
-                .loadAll();
-        mList.clear();
-        mList.addAll(list);
-        mAdapter.notifyDataSetChanged();
     }
 }

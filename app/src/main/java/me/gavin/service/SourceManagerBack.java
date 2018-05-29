@@ -3,13 +3,11 @@
 //import org.jsoup.Jsoup;
 //import org.jsoup.nodes.Element;
 //
-//import java.io.File;
-//import java.io.FileInputStream;
-//import java.io.IOException;
-//import java.io.InputStream;
+//import java.util.ArrayList;
 //import java.util.List;
 //
 //import io.reactivex.Observable;
+//import io.reactivex.schedulers.Schedulers;
 //import me.gavin.app.Config;
 //import me.gavin.app.RxTransformer;
 //import me.gavin.app.Utils;
@@ -17,17 +15,12 @@
 //import me.gavin.app.core.model.Chapter;
 //import me.gavin.app.core.model.Page;
 //import me.gavin.app.core.source.Source;
-//import me.gavin.base.App;
-//import me.gavin.db.dao.ChapterDao;
+//import me.gavin.app.core.source.SourceServicess;
+//import me.gavin.db.dao.SourceDao;
 //import me.gavin.service.base.BaseManager;
 //import me.gavin.service.base.DataLayer;
-//import me.gavin.util.CacheHelper;
 //import okhttp3.ResponseBody;
-//import okio.BufferedSink;
 //import okio.BufferedSource;
-//import okio.GzipSink;
-//import okio.GzipSource;
-//import okio.Okio;
 //
 ///**
 // * SourceManager
@@ -37,73 +30,95 @@
 //public class SourceManagerBack extends BaseManager implements DataLayer.SourceService {
 //
 //    @Override
-//    public Observable<Book> search(Source source, String query) {
+//    public Observable<List<Book>> search(String query) {
+//        return Observable.just(Source.FLAG_CHECKED)
+//                .map(flag -> " WHERE " + SourceDao.Properties.Flag.columnName + " & " + flag + " = " + flag)
+//                .map(getDaoSession().getSourceDao()::queryRaw)
+//                .flatMap(Observable::fromIterable)
+//                .map(src -> SourceServicess.getSource(src.id))
+//                .toList()
+//                .toObservable()
+//                .flatMap(srcss -> {
+//                    List<Observable<List<Book>>> observables = new ArrayList<>();
+//                    for (SourceServicess source : srcss) {
+//                        observables.add(search(source, query)
+//                                .subscribeOn(Schedulers.io()));
+//                    }
+//                    return Observable.merge(observables);
+//                });
+//    }
+//
+//    @Override
+//    public Observable<List<Book>> search(SourceServicess source, String query) {
 //        return getApi().get(source.queryUrl(query), Config.cacheControlQuery)
-//                .map(ResponseBody::byteStream)
-//                .map(this::read)
+//                .map(ResponseBody::source)
+//                .map(BufferedSource::readUtf8)
 //                .map(Jsoup::parse)
 //                .map(document -> document.select(source.querySelector()))
 //                .flatMap(Observable::fromIterable)
 //                .compose(source.queryFilter())
 //                .compose(RxTransformer.log())
-//                .map(source::query2Book);
+//                .map(source::query2Book)
+//                .toList()
+//                .toObservable()
+//                .filter(books -> !books.isEmpty());
 //    }
 //
 //    @Override
-//    public Observable<Book> detail(Source source, String id) {
-//        return null;
-//    }
-//
-//    @Override
-//    public Observable<List<Chapter>> directory(Source source, String id) {
-//        return getApi().get(source.directoryUrl(id), Config.cacheControlDirectory)
-//                .map(ResponseBody::byteStream)
-//                .map(this::read)
+//    public Observable<Book> detail(Book book) {
+//        SourceServicess source = SourceServicess.getSource(book.src);
+//        return Observable.just(source.detailsUrl(book.id))
+//                .flatMap(url -> getApi().get(url, Config.cacheControlDetail))
+//                .map(ResponseBody::source)
+//                .map(BufferedSource::readUtf8)
 //                .map(Jsoup::parse)
-//                .map(document -> document.select(source.directorySelector()))
-//                .compose(source.directoryFilter())
-//                .map(element -> source.directory2Chapter(element, id))
+//                .compose(RxTransformer.log())
+//                .map(doc -> source.bookInfo(book, doc))
+//                .compose(source.detailChapters())
 //                .toList()
 //                .toObservable()
 //                .map(chapters -> {
-//                    getDaoSession().getChapterDao()
-//                            .queryBuilder()
-//                            .where(ChapterDao.Properties.BookId.eq(id))
-//                            .buildDelete()
-//                            .executeDeleteWithoutDetachingEntities();
+//                    book.chapters.clear();
+//                    book.chapters.addAll(chapters);
+//                    return book;
+//                });
+//    }
+//
+//    @Override
+//    public Observable<List<Chapter>> directory(Book book) {
+//        SourceServicess source = SourceServicess.getSource(book.getSrc());
+//        return getApi().get(source.directoryUrl(book.id), Config.cacheControlDirectory)
+//                .map(ResponseBody::source)
+//                .map(BufferedSource::readUtf8)
+//                .map(Jsoup::parse)
+//                .map(document -> document.select(source.directorySelector()))
+//                .compose(RxTransformer.log())
+//                .compose(source.directoryFilter())
+//                .map(element -> source.directory2Chapter(element, book.id))
+//                .toList()
+//                .toObservable()
+//                .compose(RxTransformer.log())
+//                .map(chapters -> {
 //                    for (int i = 0; i < chapters.size(); i++) {
-//                        chapters.get(i).setBookId(id);
-//                        chapters.get(i).setIndex(i);
+//                        chapters.get(i).bookId = book.id;
+//                        chapters.get(i).index = i;
 //                    }
-//                    getDaoSession().getChapterDao().saveInTx(chapters);
+//                    book.count = chapters.size();
+//                    getDaoSession().getBookDao().update(book);
 //                    return chapters;
 //                });
 //    }
 //
 //    @Override
-//    public Observable<String> chapter(Source source, Book book, int index) {
-//        return Observable.just("/%s(%s)/%s/%s")
-//                .map(format -> String.format(format, book.getName(), book.getAuthor(), book.getSrc(), index))
-//                .map(sf -> CacheHelper.getFilesDir(App.get(), ".book") + sf)
-//                .map(File::new)
-//                .flatMap(file -> {
-//                    if (!file.exists() || file.isDirectory()) {
-//                        Chapter chapter = getDaoSession().getChapterDao()
-//                                .queryBuilder()
-//                                .where(ChapterDao.Properties.BookId.eq(book.getId()), ChapterDao.Properties.Index.eq(index))
-//                                .unique();
-//                        return getApi().get(source.chapterUrl(chapter), Config.cacheControlChapter)
-//                                .map(ResponseBody::byteStream)
-//                                .map(this::read)
-//                                .compose(source.chapter2Text())
-//                                .map(Element::text)
-//                                .map(s -> s.replaceAll("\\\\n", "\n"))
-//                                .map(s -> write(s, file));
-//                    }
-//                    return Observable.just(file)
-//                            .map(FileInputStream::new)
-//                            .map(this::read);
-//                })
+//    public Observable<String> chapter(SourceServicess source, Book book, int index) {
+//        return directory(book)
+//                .map(chapters -> chapters.get(index))
+//                .flatMap(chapter -> getApi().get(source.chapterUrl(chapter), Config.cacheControlChapter))
+//                .map(ResponseBody::source)
+//                .map(BufferedSource::readUtf8)
+//                .compose(source.chapter2Text())
+//                .map(Element::text)
+//                .map(s -> s.replaceAll("\\\\n", "\n"))
 //                .compose(RxTransformer.log());
 //    }
 //
@@ -113,10 +128,10 @@
 //            return Observable.just(book.getOffset())
 //                    .map(offset -> Utils.nextLocal(new Page(book), book.getOffset()));
 //        }
-//        return chapter(SourceServicess.getSource(book.src), book, book.getIndex())
+//        return chapter(SourceServicess.getSource(book.src), book, book.index)
 //                .map(s -> {
 //                    Page page = new Page(book);
-//                    page.index = book.getIndex();
+//                    page.index = book.index;
 //                    page.chapter = s;
 //                    return Utils.nextOnline(page, book.getOffset());
 //                });
@@ -172,21 +187,5 @@
 //                    }
 //                })
 //                .map(page1 -> Utils.nextOnline(page, page.start));
-//    }
-//
-//    private String write(String s, File file) throws IOException {
-//        file.delete();
-//        file.getParentFile().mkdirs();
-//        file.createNewFile();
-//        try (BufferedSink bufferedSink = Okio.buffer(new GzipSink(Okio.sink(file)))) {
-//            bufferedSink.writeUtf8(s);
-//            return s;
-//        }
-//    }
-//
-//    private String read(InputStream in) throws IOException {
-//        try (BufferedSource bufferedSource = Okio.buffer(new GzipSource(Okio.source(in)))) {
-//            return bufferedSource.readUtf8();
-//        }
 //    }
 //}

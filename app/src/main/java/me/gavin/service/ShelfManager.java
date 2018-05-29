@@ -7,15 +7,10 @@ import java.util.List;
 
 import io.reactivex.Observable;
 import me.gavin.app.core.model.Book;
-import me.gavin.app.core.source.SourceModel;
-import me.gavin.base.App;
 import me.gavin.db.dao.BookDao;
 import me.gavin.db.dao.DaoSession;
-import me.gavin.inject.component.ApplicationComponent;
 import me.gavin.service.base.BaseManager;
 import me.gavin.service.base.DataLayer;
-import okio.BufferedSource;
-import okio.Okio;
 
 /**
  * SettingManager
@@ -67,21 +62,14 @@ public class ShelfManager extends BaseManager implements DataLayer.ShelfService 
                     if (book.type == Book.TYPE_LOCAL) {
                         return Observable.just(book);
                     }
-                    return Observable.just(book.src)
-                            .map(s -> "src/" + s + ".json")
-                            .map(App.get().getAssets()::open)
-                            .map(Okio::source)
-                            .map(Okio::buffer)
-                            .map(BufferedSource::readUtf8)
-                            .map(json -> ApplicationComponent
-                                    .Instance
-                                    .get()
-                                    .getGson()
-                                    .fromJson(json, SourceModel.class))
+                    return Observable.just(getDaoSession())
+                            .map(DaoSession::getSourceDao)
+                            .map(sourceDao -> sourceDao.load(book.src))
                             .map(src -> {
                                 book.source = src;
                                 return book;
                             });
+
                 })
                 .toList()
                 .toObservable();

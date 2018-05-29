@@ -27,7 +27,10 @@
         <activity android:name="me.gavin.app.shelf.ShelfActivity" />
         <activity android:name="me.gavin.app.explorer.ExplorerActivity" />
         <activity android:name="me.gavin.app.search.SearchActivity" />
-        <activity android:name="me.gavin.app.search.SourceActivity" />
+        <activity android:name="me.gavin.app.search.SourceListActivity" />
+        <activity
+            android:name="me.gavin.app.search.SourceActivity"
+            android:windowSoftInputMode="adjustResize" />
         <activity android:name="me.gavin.app.search.DetailActivity" />
         <activity android:name="me.gavin.app.read.NewReadActivity" />
 

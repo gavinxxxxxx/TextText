@@ -45,7 +45,7 @@ public class DetailActivity extends BindingActivity<ActivityDetailBinding> {
         }
         mBinding.includeToolbar.toolbar.setOnMenuItemClickListener(item -> {
             if (item.getItemId() != R.id.action_source) {
-                Snackbar.make(mBinding.recycler, item.getTitle(), Snackbar.LENGTH_LONG).show();
+
             }
             return true;
         });

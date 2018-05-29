@@ -18,20 +18,45 @@
         android:clickable="true"
         android:focusable="true"
         android:onClick="@{v -> checkbox.toggle()}"
-        android:orientation="horizontal"
-        android:paddingBottom="8dp"
-        android:paddingLeft="14dp"
-        android:paddingRight="14dp"
-        android:paddingTop="8dp">
+        android:paddingEnd="8dp"
+        android:paddingStart="14dp">
 
         <CheckBox
             android:id="@+id/checkbox"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="1"
             android:checked="@={item.checked}"
             android:paddingEnd="0dp"
             android:paddingStart="5dp"
-            android:text="@{item.name}" />
+            android:singleLine="true"
+            android:text="@{item.name}"
+            tools:text="衍墨轩" />
+
+        <ImageView
+            android:id="@+id/ivTop"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="end"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?actionBarItemBackground"
+            android:padding="14dp"
+            android:src="@drawable/vt_vertical_align_top"
+            tools:ignore="contentDescription" />
+
+        <ImageView
+            android:id="@+id/ivEdit"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="end"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?actionBarItemBackground"
+            android:padding="14dp"
+            android:src="@drawable/vt_edit"
+            tools:ignore="contentDescription" />
 
     </LinearLayout>
 

@@ -221,7 +221,7 @@
             android:tint="@android:color/white"
             android:visibility="gone"
             app:fabSize="normal"
-            app:srcCompat="@drawable/ic_add_black_24dp"
+            app:srcCompat="@drawable/vt_add"
             tools:visibility="visible" />
 
     </android.support.design.widget.CoordinatorLayout>

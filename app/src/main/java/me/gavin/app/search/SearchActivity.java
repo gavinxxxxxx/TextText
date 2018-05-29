@@ -42,7 +42,7 @@ public class SearchActivity extends BindingActivity<ActivitySearchBinding> {
         mBinding.includeToolbar.toolbar.inflateMenu(R.menu.activity_search);
         mBinding.includeToolbar.toolbar.setOnMenuItemClickListener(item -> {
             if (item.getItemId() == R.id.action_source) {
-                startActivity(new Intent(this, SourceActivity.class));
+                startActivity(new Intent(this, SourceListActivity.class));
             }
             return true;
         });
