@@ -63,7 +63,7 @@
           }
         ]
       },
-      "directory": {
+      "catalog": {
         "url": "{host}/book/{ext}/{bookId}/index.html",
         "select": "body > section > article > ul > li.col3 > a",
         "fields": [
@@ -144,7 +144,7 @@
           }
         ]
       },
-      "directory": {
+      "catalog": {
         "url": "{host}/{bookId}/",
         "select": "#all-chapter > div > div.panel-body > div > div.col-md-6.item > a",
         "fields": [
@@ -221,7 +221,7 @@
           }
         ]
       },
-      "directory": {
+      "catalog": {
         "url": "{host}/xs/{bookId}/",
         "select": "body > div.main > div.neirong > div.clc > a",
         "fields": [

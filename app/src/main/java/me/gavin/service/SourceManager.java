@@ -108,7 +108,7 @@ public class SourceManager extends BaseManager implements DataLayer.SourceServic
 
     @Override
     public Observable<List<Chapter>> directory(Book book) {
-        return Observable.just(book.source.data().directory.url)
+        return Observable.just(book.source.data().catalog.url)
                 .map(s -> {
                     s = s.replace("{host}", book.source.host)
                             .replace("{bookId}", book.id);
@@ -120,11 +120,11 @@ public class SourceManager extends BaseManager implements DataLayer.SourceServic
                 .map(ResponseBody::source)
                 .map(BufferedSource::readUtf8)
                 .map(Jsoup::parse)
-                .map(document -> document.select(book.source.data().directory.select))
+                .map(document -> document.select(book.source.data().catalog.select))
                 .flatMap(Observable::fromIterable)
                 .map(element -> {
                     Chapter chapter = new Chapter();
-                    for (Source.Field field : book.source.data().directory.fields) {
+                    for (Source.Field field : book.source.data().catalog.fields) {
                         String regex = TextUtils.isEmpty(field.feature) ? null : field.feature
                                 .replace("{chapterId}", "(\\S+)")
                                 .replace("{ext}", "(\\S+)");

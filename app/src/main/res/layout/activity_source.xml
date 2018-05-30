@@ -3,6 +3,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <data>
+
+        <variable
+            name="item"
+            type="me.gavin.app.core.source.Source" />
+    </data>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -52,6 +59,7 @@
                             android:hint="host（https://www.qidian.com）"
                             android:inputType="textUri"
                             android:singleLine="true"
+                            android:text="@={item.host}"
                             android:textSize="14sp" />
 
                         <EditText
@@ -61,6 +69,7 @@
                             android:layout_marginEnd="8dp"
                             android:hint="名称（起点中文网）"
                             android:singleLine="true"
+                            android:text="@={item.name}"
                             android:textSize="14sp" />
 
                     </LinearLayout>
@@ -94,6 +103,7 @@
                             android:layout_marginEnd="8dp"
                             android:hint="搜索 url（https://www.qidian.com/search?kw={query}）"
                             android:singleLine="true"
+                            android:text="@={item.data.query.url}"
                             android:textSize="14sp" />
 
                         <EditText
@@ -104,6 +114,7 @@
                             android:hint="搜索 select（#result-list > div > ul > li）"
                             android:inputType="textUri"
                             android:singleLine="true"
+                            android:text="@={item.data.query.select}"
                             android:textSize="14sp" />
 
                         <android.support.v7.widget.RecyclerView
@@ -149,15 +160,17 @@
                             android:hint="详情 url（https://book.qidian.com/info/{bookId}）"
                             android:inputType="textUri"
                             android:singleLine="true"
+                            android:text="@={item.data.detail.url}"
                             android:textSize="14sp" />
 
                         <EditText
-                            android:id="@+id/etDetailSell"
+                            android:id="@+id/etDetailSel"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginEnd="8dp"
                             android:hint="详情 select（body > div.wrap > div.book-detail-wrap.center990）"
                             android:singleLine="true"
+                            android:text="@={item.data.detail.select}"
                             android:textSize="14sp" />
 
                         <android.support.v7.widget.RecyclerView
@@ -196,22 +209,24 @@
                         android:orientation="vertical">
 
                         <EditText
-                            android:id="@+id/etDirUrl"
+                            android:id="@+id/etCatalogUrl"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginEnd="8dp"
                             android:hint="目录 url（https://book.qidian.com/info/{bookId}#Catalog）"
                             android:inputType="textUri"
                             android:singleLine="true"
+                            android:text="@={item.data.catalog.url}"
                             android:textSize="14sp" />
 
                         <EditText
-                            android:id="@+id/etDirSel"
+                            android:id="@+id/etCatalogSel"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginEnd="8dp"
                             android:hint="目录 select（#j-catalogWrap > div:nth-child(1) > div:nth-child(3) > ul > li）"
                             android:singleLine="true"
+                            android:text="@={item.data.catalog.select}"
                             android:textSize="14sp" />
 
                         <android.support.v7.widget.RecyclerView
@@ -257,6 +272,7 @@
                             android:hint="章节 url（https://read.qidian.com/chapter/{bookId}/{chapterId}）"
                             android:inputType="textUri"
                             android:singleLine="true"
+                            android:text="@={item.data.chapter.url}"
                             android:textSize="14sp" />
 
                         <EditText
@@ -266,6 +282,7 @@
                             android:layout_marginEnd="8dp"
                             android:hint="章节 select（#chapter-575080 > div > div.read-content.j_readContent）"
                             android:singleLine="true"
+                            android:text="@={item.data.chapter.select}"
                             android:textSize="14sp" />
 
                     </LinearLayout>

@@ -33,7 +33,7 @@ public class Source implements Serializable {
     public String host; // http://www.daocaorenshuwu.com
     public String json;
     @Transient
-    private Data data;
+    public Data data;
     public int flag; // {0:可用 1：已选}
 
     @Generated(hash = 885735672)
@@ -54,7 +54,7 @@ public class Source implements Serializable {
         private static final long serialVersionUID = 1L;
         public Action query;
         public Action detail;
-        public Action directory;
+        public Action catalog;
         public Action chapter;
     }
 
@@ -72,38 +72,6 @@ public class Source implements Serializable {
         public String attr;
         public String feature;
         public String type;
-
-        public String getSelect() {
-            return select;
-        }
-
-        public void setSelect(String select) {
-            this.select = select;
-        }
-
-        public String getAttr() {
-            return attr;
-        }
-
-        public void setAttr(String attr) {
-            this.attr = attr;
-        }
-
-        public String getFeature() {
-            return feature;
-        }
-
-        public void setFeature(String feature) {
-            this.feature = feature;
-        }
-
-        public String getType() {
-            return type;
-        }
-
-        public void setType(String type) {
-            this.type = type;
-        }
     }
 
     public String getId() {
