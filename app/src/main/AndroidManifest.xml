@@ -30,7 +30,12 @@
         <activity android:name="me.gavin.app.search.SourceListActivity" />
         <activity
             android:name="me.gavin.app.search.SourceActivity"
-            android:windowSoftInputMode="adjustResize" />
+            android:windowSoftInputMode="adjustResize">
+            <intent-filter>
+                <action android:name="android.intent.action.TEST" />
+                <category android:name="android.intent.category.TEST" />
+            </intent-filter>
+        </activity>
         <activity android:name="me.gavin.app.search.DetailActivity" />
         <activity android:name="me.gavin.app.read.NewReadActivity" />
 

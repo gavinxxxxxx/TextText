@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -18,169 +20,257 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:clipToPadding="false"
                 android:orientation="vertical"
-                android:paddingBottom="@dimen/activity_vertical_margin"
-                android:paddingTop="@dimen/activity_vertical_margin">
+                android:padding="4dp">
 
-                <android.support.design.widget.TextInputLayout
+                <android.support.v7.widget.CardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="@dimen/activity_horizontal_margin"
-                    android:layout_marginStart="@dimen/activity_horizontal_margin">
+                    android:layout_margin="4dp"
+                    app:cardBackgroundColor="@android:color/white"
+                    app:contentPadding="4dp">
 
-                    <android.support.design.widget.TextInputEditText
-                        android:id="@+id/etName"
+                    <ImageView
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:padding="12dp"
+                        android:src="@drawable/ic_link"
+                        tools:ignore="contentDescription" />
+
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="名称（起点中文网）"
-                        android:singleLine="true"
-                        android:textSize="14sp" />
+                        android:layout_marginStart="48dp"
+                        android:orientation="vertical">
 
-                </android.support.design.widget.TextInputLayout>
+                        <EditText
+                            android:id="@+id/etHost"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="8dp"
+                            android:hint="host（https://www.qidian.com）"
+                            android:inputType="textUri"
+                            android:singleLine="true"
+                            android:textSize="14sp" />
 
-                <android.support.design.widget.TextInputLayout
+                        <EditText
+                            android:id="@+id/etName"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="8dp"
+                            android:hint="名称（起点中文网）"
+                            android:singleLine="true"
+                            android:textSize="14sp" />
+
+                    </LinearLayout>
+
+                </android.support.v7.widget.CardView>
+
+                <android.support.v7.widget.CardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="@dimen/activity_horizontal_margin"
-                    android:layout_marginStart="@dimen/activity_horizontal_margin">
+                    android:layout_margin="4dp"
+                    app:cardBackgroundColor="@android:color/white"
+                    app:contentPadding="4dp">
 
-                    <android.support.design.widget.TextInputEditText
-                        android:id="@+id/etHost"
+                    <ImageView
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:padding="12dp"
+                        android:src="@drawable/vt_search"
+                        tools:ignore="contentDescription" />
+
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="host（https://www.qidian.com）"
-                        android:singleLine="true"
-                        android:textSize="14sp" />
+                        android:layout_marginStart="48dp"
+                        android:orientation="vertical">
 
-                </android.support.design.widget.TextInputLayout>
+                        <EditText
+                            android:id="@+id/etQueryUrl"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="8dp"
+                            android:hint="搜索 url（https://www.qidian.com/search?kw={query}）"
+                            android:singleLine="true"
+                            android:textSize="14sp" />
 
-                <android.support.design.widget.TextInputLayout
+                        <EditText
+                            android:id="@+id/etQuerySel"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="8dp"
+                            android:hint="搜索 select（#result-list > div > ul > li）"
+                            android:inputType="textUri"
+                            android:singleLine="true"
+                            android:textSize="14sp" />
+
+                        <android.support.v7.widget.RecyclerView
+                            android:id="@+id/rvQuery"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="8dp"
+                            app:layout_constraintEnd_toEndOf="@+id/tilHost"
+                            app:layout_constraintStart_toStartOf="@+id/tilHost"
+                            app:layout_constraintTop_toBottomOf="@+id/tilQuerySel"
+                            tools:itemCount="1"
+                            tools:listitem="@layout/item_source_field" />
+
+                    </LinearLayout>
+
+                </android.support.v7.widget.CardView>
+
+                <android.support.v7.widget.CardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="@dimen/activity_horizontal_margin"
-                    android:layout_marginStart="@dimen/activity_horizontal_margin">
+                    android:layout_margin="4dp"
+                    app:cardBackgroundColor="@android:color/white"
+                    app:contentPadding="4dp">
 
-                    <android.support.design.widget.TextInputEditText
-                        android:id="@+id/etQueryUrl"
+                    <ImageView
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:padding="12dp"
+                        android:src="@drawable/ic_details"
+                        tools:ignore="contentDescription" />
+
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="搜索 url（https://www.qidian.com/search?kw={query}）"
-                        android:singleLine="true"
-                        android:textSize="14sp" />
+                        android:layout_marginStart="48dp"
+                        android:orientation="vertical">
 
-                </android.support.design.widget.TextInputLayout>
+                        <EditText
+                            android:id="@+id/etDetailUrl"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="8dp"
+                            android:hint="详情 url（https://book.qidian.com/info/{bookId}）"
+                            android:inputType="textUri"
+                            android:singleLine="true"
+                            android:textSize="14sp" />
 
-                <android.support.design.widget.TextInputLayout
+                        <EditText
+                            android:id="@+id/etDetailSell"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="8dp"
+                            android:hint="详情 select（body > div.wrap > div.book-detail-wrap.center990）"
+                            android:singleLine="true"
+                            android:textSize="14sp" />
+
+                        <android.support.v7.widget.RecyclerView
+                            android:id="@+id/rvDetail"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="8dp"
+                            app:layout_constraintEnd_toEndOf="@+id/tilHost"
+                            app:layout_constraintStart_toStartOf="@+id/tilHost"
+                            app:layout_constraintTop_toBottomOf="@+id/tilQuerySel"
+                            tools:itemCount="1"
+                            tools:listitem="@layout/item_source_field" />
+
+                    </LinearLayout>
+
+                </android.support.v7.widget.CardView>
+
+                <android.support.v7.widget.CardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="@dimen/activity_horizontal_margin"
-                    android:layout_marginStart="@dimen/activity_horizontal_margin">
+                    android:layout_margin="4dp"
+                    app:cardBackgroundColor="@android:color/white"
+                    app:contentPadding="4dp">
 
-                    <android.support.design.widget.TextInputEditText
-                        android:id="@+id/etQuerySel"
+                    <ImageView
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:padding="12dp"
+                        android:src="@drawable/ic_format_list_numbered"
+                        tools:ignore="contentDescription" />
+
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="搜索 select（#result-list > div > ul > li）"
-                        android:singleLine="true"
-                        android:textSize="14sp" />
+                        android:layout_marginStart="48dp"
+                        android:orientation="vertical">
 
-                </android.support.design.widget.TextInputLayout>
+                        <EditText
+                            android:id="@+id/etDirUrl"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="8dp"
+                            android:hint="目录 url（https://book.qidian.com/info/{bookId}#Catalog）"
+                            android:inputType="textUri"
+                            android:singleLine="true"
+                            android:textSize="14sp" />
 
-                <android.support.design.widget.TextInputLayout
+                        <EditText
+                            android:id="@+id/etDirSel"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="8dp"
+                            android:hint="目录 select（#j-catalogWrap > div:nth-child(1) > div:nth-child(3) > ul > li）"
+                            android:singleLine="true"
+                            android:textSize="14sp" />
+
+                        <android.support.v7.widget.RecyclerView
+                            android:id="@+id/rvDir"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="8dp"
+                            app:layout_constraintEnd_toEndOf="@+id/tilHost"
+                            app:layout_constraintStart_toStartOf="@+id/tilHost"
+                            app:layout_constraintTop_toBottomOf="@+id/tilQuerySel"
+                            tools:itemCount="1"
+                            tools:listitem="@layout/item_source_field" />
+
+                    </LinearLayout>
+
+                </android.support.v7.widget.CardView>
+
+                <android.support.v7.widget.CardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="@dimen/activity_horizontal_margin"
-                    android:layout_marginStart="@dimen/activity_horizontal_margin">
+                    android:layout_margin="4dp"
+                    app:cardBackgroundColor="@android:color/white"
+                    app:contentPadding="4dp">
 
-                    <android.support.design.widget.TextInputEditText
-                        android:id="@+id/etDetailUrl"
+                    <ImageView
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:padding="12dp"
+                        android:src="@drawable/ic_short_text"
+                        tools:ignore="contentDescription" />
+
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="详情 url（https://book.qidian.com/info/{bookId}）"
-                        android:singleLine="true"
-                        android:textSize="14sp" />
+                        android:layout_marginStart="48dp"
+                        android:orientation="vertical">
 
-                </android.support.design.widget.TextInputLayout>
+                        <EditText
+                            android:id="@+id/etChapterUrl"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="8dp"
+                            android:hint="章节 url（https://read.qidian.com/chapter/{bookId}/{chapterId}）"
+                            android:inputType="textUri"
+                            android:singleLine="true"
+                            android:textSize="14sp" />
 
-                <android.support.design.widget.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="@dimen/activity_horizontal_margin"
-                    android:layout_marginStart="@dimen/activity_horizontal_margin">
+                        <EditText
+                            android:id="@+id/etChapterSel"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="8dp"
+                            android:hint="章节 select（#chapter-575080 > div > div.read-content.j_readContent）"
+                            android:singleLine="true"
+                            android:textSize="14sp" />
 
-                    <android.support.design.widget.TextInputEditText
-                        android:id="@+id/etDetailSel"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="详情 select（body > div.wrap > div.book-detail-wrap.center990）"
-                        android:singleLine="true"
-                        android:textSize="14sp" />
+                    </LinearLayout>
 
-                </android.support.design.widget.TextInputLayout>
-
-                <android.support.design.widget.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="@dimen/activity_horizontal_margin"
-                    android:layout_marginStart="@dimen/activity_horizontal_margin">
-
-                    <android.support.design.widget.TextInputEditText
-                        android:id="@+id/etDirUrl"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="目录 url（https://book.qidian.com/info/{bookId}#Catalog）"
-                        android:singleLine="true"
-                        android:textSize="14sp" />
-
-                </android.support.design.widget.TextInputLayout>
-
-                <android.support.design.widget.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="@dimen/activity_horizontal_margin"
-                    android:layout_marginStart="@dimen/activity_horizontal_margin">
-
-                    <android.support.design.widget.TextInputEditText
-                        android:id="@+id/etDirSel"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="目录 select（#j-catalogWrap > div:nth-child(1) > div:nth-child(3) > ul > li）"
-                        android:singleLine="true"
-                        android:textSize="14sp" />
-
-                </android.support.design.widget.TextInputLayout>
-
-                <android.support.design.widget.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="@dimen/activity_horizontal_margin"
-                    android:layout_marginStart="@dimen/activity_horizontal_margin">
-
-                    <android.support.design.widget.TextInputEditText
-                        android:id="@+id/etChapterUrl"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="章节 url（https://read.qidian.com/chapter/{bookId}/{chapterId}）"
-                        android:singleLine="true"
-                        android:textSize="14sp" />
-
-                </android.support.design.widget.TextInputLayout>
-
-                <android.support.design.widget.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="@dimen/activity_horizontal_margin"
-                    android:layout_marginStart="@dimen/activity_horizontal_margin">
-
-                    <android.support.design.widget.TextInputEditText
-                        android:id="@+id/etChapterSel"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="章节 select（#chapter-575080 > div > div.read-content.j_readContent）"
-                        android:singleLine="true"
-                        android:textSize="14sp" />
-
-                </android.support.design.widget.TextInputLayout>
+                </android.support.v7.widget.CardView>
 
             </LinearLayout>
 

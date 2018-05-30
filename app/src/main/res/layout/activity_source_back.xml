@@ -1,0 +1,296 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true"
+        android:orientation="vertical">
+
+        <include
+            android:id="@+id/includeToolbar"
+            layout="@layout/layout_toolbar" />
+
+        <android.support.v4.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <android.support.constraint.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:descendantFocusability="beforeDescendants"
+                android:paddingBottom="@dimen/activity_vertical_margin"
+                android:paddingTop="@dimen/activity_vertical_margin"
+                tools:layout_height="match_parent">
+
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/tilHost"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginStart="56dp"
+                    app:hintEnabled="false"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <android.support.design.widget.TextInputEditText
+                        android:id="@+id/etHost"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="host（https://www.qidian.com）"
+                        android:singleLine="true"
+                        android:textSize="14sp" />
+
+                </android.support.design.widget.TextInputLayout>
+
+                <ImageView
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:padding="12dp"
+                    android:src="@drawable/ic_link"
+                    app:layout_constraintBottom_toBottomOf="@+id/tilHost"
+                    app:layout_constraintEnd_toStartOf="@+id/tilHost"
+                    app:layout_constraintTop_toTopOf="@+id/tilHost"
+                    tools:ignore="contentDescription" />
+
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/tilName"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:hintEnabled="false"
+                    app:layout_constraintEnd_toEndOf="@+id/tilHost"
+                    app:layout_constraintStart_toStartOf="@+id/tilHost"
+                    app:layout_constraintTop_toBottomOf="@+id/tilHost">
+
+                    <android.support.design.widget.TextInputEditText
+                        android:id="@+id/etName"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="名称（起点中文网）"
+                        android:singleLine="true"
+                        android:textSize="14sp" />
+
+                </android.support.design.widget.TextInputLayout>
+
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/tilQueryUrl"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:hintEnabled="false"
+                    app:layout_constraintEnd_toEndOf="@+id/tilHost"
+                    app:layout_constraintStart_toStartOf="@+id/tilHost"
+                    app:layout_constraintTop_toBottomOf="@+id/tilName">
+
+                    <android.support.design.widget.TextInputEditText
+                        android:id="@+id/etQueryUrl"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="搜索 url（https://www.qidian.com/search?kw={query}）"
+                        android:singleLine="true"
+                        android:textSize="14sp" />
+
+                </android.support.design.widget.TextInputLayout>
+
+                <ImageView
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:padding="12dp"
+                    android:src="@drawable/vt_search"
+                    app:layout_constraintBottom_toBottomOf="@+id/tilQueryUrl"
+                    app:layout_constraintEnd_toStartOf="@+id/tilHost"
+                    app:layout_constraintTop_toTopOf="@+id/tilQueryUrl"
+                    tools:ignore="contentDescription" />
+
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/tilQuerySel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:hintEnabled="false"
+                    app:layout_constraintEnd_toEndOf="@+id/tilHost"
+                    app:layout_constraintStart_toStartOf="@+id/tilHost"
+                    app:layout_constraintTop_toBottomOf="@+id/tilQueryUrl">
+
+                    <android.support.design.widget.TextInputEditText
+                        android:id="@+id/etQuerySel"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="搜索 select（#result-list > div > ul > li）"
+                        android:singleLine="true"
+                        android:textSize="14sp" />
+
+                </android.support.design.widget.TextInputLayout>
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/rvQuery"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintEnd_toEndOf="@+id/tilHost"
+                    app:layout_constraintStart_toStartOf="@+id/tilHost"
+                    app:layout_constraintTop_toBottomOf="@+id/tilQuerySel"
+                    tools:itemCount="1"
+                    tools:listitem="@layout/item_source_field" />
+
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/tilDetailUrl"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:hintEnabled="false"
+                    app:layout_constraintEnd_toEndOf="@+id/tilHost"
+                    app:layout_constraintStart_toStartOf="@+id/tilHost"
+                    app:layout_constraintTop_toBottomOf="@+id/rvQuery">
+
+                    <android.support.design.widget.TextInputEditText
+                        android:id="@+id/etDetailUrl"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="详情 url（https://book.qidian.com/info/{bookId}）"
+                        android:singleLine="true"
+                        android:textSize="14sp" />
+
+                </android.support.design.widget.TextInputLayout>
+
+                <ImageView
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:padding="12dp"
+                    android:src="@drawable/ic_details"
+                    app:layout_constraintBottom_toBottomOf="@+id/tilDetailUrl"
+                    app:layout_constraintEnd_toStartOf="@+id/tilHost"
+                    app:layout_constraintTop_toTopOf="@+id/tilDetailUrl"
+                    tools:ignore="contentDescription" />
+
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/tilDetailSel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:hintEnabled="false"
+                    app:layout_constraintEnd_toEndOf="@+id/tilHost"
+                    app:layout_constraintStart_toStartOf="@+id/tilHost"
+                    app:layout_constraintTop_toBottomOf="@+id/tilDetailUrl">
+
+                    <android.support.design.widget.TextInputEditText
+                        android:id="@+id/etDetailSel"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="详情 select（body > div.wrap > div.book-detail-wrap.center990）"
+                        android:singleLine="true"
+                        android:textSize="14sp" />
+
+                </android.support.design.widget.TextInputLayout>
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/rvDetail"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintEnd_toEndOf="@+id/tilHost"
+                    app:layout_constraintStart_toStartOf="@+id/tilHost"
+                    app:layout_constraintTop_toBottomOf="@+id/tilDetailSel"
+                    tools:itemCount="1"
+                    tools:listitem="@layout/item_source_field" />
+
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/tilDirUrl"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:hintEnabled="false"
+                    app:layout_constraintEnd_toEndOf="@+id/tilHost"
+                    app:layout_constraintStart_toStartOf="@+id/tilHost"
+                    app:layout_constraintTop_toBottomOf="@+id/rvDetail">
+
+                    <android.support.design.widget.TextInputEditText
+                        android:id="@+id/etDirUrl"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="目录 url（https://book.qidian.com/info/{bookId}#Catalog）"
+                        android:singleLine="true"
+                        android:textSize="14sp" />
+
+                </android.support.design.widget.TextInputLayout>
+
+                <ImageView
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:padding="12dp"
+                    android:src="@drawable/ic_format_list_numbered"
+                    app:layout_constraintBottom_toBottomOf="@+id/tilDirUrl"
+                    app:layout_constraintEnd_toStartOf="@+id/tilHost"
+                    app:layout_constraintTop_toTopOf="@+id/tilDirUrl"
+                    tools:ignore="contentDescription" />
+
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/tilDirSel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:hintEnabled="false"
+                    app:layout_constraintEnd_toEndOf="@+id/tilHost"
+                    app:layout_constraintStart_toStartOf="@+id/tilHost"
+                    app:layout_constraintTop_toBottomOf="@+id/tilDirUrl">
+
+                    <android.support.design.widget.TextInputEditText
+                        android:id="@+id/etDirSel"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="目录 select（#j-catalogWrap > div:nth-child(1) > div:nth-child(3) > ul > li）"
+                        android:singleLine="true"
+                        android:textSize="14sp" />
+
+                </android.support.design.widget.TextInputLayout>
+
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/tilChapterUrl"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:hintEnabled="false"
+                    app:layout_constraintEnd_toEndOf="@+id/tilHost"
+                    app:layout_constraintStart_toStartOf="@+id/tilHost"
+                    app:layout_constraintTop_toBottomOf="@+id/tilDirSel">
+
+                    <android.support.design.widget.TextInputEditText
+                        android:id="@+id/etChapterUrl"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="章节 url（https://read.qidian.com/chapter/{bookId}/{chapterId}）"
+                        android:singleLine="true"
+                        android:textSize="14sp" />
+
+                </android.support.design.widget.TextInputLayout>
+
+                <ImageView
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:padding="12dp"
+                    android:src="@drawable/ic_short_text"
+                    app:layout_constraintBottom_toBottomOf="@+id/tilChapterUrl"
+                    app:layout_constraintEnd_toStartOf="@+id/tilHost"
+                    app:layout_constraintTop_toTopOf="@+id/tilChapterUrl"
+                    tools:ignore="contentDescription" />
+
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/tilChapterSel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:hintEnabled="false"
+                    app:layout_constraintEnd_toEndOf="@+id/tilHost"
+                    app:layout_constraintStart_toStartOf="@+id/tilHost"
+                    app:layout_constraintTop_toBottomOf="@+id/tilChapterUrl">
+
+                    <android.support.design.widget.TextInputEditText
+                        android:id="@+id/etChapterSel"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="章节 select（#chapter-575080 > div > div.read-content.j_readContent）"
+                        android:singleLine="true"
+                        android:textSize="14sp" />
+
+                </android.support.design.widget.TextInputLayout>
+
+            </android.support.constraint.ConstraintLayout>
+
+        </android.support.v4.widget.NestedScrollView>
+
+    </LinearLayout>
+
+</layout>

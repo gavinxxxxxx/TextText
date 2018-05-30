@@ -68,10 +68,42 @@ public class Source implements Serializable {
 
     public static class Field implements Serializable {
         private static final long serialVersionUID = 1L;
-        public String type;
         public String select;
         public String attr;
         public String feature;
+        public String type;
+
+        public String getSelect() {
+            return select;
+        }
+
+        public void setSelect(String select) {
+            this.select = select;
+        }
+
+        public String getAttr() {
+            return attr;
+        }
+
+        public void setAttr(String attr) {
+            this.attr = attr;
+        }
+
+        public String getFeature() {
+            return feature;
+        }
+
+        public void setFeature(String feature) {
+            this.feature = feature;
+        }
+
+        public String getType() {
+            return type;
+        }
+
+        public void setType(String type) {
+            this.type = type;
+        }
     }
 
     public String getId() {
