@@ -1,4 +1,4 @@
-//package me.gavin.app.test;
+//package me.gavin.app.core.flipper;
 //
 //import android.animation.Animator;
 //import android.animation.AnimatorListenerAdapter;
@@ -12,7 +12,7 @@
 //import android.view.animation.DecelerateInterpolator;
 //
 //import me.gavin.app.Config;
-//import me.gavin.app.model.Word;
+//import me.gavin.app.core.model.Word;
 //import me.gavin.base.App;
 //import me.gavin.text.R;
 //
@@ -58,7 +58,6 @@
 //                        toBitmap(2);
 //                        mOffsetX = 0;
 //                        mView.invalidate();
-//                        mView.onFlipped();
 //                    } else if (mOffsetX == Config.width && mView.last() != null) {
 //                        mView.onFlip(true);
 //                        bs[2].recycle();
@@ -67,22 +66,10 @@
 //                        toBitmap(0);
 //                        mOffsetX = 0;
 //                        mView.invalidate();
-//                        mView.onFlipped();
 //                    }
 //                }
 //            }
 //        });
-//    }
-//
-//    @Override
-//    public void flip(boolean reserve) {
-//
-//    }
-//
-//    @Override
-//    public void notifyPageChanged() {
-//        toBitmap(0, 1, 2);
-//        mView.invalidate();
 //    }
 //
 //    @Override

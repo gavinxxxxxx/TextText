@@ -4,7 +4,7 @@ apply plugin: 'AndResGuard'
 
 android {
     compileSdkVersion 27
-    buildToolsVersion = "27.0.3"
+    buildToolsVersion "27.0.3"
 
     defaultConfig {
         applicationId "me.gavin.text"
@@ -62,7 +62,7 @@ android {
     }
 
     greendao {
-        schemaVersion 22
+        schemaVersion 24
         daoPackage 'me.gavin.db.dao'
         targetGenDir 'src/main/java'
     }
@@ -107,12 +107,12 @@ dependencies {
     implementation 'com.android.support:design:27.1.1'
     implementation 'com.android.support:recyclerview-v7:27.1.1'
     implementation 'com.android.support:palette-v7:27.1.1'
-    implementation 'com.android.support.constraint:constraint-layout:1.1.0'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.1'
 
     implementation 'me.yokeyword:fragmentation:1.1.9'
 
-    implementation 'io.reactivex.rxjava2:rxjava:2.1.7'
-    implementation 'io.reactivex.rxjava2:rxandroid:2.0.1'
+    implementation 'io.reactivex.rxjava2:rxjava:2.1.9'
+    implementation 'io.reactivex.rxjava2:rxandroid:2.0.2'
     implementation 'com.tbruyelle.rxpermissions2:rxpermissions:0.9.4@aar'
 
     implementation 'com.squareup.retrofit2:retrofit:2.4.0'

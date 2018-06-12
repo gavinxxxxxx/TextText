@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -212,5 +213,15 @@ public class ExampleUnitTest {
         String feature = "/(\\S+)/";
         System.out.println(s1.replaceFirst(feature, "$1"));
         System.out.println(s2.replaceFirst(feature, "$1"));
+    }
+
+    @Test
+    public void equ() {
+        String s1 = "/quanzhifashi/";
+        String s2 = "/book/quanzhifashi/";
+        Objects.hash(s1, s2); // TODO: 2018/6/12
+        System.out.println(s1.equals(s2));
+
+        Collections.synchronizedList(new ArrayList<>()); // TODO: 2018/6/12
     }
 }
