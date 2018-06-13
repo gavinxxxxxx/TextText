@@ -50,6 +50,11 @@ public class SourceManager extends BaseManager implements DataLayer.SourceServic
                 });
     }
 
+    @Override
+    public void resetSource(Book book) {
+        book.source = getDaoSession().getSourceDao().load(book.src);
+    }
+
     private Observable<List<Book>> search(Source src, String query) {
         return Observable.just(src.data().query.url)
                 .map(s -> s.replace("{host}", src.host)

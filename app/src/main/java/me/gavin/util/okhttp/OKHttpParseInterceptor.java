@@ -28,11 +28,11 @@ public final class OKHttpParseInterceptor implements Interceptor {
         Response response = chain.proceed(chain.request());
         if (response != null && response.body() != null) {
             byte[] bytes = response.body().bytes();
-            if (bytes == null || bytes.length < 2) {
-                return response;
+            if (bytes == null) {
+                bytes = new byte[0];
             }
 
-            if (inGZIPFormat(bytes)) { // 反GZIP
+            if (bytes.length >= 2 && inGZIPFormat(bytes)) { // 反GZIP
                 GzipSource gzipSource = new GzipSource(Okio.source(new ByteArrayInputStream(bytes)));
                 bytes = Okio.buffer(gzipSource).readByteArray();
             }

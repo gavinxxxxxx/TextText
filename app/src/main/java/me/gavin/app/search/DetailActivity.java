@@ -3,8 +3,11 @@ package me.gavin.app.search;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
+import android.view.MenuItem;
+
+import java.util.Arrays;
+import java.util.List;
 
 import me.gavin.app.RxTransformer;
 import me.gavin.app.core.model.Book;
@@ -38,17 +41,7 @@ public class DetailActivity extends BindingActivity<ActivityDetailBinding> {
         mBinding.includeToolbar.toolbar.setTitle("书籍详情");
         mBinding.includeToolbar.toolbar.setNavigationIcon(R.drawable.ic_arrow_back_24dp);
         mBinding.includeToolbar.toolbar.setNavigationOnClickListener(v -> finish());
-        mBinding.includeToolbar.toolbar.inflateMenu(R.menu.activity_details);
-        mBinding.includeToolbar.toolbar.getMenu().getItem(0).setTitle(mBook.srcName);
-        for (String s : mBook.srcNames.split(",")) {
-            mBinding.includeToolbar.toolbar.getMenu().getItem(0).getSubMenu().add(s);
-        }
-        mBinding.includeToolbar.toolbar.setOnMenuItemClickListener(item -> {
-            if (item.getItemId() != R.id.action_source) {
-
-            }
-            return true;
-        });
+        initMenu();
 
         mBinding.recycler.setLayoutManager(new LinearLayoutManager(this) {
             @Override
@@ -62,6 +55,30 @@ public class DetailActivity extends BindingActivity<ActivityDetailBinding> {
         mBinding.setItem(mBook);
 
         detail();
+    }
+
+    private void initMenu() {
+        mBinding.includeToolbar.toolbar.inflateMenu(R.menu.activity_details);
+        MenuItem source = mBinding.includeToolbar.toolbar.getMenu().findItem(R.id.action_source);
+        source.setTitle(mBook.srcName);
+        List<String> srcs = Arrays.asList(mBook.srcs.split(","));
+        List<String> srcNames = Arrays.asList(mBook.srcNames.split(","));
+        List<String> ids = Arrays.asList(mBook.ids.split(","));
+        for (String s : srcNames) {
+            source.getSubMenu().add(s);
+        }
+        mBinding.includeToolbar.toolbar.setOnMenuItemClickListener(item -> {
+            if (item.getItemId() != R.id.action_source) {
+                source.setTitle(item.getTitle());
+                int index = srcNames.indexOf(source.getTitle().toString());
+                mBook.src = srcs.get(index);
+                mBook.srcName = srcNames.get(index);
+                mBook.id = ids.get(index);
+                getDataLayer().getSourceService().resetSource(mBook);
+                detail();
+            }
+            return true;
+        });
     }
 
     private void detail() {
