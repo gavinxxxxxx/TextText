@@ -50,9 +50,11 @@ public class SourceManager extends BaseManager implements DataLayer.SourceServic
                 });
     }
 
-    @Override
-    public void resetSource(Book book) {
-        book.source = getDaoSession().getSourceDao().load(book.src);
+    private Book checkSrc(Book book) {
+        if (book.source == null || !book.src.equals(book.source.id)) {
+            book.source = getDaoSession().getSourceDao().load(book.src);
+        }
+        return book;
     }
 
     private Observable<List<Book>> search(Source src, String query) {
@@ -70,7 +72,6 @@ public class SourceManager extends BaseManager implements DataLayer.SourceServic
                     book.type = Book.TYPE_ONLINE;
                     book.src = src.id;
                     book.srcName = src.name;
-                    book.source = src;
                     for (Source.Field field : src.data().query.fields) {
                         String regex = TextUtils.isEmpty(field.feature) ? null : field.feature
                                 .replace("{bookId}", "(\\S+)")
@@ -87,7 +88,9 @@ public class SourceManager extends BaseManager implements DataLayer.SourceServic
 
     @Override
     public Observable<Book> detail(Book book) {
-        return Observable.just(book.source.data().detail.url)
+        return Observable.just(book)
+                .map(this::checkSrc)
+                .map(arg0 -> book.source.data().detail.url)
                 .map(s -> {
                     s = s.replace("{host}", book.source.host)
                             .replace("{bookId}", book.id);
@@ -113,7 +116,9 @@ public class SourceManager extends BaseManager implements DataLayer.SourceServic
 
     @Override
     public Observable<List<Chapter>> directory(Book book) {
-        return Observable.just(book.source.data().catalog.url)
+        return Observable.just(book)
+                .map(this::checkSrc)
+                .map(arg0 -> book.source.data().catalog.url)
                 .map(s -> {
                     s = s.replace("{host}", book.source.host)
                             .replace("{bookId}", book.id);

@@ -74,7 +74,6 @@ public class DetailActivity extends BindingActivity<ActivityDetailBinding> {
                 mBook.src = srcs.get(index);
                 mBook.srcName = srcNames.get(index);
                 mBook.id = ids.get(index);
-                getDataLayer().getSourceService().resetSource(mBook);
                 detail();
             }
             return true;

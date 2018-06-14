@@ -10,6 +10,7 @@ public class Chapter {
     public String id;
     public String bookId;
     public String title;
+    public String url;
     public int index;
     public long offset;
     public boolean selected;

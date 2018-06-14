@@ -24,52 +24,57 @@
             tools:layout_marginTop="-25dp"
             tools:visibility="visible" />
 
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="@color/colorPrimary"
-            android:elevation="4dp"
-            android:fitsSystemWindows="false"
-            android:theme="@style/ToolbarLightOverflow"
-            app:navigationIcon="@drawable/ic_arrow_back_24dp"
-            app:popupTheme="@style/AppTheme.PopupOverlay"
-            app:subtitleTextAppearance="@style/Toolbar.SubtitleOverlay"
-            app:title="@string/app_name"
-            app:titleTextAppearance="@style/Toolbar.TitleOverlay" />
-
         <LinearLayout
-            android:id="@+id/llSrc"
+            android:id="@+id/llToolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="56dp"
             android:elevation="4dp"
             android:fitsSystemWindows="false"
-            android:paddingBottom="5dp"
-            android:paddingEnd="@dimen/activity_horizontal_margin"
-            android:paddingStart="@dimen/activity_horizontal_margin"
-            android:paddingTop="5dp"
-            tools:background="@color/colorVector">
+            android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/tvUrl"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:singleLine="true"
-                android:textColor="@android:color/white"
-                android:textSize="12sp"
-                tools:text="@string/app_name" />
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:theme="@style/ToolbarLightOverflow"
+                app:navigationIcon="@drawable/ic_arrow_back_24dp"
+                app:popupTheme="@style/AppTheme.PopupOverlay"
+                app:subtitleTextAppearance="@style/Toolbar.SubtitleOverlay"
+                app:title="@string/app_name"
+                app:titleTextAppearance="@style/Toolbar.TitleOverlay" />
 
-            <TextView
-                android:id="@+id/tvSrc"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:id="@+id/llSrc"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:singleLine="true"
-                android:textColor="@android:color/white"
-                android:textSize="12sp"
-                tools:text="衍墨轩" />
+                android:background="#10000000"
+                android:paddingBottom="5dp"
+                android:paddingEnd="@dimen/activity_horizontal_margin"
+                android:paddingStart="@dimen/activity_horizontal_margin"
+                android:paddingTop="5dp">
+
+                <TextView
+                    android:id="@+id/tvUrl"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:singleLine="true"
+                    android:textColor="@android:color/white"
+                    android:textSize="12sp"
+                    tools:text="@string/app_name" />
+
+                <TextView
+                    android:id="@+id/tvSrc"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:singleLine="true"
+                    android:textColor="@android:color/white"
+                    android:textSize="10sp"
+                    tools:ignore="smallSp"
+                    tools:text="衍墨轩" />
+
+            </LinearLayout>
 
         </LinearLayout>
 

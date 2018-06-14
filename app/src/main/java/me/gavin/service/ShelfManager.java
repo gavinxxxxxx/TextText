@@ -52,34 +52,14 @@ public class ShelfManager extends BaseManager implements DataLayer.ShelfService 
 
     @Override
     public Observable<List<Book>> loadAllBooks() {
-        return Observable.just(getDaoSession())
-                .map(DaoSession::getBookDao)
-                .map(AbstractDao::queryBuilder)
-                .map(qb -> qb.orderDesc(BookDao.Properties.Time))
-                .map(QueryBuilder::list)
-                .flatMap(Observable::fromIterable)
-                .flatMap(book -> {
-                    if (book.type == Book.TYPE_LOCAL) {
-                        return Observable.just(book);
-                    }
-                    return Observable.just(getDaoSession())
-                            .map(DaoSession::getSourceDao)
-                            .map(sourceDao -> sourceDao.load(book.src))
-                            .map(src -> {
-                                book.source = src;
-                                return book;
-                            });
-
-                })
-                .toList()
-                .toObservable();
-
-//        return Observable.just(getDaoSession()
-//                .getBookDao()
-//                .queryBuilder()
-//                .orderDesc(BookDao.Properties.Time)
-//                // .orderAsc(BookDao.Properties.Name) 多重排序
-//                .list());
+        return Observable.defer(() -> {
+            List<Book> books = getDaoSession().getBookDao()
+                    .queryBuilder()
+                    .orderDesc(BookDao.Properties.Time)
+                    // .orderAsc(BookDao.Properties.Name) 多重排序
+                    .list();
+            return Observable.just(books);
+        });
     }
 
     @Override

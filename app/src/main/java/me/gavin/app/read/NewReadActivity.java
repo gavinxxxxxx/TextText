@@ -6,7 +6,6 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
-import android.support.v4.graphics.ColorUtils;
 import android.support.v4.widget.DrawerLayout;
 import android.view.Gravity;
 import android.view.View;
@@ -52,23 +51,14 @@ public class NewReadActivity extends BindingActivity<ActivityReadNewBinding> imp
 
         mBinding.drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
 
-        float[] hsl = new float[3];
-        ColorUtils.colorToHSL(Config.bgColor, hsl);
-        hsl[1] = Math.max(0, hsl[1] - 0.025f);
-        hsl[2] = Math.max(0, hsl[2] - 0.025f);
-        float[] hsl2 = new float[3];
-        ColorUtils.colorToHSL(Config.bgColor, hsl2);
-        hsl2[1] = Math.max(0, hsl[1] + 0.03f);
-        hsl2[2] = Math.max(0, hsl[2] + 0.03f);
-        mBinding.includeContent.cover.setBackgroundColor(ColorUtils.HSLToColor(hsl));
         mBinding.includeContent.toolbar.setTitle(mBook.name);
         Drawable drawable = getDrawable(R.drawable.ic_arrow_back_24dp).mutate();
         drawable.setTint(Config.textColor);
         mBinding.includeContent.toolbar.setNavigationIcon(drawable);
         mBinding.includeContent.toolbar.setNavigationOnClickListener(v -> finish());
         mBinding.includeContent.toolbar.setTitleTextColor(Config.textColor);
-        mBinding.includeContent.toolbar.setBackgroundColor(Config.bgColor);
-        mBinding.includeContent.llSrc.setBackgroundColor(ColorUtils.HSLToColor(hsl2));
+        mBinding.includeContent.llToolbar.setBackgroundColor(Config.bgColor);
+        mBinding.includeContent.cover.setBackgroundColor(Config.bgColor);
         mBinding.includeContent.tvUrl.setTextColor(Config.textColor);
         mBinding.includeContent.tvSrc.setTextColor(Config.textColor);
         mBinding.includeContent.fab.setBackgroundTintList(ColorStateList.valueOf(Config.bgColor));
@@ -78,7 +68,7 @@ public class NewReadActivity extends BindingActivity<ActivityReadNewBinding> imp
         mBinding.includeContent.text.setFlipper(new SimpleFlipper());
         mBinding.includeContent.text.setOnSystemUiVisibilityChangeListener(visibility -> {
             mBinding.includeContent.cover.setVisibility(visibility);
-            mBinding.includeContent.toolbar.setVisibility(visibility);
+            mBinding.includeContent.llToolbar.setVisibility(visibility);
             mBinding.includeContent.llSrc.setVisibility(visibility);
             if ((visibility & (View.INVISIBLE | View.GONE)) != 0) {
                 mBinding.includeContent.fab.hide();
@@ -123,8 +113,7 @@ public class NewReadActivity extends BindingActivity<ActivityReadNewBinding> imp
     public void onFlip(Page page) {
         // TODO: 2018/5/24 无章节时 crash
         mBinding.includeContent.tvSrc.setText(mBook.srcName);
-//        mBinding.includeContent.tvUrl.setText(SourceServicess
-//                .getSource(mBook.src).chapterUrl(mChapterList.get(mBook.index)));
+        mBinding.includeContent.tvUrl.setText(mBook.source.data().chapter.url);
         mBook.setIndex(mBinding.includeContent.text.curr().index);
         mBook.setOffset(mBinding.includeContent.text.curr().start);
         Chapter curr = mChapterList.get(0);
@@ -205,7 +194,7 @@ public class NewReadActivity extends BindingActivity<ActivityReadNewBinding> imp
         if (mBook.type == Book.TYPE_LOCAL) {
             return Observable.just(mBook)
                     .map(Book::open)
-                    .map(is -> StreamHelper.getChapters(is, mBook.getCharset()));
+                    .map(is -> StreamHelper.getChapters(is, mBook.charset));
         } else if (mBook.type == Book.TYPE_ONLINE) {
             return getDataLayer().getSourceService()
                     .directory(mBook);

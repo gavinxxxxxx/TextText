@@ -58,8 +58,6 @@ public class DataLayer {
     public interface SourceService {
         Observable<List<Book>> search(String query);
 
-        void resetSource(Book book);
-
         Observable<Book> detail(Book book);
 
         Observable<List<Chapter>> directory(Book book);

@@ -55,7 +55,7 @@ public class SimpleFlipper extends Flipper {
             for (Word word : mView.curr().wordList) {
                 word.draw(canvas, 0, 0);
             }
-            canvas.drawText(mView.curr().start + "~" + mView.curr().end, 10, 40, Config.textPaint);
+            // canvas.drawText(mView.curr().start + "~" + mView.curr().end, 10, 40, Config.textPaint);
         } else {
             String s = "加载中...";
             canvas.drawText(s, Config.width / 2 - Config.textPaint.measureText(s) / 2, Config.height / 2, Config.textPaint);

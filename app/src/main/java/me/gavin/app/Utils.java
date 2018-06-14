@@ -92,7 +92,7 @@ public final class Utils {
         // 页前多加载字符 - 用来判断首行是否缩进
         int preCountH = start > Config.segmentPreCount ? Config.segmentPreCount : (int) page.start;
         int preCountF = page.end < page.book.length - Config.segmentPreCount ? Config.segmentPreCount : (int) (page.book.length - page.end);
-        String text = StreamHelper.getText(page.book.open(), page.book.getCharset(),
+        String text = StreamHelper.getText(page.book.open(), page.book.charset,
                 start - preCountH, (int) (page.end - start) + preCountH + preCountF);
         page.mText = text.substring(preCountH, text.length() - preCountF);
         page.mTextSp = Utils.trim(page.mText).split(Config.REGEX_SEGMENT);
@@ -133,7 +133,7 @@ public final class Utils {
         page.isFirst = page.start == 0;
         // 页前多加载字符 - 用来判断首行是否缩进
         int preCountH = page.start > Config.segmentPreCount ? Config.segmentPreCount : (int) page.start;
-        String text = StreamHelper.getText(page.book.open(), page.book.getCharset(),
+        String text = StreamHelper.getText(page.book.open(), page.book.charset,
                 page.start - preCountH, Config.pagePreCount + preCountH);
         page.mText = text.substring(preCountH);
         page.mTextSp = Utils.trim(page.mText).split(Config.REGEX_SEGMENT);
