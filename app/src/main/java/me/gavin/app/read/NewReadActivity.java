@@ -5,6 +5,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.Snackbar;
 import android.support.v4.widget.DrawerLayout;
 import android.view.Gravity;
@@ -32,6 +33,7 @@ public class NewReadActivity extends BindingActivity<ActivityReadNewBinding> imp
 
     private Book mBook;
     private final List<Chapter> mChapterList = new ArrayList<>();
+    private BottomSheetBehavior mBehavior;
 
     @Override
     protected int getLayoutId() {
@@ -61,7 +63,9 @@ public class NewReadActivity extends BindingActivity<ActivityReadNewBinding> imp
         mBinding.includeContent.cover.setBackgroundColor(Config.bgColor);
         mBinding.includeContent.tvUrl.setTextColor(Config.textColor);
         mBinding.includeContent.tvSrc.setTextColor(Config.textColor);
-        mBinding.includeContent.fab.setBackgroundTintList(ColorStateList.valueOf(Config.bgColor));
+        mBinding.includeContent.bottomSheet.setBackgroundColor(Config.bgColor);
+
+        mBehavior = BottomSheetBehavior.from(mBinding.includeContent.bottomSheet);
 
         mBinding.includeContent.text.setPager(this);
         // mBinding.text.setFlipper(new CoverFlipper());
@@ -71,9 +75,11 @@ public class NewReadActivity extends BindingActivity<ActivityReadNewBinding> imp
             mBinding.includeContent.llToolbar.setVisibility(visibility);
             mBinding.includeContent.llSrc.setVisibility(visibility);
             if ((visibility & (View.INVISIBLE | View.GONE)) != 0) {
-                mBinding.includeContent.fab.hide();
+//                mBinding.includeContent.fab.hide();
+                mBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
             } else {
-                mBinding.includeContent.fab.show();
+                mBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+//                mBinding.includeContent.fab.show();
             }
         });
 
