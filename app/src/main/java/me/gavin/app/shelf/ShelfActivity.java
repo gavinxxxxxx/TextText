@@ -19,8 +19,8 @@ import me.gavin.app.search.SearchActivity;
 import me.gavin.app.test.TestActivity;
 import me.gavin.base.BindingActivity;
 import me.gavin.base.BundleKey;
-import me.gavin.text.R;
-import me.gavin.text.databinding.ActivityShelfBinding;
+import me.gavin.R;
+import me.gavin.databinding.ActivityShelfBinding;
 
 /**
  * 书架

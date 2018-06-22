@@ -13,8 +13,8 @@ import me.gavin.base.function.Consumer;
 import me.gavin.base.function.IntConsumer;
 import me.gavin.base.recycler.RecyclerAdapter;
 import me.gavin.base.recycler.RecyclerHolder;
-import me.gavin.text.R;
-import me.gavin.text.databinding.ItemShelfBookBinding;
+import me.gavin.R;
+import me.gavin.databinding.ItemShelfBookBinding;
 
 /**
  * 书架

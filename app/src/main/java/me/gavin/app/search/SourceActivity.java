@@ -13,8 +13,8 @@ import me.gavin.app.core.source.Source;
 import me.gavin.base.BindingActivity;
 import me.gavin.base.BundleKey;
 import me.gavin.inject.component.ApplicationComponent;
-import me.gavin.text.R;
-import me.gavin.text.databinding.ActivitySourceBinding;
+import me.gavin.R;
+import me.gavin.databinding.ActivitySourceBinding;
 import me.gavin.util.L;
 
 /**

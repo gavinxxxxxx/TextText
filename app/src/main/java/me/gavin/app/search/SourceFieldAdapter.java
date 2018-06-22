@@ -10,8 +10,8 @@ import java.util.List;
 import me.gavin.app.core.source.Source;
 import me.gavin.base.recycler.RecyclerAdapter;
 import me.gavin.base.recycler.RecyclerHolder;
-import me.gavin.text.R;
-import me.gavin.text.databinding.ItemSourceFieldBinding;
+import me.gavin.R;
+import me.gavin.databinding.ItemSourceFieldBinding;
 
 /**
  * 书籍属性

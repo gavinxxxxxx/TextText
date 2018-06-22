@@ -6,7 +6,7 @@ import android.util.Log;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import me.gavin.text.BuildConfig;
+import me.gavin.BuildConfig;
 
 /**
  * 日志（log）工具类

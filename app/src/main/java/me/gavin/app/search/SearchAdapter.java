@@ -8,8 +8,8 @@ import me.gavin.app.core.model.Book;
 import me.gavin.base.function.IntConsumer;
 import me.gavin.base.recycler.RecyclerAdapter;
 import me.gavin.base.recycler.RecyclerHolder;
-import me.gavin.text.R;
-import me.gavin.text.databinding.ItemSearchBinding;
+import me.gavin.R;
+import me.gavin.databinding.ItemSearchBinding;
 
 /**
  * 搜索结果适配器

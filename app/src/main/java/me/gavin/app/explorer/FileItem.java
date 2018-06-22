@@ -9,7 +9,7 @@ import java.util.Locale;
 import io.reactivex.Observable;
 import io.reactivex.ObservableTransformer;
 import me.gavin.app.RxTransformer;
-import me.gavin.text.R;
+import me.gavin.R;
 
 /**
  * 这里是萌萌哒注释君

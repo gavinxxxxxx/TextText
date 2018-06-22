@@ -10,7 +10,7 @@ import java.util.List;
 
 import me.gavin.base.function.Consumer;
 import me.gavin.base.function.IntConsumer;
-import me.gavin.text.R;
+import me.gavin.R;
 
 /**
  * DataBinding 基类适配器

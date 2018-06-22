@@ -26,8 +26,8 @@ import me.gavin.app.core.pager.Pager;
 import me.gavin.base.BindingActivity;
 import me.gavin.base.BundleKey;
 import me.gavin.base.recycler.BindingAdapter;
-import me.gavin.text.R;
-import me.gavin.text.databinding.ActivityReadNewBinding;
+import me.gavin.R;
+import me.gavin.databinding.ActivityReadNewBinding;
 
 public class NewReadActivity extends BindingActivity<ActivityReadNewBinding> implements Pager {
 

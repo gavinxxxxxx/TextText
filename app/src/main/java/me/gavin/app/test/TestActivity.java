@@ -5,8 +5,8 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 
 import me.gavin.base.BindingActivity;
-import me.gavin.text.R;
-import me.gavin.text.databinding.ActivityTestBinding;
+import me.gavin.R;
+import me.gavin.databinding.ActivityTestBinding;
 
 /**
  * 这里是萌萌哒注释菌

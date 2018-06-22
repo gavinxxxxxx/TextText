@@ -9,7 +9,7 @@ import com.android.databinding.library.baseAdapters.BR;
 import java.util.List;
 
 import me.gavin.base.function.IntConsumer;
-import me.gavin.text.R;
+import me.gavin.R;
 
 /**
  * DataBinding 基类适配器

@@ -11,8 +11,8 @@ import me.gavin.app.core.source.Source;
 import me.gavin.base.BindingActivity;
 import me.gavin.base.recycler.BindingAdapter;
 import me.gavin.inject.component.ApplicationComponent;
-import me.gavin.text.R;
-import me.gavin.text.databinding.ActivitySourceListBinding;
+import me.gavin.R;
+import me.gavin.databinding.ActivitySourceListBinding;
 
 /**
  * 书源管理

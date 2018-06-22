@@ -1,4 +1,4 @@
-package me.gavin.text;
+package me.gavin;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("me.gavin.text", appContext.getPackageName());
+        assertEquals("me.gavin", appContext.getPackageName());
     }
 }

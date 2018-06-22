@@ -7,7 +7,7 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 
-import me.gavin.text.R;
+import me.gavin.R;
 import me.gavin.util.ImageLoader;
 import me.gavin.widget.FastScrollerEx;
 

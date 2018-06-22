@@ -9,8 +9,8 @@ import java.util.List;
 import me.gavin.app.core.model.Chapter;
 import me.gavin.base.BindingFragment;
 import me.gavin.base.recycler.BindingAdapter;
-import me.gavin.text.R;
-import me.gavin.text.databinding.FragmentChapterBinding;
+import me.gavin.R;
+import me.gavin.databinding.FragmentChapterBinding;
 import me.gavin.util.L;
 
 /**

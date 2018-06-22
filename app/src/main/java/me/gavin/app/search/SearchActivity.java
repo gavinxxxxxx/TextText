@@ -15,8 +15,8 @@ import me.gavin.app.RxTransformer;
 import me.gavin.app.core.model.Book;
 import me.gavin.base.BindingActivity;
 import me.gavin.base.BundleKey;
-import me.gavin.text.R;
-import me.gavin.text.databinding.ActivitySearchBinding;
+import me.gavin.R;
+import me.gavin.databinding.ActivitySearchBinding;
 
 /**
  * 搜索

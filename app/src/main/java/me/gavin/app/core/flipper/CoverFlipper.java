@@ -14,7 +14,7 @@
 //import me.gavin.app.Config;
 //import me.gavin.app.core.model.Word;
 //import me.gavin.base.App;
-//import me.gavin.text.R;
+//import me.gavin.R;
 //
 ///**
 // * 覆盖 - 翻页

@@ -26,8 +26,8 @@
 //import me.gavin.base.BindingActivity;
 //import me.gavin.base.BundleKey;
 //import me.gavin.base.recycler.BindingAdapter;
-//import me.gavin.text.R;
-//import me.gavin.text.databinding.ActivityReadBinding;
+//import me.gavin.R;
+//import me.gavin.databinding.ActivityReadBinding;
 //
 //public class ReadActivity extends BindingActivity<ActivityReadBinding> {
 //

@@ -16,8 +16,8 @@ import me.gavin.app.read.NewReadActivity;
 import me.gavin.base.BindingActivity;
 import me.gavin.base.BundleKey;
 import me.gavin.base.recycler.BindingAdapter;
-import me.gavin.text.R;
-import me.gavin.text.databinding.ActivityDetailBinding;
+import me.gavin.R;
+import me.gavin.databinding.ActivityDetailBinding;
 import me.gavin.util.L;
 
 /**

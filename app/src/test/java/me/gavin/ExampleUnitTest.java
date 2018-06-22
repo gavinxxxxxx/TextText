@@ -1,4 +1,4 @@
-package me.gavin.text;
+package me.gavin;
 
 import org.junit.Test;
 

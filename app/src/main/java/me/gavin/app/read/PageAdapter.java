@@ -7,8 +7,8 @@ import java.util.List;
 import me.gavin.app.core.model.Page;
 import me.gavin.base.recycler.RecyclerAdapter;
 import me.gavin.base.recycler.RecyclerHolder;
-import me.gavin.text.R;
-import me.gavin.text.databinding.ItemTextBinding;
+import me.gavin.R;
+import me.gavin.databinding.ItemTextBinding;
 
 public class PageAdapter extends RecyclerAdapter<Page, ItemTextBinding> {
 

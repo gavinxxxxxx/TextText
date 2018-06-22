@@ -19,8 +19,8 @@ import io.reactivex.Observable;
 import me.gavin.app.RxTransformer;
 import me.gavin.base.BindingActivity;
 import me.gavin.base.recycler.BindingAdapter;
-import me.gavin.text.R;
-import me.gavin.text.databinding.ActivityExplorerBinding;
+import me.gavin.R;
+import me.gavin.databinding.ActivityExplorerBinding;
 
 /**
  * 文件浏览
