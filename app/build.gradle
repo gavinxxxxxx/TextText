@@ -9,7 +9,7 @@ android {
     defaultConfig {
         applicationId "me.gavin.text"
         minSdkVersion 21
-        targetSdkVersion 27
+        targetSdkVersion 28
         versionCode 1
         versionName "0.0.1"
         resConfigs "zh"
